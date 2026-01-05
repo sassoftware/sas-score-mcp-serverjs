@@ -1,0 +1,13 @@
+[
+
+   {
+      "name": "query-customer-usage",
+      "template": "sasQueryTemplate",
+      "table": "Public.gidb_current",
+      "selectColumns": "opsys, offering, product,  rate, quantity, quantype, currency",
+      "columns": null,
+      "job": "run_sql_query",
+      "server": "cas"
+   }
+
+]

@@ -1,0 +1,20 @@
+{
+	"servers": {
+		"sasmcp": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"@sassoftware/sas-score-mcp-serverjs@alpha"
+			],
+			"env": {
+				"MCPTYPE": "stdio",
+				"AUTHFLOW": "sascli", 
+				"SAS_CLI_PROFILE": "cis",
+				"SAS_CLI_CONFIG": "c:\\Users\\kumar",
+				"SSLCERT": "c:\\Users\\kumar\\.tls",
+				"COMPUTECONTEXT": "SAS Job Execution compute context",
+				"CAS_SERVER": "cas-shared-default"
+			}
+		}
+	}
+}

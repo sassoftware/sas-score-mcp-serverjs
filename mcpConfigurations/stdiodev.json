@@ -1,0 +1,20 @@
+{
+	"servers": {
+		"sasmcp": {
+			"type": "stdio",
+			"command": "node",
+			"args": [
+				"c:\\dev\\gitlab\\mcp-serverjs\\cli.js"
+			],
+			"env": {
+				"MCPTYPE": "stdio",
+				"AUTHFLOW": "sascli", 
+				"SAS_CLI_PROFILE": "00m",
+				"SAS_CLI_CONFIG": "c:\\Users\\kumar",
+				"SSLCERT": "c:\\Users\\kumar\\.tls",
+				"COMPUTECONTEXT": "SAS Job Execution compute context",
+				"CAS_SERVER": "cas-shared-default"
+			}
+		}
+	}
+}
