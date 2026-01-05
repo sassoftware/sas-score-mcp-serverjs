@@ -19,10 +19,10 @@ This MCP server was developed for two types of SAS users.
 
 ### SAS users
 SAS users who want to use natural language("chat") to execute prebuilt SAS code and models.
-See this [quick reference](../sas-mcp-tools-reference.md) for details.
+See this [quick reference](./sas-mcp-tools-reference.md) for details.
 
 ### MCP tool developers 
-SAS developers who want to extend the capabilities of the server with their own tools. See the [guide](../tool-developer-guide.md) for details.
+SAS developers who want to extend the capabilities of the server with their own tools. See the [guide](./tool-developer-guide.md) for details.
 
 ## Configuration Variables
 Typically these are set either in the .env file or as environment variables (or both). This is full list of the configuration variables used the mcp server.
