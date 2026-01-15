@@ -65,7 +65,7 @@ VIYA_SERVER= your Viya server url
 TOKENFILE=
 
 # if password flow specify these
-CLIENTIDPW=
+CLIENTID=
 CLIENTSECRET=
 PASSWORD=
 
@@ -154,7 +154,7 @@ The env variables can be specified in two ways:
     "command": "npx",
     "args": [
       "-y",
-      "@sassoftware/sas-app-mcp-serverjs@latest",
+      "@sassoftware/sas-score-mcp-serverjs@latest",
     ],
     "env": {
       "MCPTYPE": "stdio",
@@ -166,8 +166,8 @@ The env variables can be specified in two ways:
       "VIYA_SERVER": "viya server if AUTHFLOW=password|token|refresh",
       "PASSWORD": "password if AUTHFLOW is password",
       "USERNAME": "username if AUTHFLOW is password",
-      "CLIENTIDPW": "client password if AUTHFLOW is password",
-      "CLIENTSECRETPW": "client id if AUTHFLOW is password",
+      "CLIENTID": "client password if AUTHFLOW is password",
+      "CLIENTSECRET": "client id if AUTHFLOW is password",
       "TOKENFILE": "file if AUTHFLOW is token",
       "COMPUTECONTEXT": "SAS Job Execution compute context",
       "CASSERVER": "cas-shared-default",
@@ -222,7 +222,7 @@ But this step is necessary of using http transport.
 
 
 ```sh
-npx @sassoftware/sas-app-mcp-serverjs@latest
+npx @sassoftware/sas-score-mcp-serverjs@latest
 ```
 
 Make sure that the .env file is in the current working directory
