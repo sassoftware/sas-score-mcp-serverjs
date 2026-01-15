@@ -68,14 +68,14 @@ async function igetLogonPayload(_appContext) {
     return logonPayload;
   }
 
-  if (_appContext.PASSWORDAUTHFLOW === "password") {
+  if (_appContext.AUTHFLOW === "password") {
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
       authType: "password",
       user: _appContext.USERNAME,
       password: _appContext.PASSWORD,
-      clientID: _appContext.CLIENTIDPW,
-      clientSecret: _appContext.CLIENTSECRETPW,
+      clientID: _appContext.CLIENTID,
+      clientSecret: _appContext.CLIENTSECRET,
     };
 
     return logonPayload;

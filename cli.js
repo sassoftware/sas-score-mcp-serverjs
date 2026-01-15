@@ -108,8 +108,8 @@ const appEnvBase = {
   PORT: process.env.PORT || 8080,
   USERNAME: process.env.USERNAME || null,
   PASSWORD: process.env.PASSWORD || null,
-  CLIENTIDPW: process.env.CLIENTIDPW || null,
-  CLIENTSECRET: process.env.CLIENTSECRETPW || null,
+  CLIENTID: process.env.CLIENTID|| null,
+  CLIENTSECRET: process.env.CLIENTSECRET || null,
   TOKEN: process.env.TOKEN || null,
   REFRESH_TOKEN: process.env.REFRESH_TOKEN || null,
   TOKENFILE: process.env.TOKENFILE || null,
@@ -166,7 +166,7 @@ if (appEnvBase.TOKENFILE != null) {
     console.error(`[Note]Loading token from file: ${appEnvBase.TOKENFILE}...`);
     appEnvBase.TOKEN = fs.readFileSync(appEnvBase.TOKENFILE, { encoding: 'utf8' });
     appEnvBase.AUTHFLOW = 'token';
-    appEnvBase.appContexts.logonPayload = {
+    appEnvBase.contexts.logonPayload = {
       host: appEnvBase.VIYA_SERVER,
       authType: 'server',
       token: appEnvBase.TOKEN,
@@ -192,14 +192,7 @@ if (appEnvBase.REFRESH_TOKEN != null) {
   }
 }
 
-// if authflow is cli, postpone getting logonPayload until needed
 
-/*
-if(appEnvBase.AUTHFLOW ==='sascli') {
-  let logonPayload = await getLogonPayload(appEnvBase);
-  appEnvBase.logonPayload = logonPayload;
-}
-  */
 
 // setup mcpServer (both http and stdio use this)
 // this is singleton - best practices recommend this
