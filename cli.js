@@ -8,7 +8,9 @@
 
 
 import coreSSE from './src/coreSSE.js';
-import corehttp from './src/corehttp.js';
+import expressMcpServer from './src/expressMcpServer.js';
+import hapiMcpServer from './src/hapiMcpServer.js';
+
 import createMcpServer from './src/createMcpServer.js';
 // import dotenvExpand from 'dotenv-expand';
 import fs from 'fs';
@@ -38,7 +40,7 @@ if (process.env.ENVFILE === 'NONE') {
     let e = iconfig(envf); // avoid dotenv since it writes to console.log
     console.error('[Note]: Environment variables loaded from .env file...');
     console.error('Loaded env variables:', e);
-   // dotenvExpand.expand(e);
+    // dotenvExpand.expand(e);
   } else {
     console.error(
       '[Note]: No .env file found, Using default environment variables...'
@@ -90,9 +92,15 @@ if (process.env.SUBCLASS != null) {
 // setup base appEnv 
 // for stdio this is the _appContext
 // for http each session a copy of this as appEnvTemplate is created in corehttp
+
+// backward compability variables
+let clientID = process.env.CLIENTID || process.env.CLIENTIDPW || null;
+let clientSecret = process.env.CLIENTSECRET || process.env.CLIENTSECRETPW || null;
+
 const appEnvBase = {
   version: version,
   mcpType: mcpType,
+  appName: process.env.APPNAME || 'viyaapp',
   brand: (process.env.BRAND == null) ? BRAND : process.env.BRAND,
   HTTPS:
     process.env.HTTPS != null && process.env.HTTPS.toUpperCase() === 'TRUE'
@@ -108,8 +116,10 @@ const appEnvBase = {
   PORT: process.env.PORT || 8080,
   USERNAME: process.env.USERNAME || null,
   PASSWORD: process.env.PASSWORD || null,
-  CLIENTID: process.env.CLIENTID|| null,
-  CLIENTSECRET: process.env.CLIENTSECRET || null,
+  CLIENTID: clientID,
+  CLIENTSECRET: clientSecret,
+  PKCE: process.env.PKCE || null,
+
   TOKEN: process.env.TOKEN || null,
   REFRESH_TOKEN: process.env.REFRESH_TOKEN || null,
   TOKENFILE: process.env.TOKENFILE || null,
@@ -136,9 +146,15 @@ const appEnvBase = {
   logonPayload: null,
   bearerToken: null,
   tlsOpts: null,
+  oauthInfo: null,
   contexts: {
+    host: process.env.VIYA_SERVER,
     store: null, /* for restaf users */
     storeConfig: {},
+    oauthInfo: null,
+    CLIENTID: clientID,
+    CLIENTSECRET: clientSecret,
+    pkce: process.env.PKCE || null,
     casSession: null, /* restaf cas session object */
     computeSession: null, /* restaf compute session object */
     viyaCert: null, /* ssl/tsl certificates to connect to viya */
@@ -166,7 +182,7 @@ if (appEnvBase.TOKENFILE != null) {
     console.error(`[Note]Loading token from file: ${appEnvBase.TOKENFILE}...`);
     appEnvBase.TOKEN = fs.readFileSync(appEnvBase.TOKENFILE, { encoding: 'utf8' });
     appEnvBase.AUTHFLOW = 'token';
-    appEnvBase.contexts.logonPayload = {
+    appEnvBase.appContexts.logonPayload = {
       host: appEnvBase.VIYA_SERVER,
       authType: 'server',
       token: appEnvBase.TOKEN,
@@ -192,6 +208,7 @@ if (appEnvBase.REFRESH_TOKEN != null) {
   }
 }
 
+// if authflow is cli or code, postpone getting logonPayload until needed
 
 
 // setup mcpServer (both http and stdio use this)
@@ -209,6 +226,7 @@ sessionCache.set('transports', transports);
 
 // set this for stdio transport use
 // dummy sessionId for use in the tools  
+let useHapi = process.env.AUTHFLOW === 'code' ? true : false;
 if (mcpType === 'stdio') {
   let sessionId = randomUUID();
   sessionCache.set('currentId', sessionId);
@@ -219,31 +237,36 @@ if (mcpType === 'stdio') {
 
 } else {
   console.error('[Note] Starting HTTP MCP server...');
-  await corehttp(mcpServer, sessionCache, appEnvBase);
-  console.error('[Note] MCP HTTP server started on port ' + appEnvBase.PORT);
+  if (useHapi === true) {
+    await hapiMcpServer(mcpServer, sessionCache, appEnvBase);
+    console.error('[Note] Using HAPI HTTP server...');
+  } else {
+    await expressMcpServer(mcpServer, sessionCache, appEnvBase);
+    console.error('[Note] MCP HTTP server started on port ' + appEnvBase.PORT);
+  }
 }
 
 // custom reader for .env file to avoid dotenv logging to console
 function iconfig(envFile) {
-	try {
-		let data = fs.readFileSync(envFile, 'utf8');
-		let d = data.split(/\r?\n/);
+  try {
+    let data = fs.readFileSync(envFile, 'utf8');
+    let d = data.split(/\r?\n/);
     let envData = {};
-		d.forEach(l => {
-			if (l.length > 0 && l.indexOf('#') === -1) {
-				let la = l.split('=');
-				let envName = la[0];
-				if (la.length === 2 && la[1].length > 0) {
-					let t = la[1].trim();
-					process.env[envName] = t;
+    d.forEach(l => {
+      if (l.length > 0 && l.indexOf('#') === -1) {
+        let la = l.split('=');
+        let envName = la[0];
+        if (la.length === 2 && la[1].length > 0) {
+          let t = la[1].trim();
+          process.env[envName] = t;
           envData[envName] = t;
-				}
-			}
-		});
+        }
+      }
+    });
     return envData;
-	} catch (err) {
-		console.log(err);
-		process.exit(0);
-	}
+  } catch (err) {
+    console.log(err);
+    process.exit(0);
+  }
 }
 

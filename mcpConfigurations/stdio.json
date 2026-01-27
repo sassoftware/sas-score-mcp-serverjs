@@ -4,11 +4,11 @@
 			"type": "stdio",
 			"command": "npx",
 			"args": [
-				"@sassoftware/sas-score-mcp-serverjs@alpha"
+				"@sassoftware/sas-score-mcp-serverjs@latest"
 			],
 			"env": {
 				"MCPTYPE": "stdio",
-				"AUTHFLOW": "sascli", 
+				"AUTHFLOW": "password", 
 				"SAS_CLI_PROFILE": "cis",
 				"SAS_CLI_CONFIG": "c:\\Users\\kumar",
 				"SSLCERT": "c:\\Users\\kumar\\.tls",

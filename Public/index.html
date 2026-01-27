@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sas-score-mcp-server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        dialog {
+            position: fixed;
+            left: 50%;
+            right: auto;
+            top: 0;
+            transform: translateX(-50%);
+            width: fit-content;
+            height: fit-content;
+            border: none;
+            border-radius: 4px;
+            padding: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        dialog h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #000;
+        }
+
+        dialog p {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            width: fit-content;
+            line-height: 1.6;
+            color: #333;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        /* Window styling to show it's 10px larger than dialog */
+        body::before {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <dialog open>
+        <h2>sas-score-mcp-server</h2>
+        <p>The mcp server is now ready for use. </p>
+        <p>You can close this window</p>
+        <p>For information on the tools see this documentation link:</p>
+            <a href="https://github.com/sassoftware/sas-score-mcp-serverjs/wiki   " target="_blank">Summary of tools  </a>
+    </p>
+    </dialog>
+</body>
+</html>

@@ -130,8 +130,64 @@ Set the env TOKENFILE to a file containing the token.
 There seems to be a pattern of using a long-lived token.
 If this is your use case, set the TOKENFILE to a file containing this token.
 
-### Oauth
-This is under development.
+### Oauth - Authentication handled by the mcp server
+
+In this approach, the mcp client does not participate in the Oauth authentication process.
+
+#### SAS viya setup.
+
+Create a Oauth client  with the following properties
+
+```js
+{
+  auth flow: authorization_code
+  clientid: <your client id>
+  clientsecret: <some client secret - pkce not supported at this time>
+  redirect: https://localhost:8080/mcpserver
+}
+
+#### Use an .env file as follows(sample values shown)
+
+```env
+
+PORT=8080
+HTTPS=true
+MCPTYPE=http
+USELOGON=FALSE
+USETOKEN=TRUE
+APPNAME=mcpserver
+APPHOST=localhost
+APPPORT=8080
+
+CLIENTID=mcpserver
+CLIENTSECRET=jellico
+AUTHFLOW=code
+SSLCERT=c:\Users\kumar\.tls 
+VIYACERT=c:\Users\kumar\viyaCert
+CAS_SERVER=cas-shared-default
+COMPUTECONTEXT=SAS Job Execution compute context
+SAMESITE=Lax,false
+
+```
+
+#### Usage
+
+Start the server with this command:
+
+```sh
+npx @sassoftware/sas-score-mcp-serverjs@latest
+```
+
+Then visit this site on your browser:
+
+```sh
+https://localhost:8080/mcpserver
+```
+
+You will be prompted to logon to SAS Viya.
+A dialog will be displayed if the logon was successful.
+Icon this window and proceed to your mcp client
+
 
 ## Transport Methods
 This server supports both stdio and http transport methods.
