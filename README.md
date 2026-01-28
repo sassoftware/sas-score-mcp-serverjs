@@ -130,7 +130,7 @@ Set the env TOKENFILE to a file containing the token.
 There seems to be a pattern of using a long-lived token.
 If this is your use case, set the TOKENFILE to a file containing this token.
 
-### Oauth - Authentication handled by the mcp server
+### Oauth - Authentication handled by the mcp server(experimental)
 
 In this approach, the mcp client does not participate in the Oauth authentication process.
 

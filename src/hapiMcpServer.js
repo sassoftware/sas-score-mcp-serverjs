@@ -5,15 +5,18 @@
 import appServer from "@sassoftware/viya-serverjs";
 import handleRequest from "./handleRequest.js";
 import handleGetDelete from "./handleGetDelete.js";
+import urlOpen from "./urlOpen.js";
 //import { auth } from "@modelcontextprotocol/sdk/client/auth.js";
 
 async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
 
   console.error(appServer);
   appServer(mcpHandlers, true, 'app', null);
+  if (process.env.AUTOSTART === 'TRUE') {
+    await urlOpen();
+  }
 
   function mcpHandlers() {
-
     let routes = [
       {
         method: ["GET"],

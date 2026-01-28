@@ -96,16 +96,12 @@ if (process.env.SUBCLASS != null) {
 // backward compability variables
 let clientID = process.env.CLIENTID || process.env.CLIENTIDPW || null;
 let clientSecret = process.env.CLIENTSECRET || process.env.CLIENTSECRETPW || null;
-
+let https = process.env.HTTPS != null ? process.env.HTTPS.toUpperCase() : "FALSE";
 const appEnvBase = {
   version: version,
-  mcpType: mcpType,
-  appName: process.env.APPNAME || 'viyaapp',
+  mcpType: mcpType, 
   brand: (process.env.BRAND == null) ? BRAND : process.env.BRAND,
-  HTTPS:
-    process.env.HTTPS != null && process.env.HTTPS.toUpperCase() === 'TRUE'
-      ? true
-      : false,
+  HTTPS: https,
   SAS_CLI_PROFILE: process.env.SAS_CLI_PROFILE || 'Default',
   SAS_CLI_CONFIG: process.env.SAS_CLI_CONFIG || process.env.HOME, // default to user home directory
   SSLCERT: process.env.SSLCERT || null,
@@ -149,6 +145,10 @@ const appEnvBase = {
   oauthInfo: null,
   contexts: {
     host: process.env.VIYA_SERVER,
+    APPHOST: process.env.APPHOST || 'localhost',
+    APPNAME: process.env.APPNAME || 'mcpServer',
+    PORT: process.env.APPPORT || 8080,
+    HTTPS: https,
     store: null, /* for restaf users */
     storeConfig: {},
     oauthInfo: null,
@@ -239,7 +239,7 @@ if (mcpType === 'stdio') {
   console.error('[Note] Starting HTTP MCP server...');
   if (useHapi === true) {
     await hapiMcpServer(mcpServer, sessionCache, appEnvBase);
-    console.error('[Note] Using HAPI HTTP server...');
+    console.error('[Note] Using HAPI HTTP server...')
   } else {
     await expressMcpServer(mcpServer, sessionCache, appEnvBase);
     console.error('[Note] MCP HTTP server started on port ' + appEnvBase.PORT);
