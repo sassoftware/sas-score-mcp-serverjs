@@ -130,9 +130,11 @@ Set the env TOKENFILE to a file containing the token.
 There seems to be a pattern of using a long-lived token.
 If this is your use case, set the TOKENFILE to a file containing this token.
 
-### Oauth - Authentication handled by the mcp server(experimental)
+### Oauth - (experimental) Authentication handled by the mcp server
 
-In this approach, the mcp client does not participate in the Oauth authentication process.
+In this approach, the mcp client does not participate in the Oauth authentication process. It is handled by the mcp server at startup.
+
+> This is marked as experimental since there can be timing issues between the mcp client and server. This needs to be investigated further.
 
 #### SAS viya setup.
 
