@@ -1,5 +1,5 @@
 {
-  "name": "@sassoftware/mcp-hapi-serverjs",
+  "name": "@sassoftware/sas-score-mcp-serverjs",
   "version": "0.2.0",
   "description": "A mcp server for SAS Viya",
   "author": "Deva Kumar <deva.kumar@sas.com>",
