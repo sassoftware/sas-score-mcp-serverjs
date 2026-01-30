@@ -33,10 +33,10 @@ if (process.env.ENVFILE === 'FALSE') {
   //use this when using remote mcp server and no .env file is desired
   console.error('[Note]: Skipping .env file as ENVFILE is set to FALSE...');
 } else {
-  console.error('----------', process.cwd());
-  let envf = process.cwd() + '/.env'; 
+  console.error('Working Directory', process.cwd());
+  let envf = process.cwd() + '\\.env'; 
   //__dirname + '\\.env';
-  console.error(envf);
+  console.error('Env file:', envf); 
   if (fs.existsSync(envf)) {
     console.error(`Loading environment variables rom ${envf}...`);
     let e = iconfig(envf); // avoid dotenv since it writes to console.log
