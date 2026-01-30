@@ -11,20 +11,20 @@ async function getToken(_appContext) {
   if (_appContext.SAS_CLI_CONFIG != null) {
     homedir = _appContext.SAS_CLI_CONFIG;
   }
- console.error(os.platform());
+
   let sep = (os.platform() === 'win32') ? '\\' : '/';
-  console.error('Using sep: ' + sep);
   let credentials = homedir + sep + '.sas' + sep + 'credentials.json';
   let url = homedir + sep + '.sas' + sep + 'config.json';
   console.error('[Note] Using credentials file: ' + credentials);
   console.error('[Note] Using config file: ' + url);
-
+  let profile = (_appContext.SAS_CLI_PROFILE == null || _appContext.SAS_CLI_PROFILE.toLowerCase() === 'default')
+      ? 'Default' : _appContext.SAS_CLI_PROFILE;
+  console.error('[Note] Using SASCLI profile: ' + profile);
   try {
 
     let j = fs.readFileSync(credentials, 'utf8');
     let js = JSON.parse(j);
-    let profile = (_appContext.SAS_CLI_PROFILE == null || _appContext.SAS_CLI_PROFILE.toLowerCase() === 'default')
-      ? 'Default' : _appContext.SAS_CLI_PROFILE;
+    
     let refresh_token = js[profile]['refresh-token'];
     j = fs.readFileSync(url, 'utf8');
     js = JSON.parse(j);
