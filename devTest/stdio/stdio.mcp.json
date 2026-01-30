@@ -2,18 +2,20 @@
 	"servers": {
 		"sasmcp": {
 			"type": "stdio",
-			"command": "npx",
+			"command": "node",
 			"args": [
-				"@sassoftware/sas-score-mcp-serverjs@latest"
+				"c:\\dev\\github\\sas-score-mcp-serverjs\\cli.js"
 			],
 			"env": {
 				"MCPTYPE": "stdio",
-				"AUTHFLOW": "password", 
-				"SAS_CLI_PROFILE": "cis",
+				"AUTHFLOW": "sascli",
+				"SAS_CLI_PROFILE": "xf1",
 				"SAS_CLI_CONFIG": "c:\\Users\\kumar",
 				"SSLCERT": "c:\\Users\\kumar\\.tls",
+				"VIYACERT": "c:\\Users\\kumar\\viyaCert\\xf1\\viya",
+				"CAS_SERVER": "cas-shared-default",
 				"COMPUTECONTEXT": "SAS Job Execution compute context",
-				"CAS_SERVER": "cas-shared-default"
+				"ENVFILE": "FALSE"
 			}
 		}
 	}

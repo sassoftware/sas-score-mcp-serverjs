@@ -40,7 +40,7 @@
     "@sassoftware/restaf": "^5.6.0",
     "@sassoftware/restafedit": "^3.11.1-10",
     "@sassoftware/restaflib": "^5.6.0",
-    "@sassoftware/viya-serverjs": "^0.6.1-5",
+    "@sassoftware/viya-serverjs": "^0.6.3-0",
     "axios": "^1.13.2",
     "body-parser": "^2.2.1",
     "cors": "^2.8.5",

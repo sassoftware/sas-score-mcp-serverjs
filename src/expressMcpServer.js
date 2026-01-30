@@ -228,7 +228,7 @@ async function expressMcpServer(mcpServer, cache, currentAppEnvContext) {
   let appServer;
 
   // get TLS options
-  if (appEnvBase.HTTPS === true) {
+  if (appEnvBase.HTTPS === 'TRUE') {
     //appEnvBase.tlsOpts = getOpts(appEnvBase);
     if (appEnvBase.tlsOpts == null) {
       appEnvBase.tlsOpts = await getTls(appEnvBase);  

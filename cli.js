@@ -29,9 +29,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let pkg = fs.readFileSync(__dirname + '/package.json', 'utf8');
 
-if (process.env.ENVFILE === 'NONE') {
+if (process.env.ENVFILE === 'FALSE') {
   //use this when using remote mcp server and no .env file is desired
-  console.error('[Note]: Skipping .env file as ENVFILE is set to NONE...');
+  console.error('[Note]: Skipping .env file as ENVFILE is set to FALSE...');
 } else {
   let envf = __dirname + '\\.env';
   console.error(envf);
@@ -47,6 +47,10 @@ if (process.env.ENVFILE === 'NONE') {
     );
   }
 }
+
+if (process.env.APPHOST == null) {
+  process.env.APPHOST = 'localhost';
+} 
 /********************************* */
 const BRAND = 'sas-score'
 /********************************* */
@@ -144,10 +148,11 @@ const appEnvBase = {
   tlsOpts: null,
   oauthInfo: null,
   contexts: {
+    AUTHFLOW: process.env.AUTHFLOW || 'sascli',
     host: process.env.VIYA_SERVER,
     APPHOST: process.env.APPHOST || 'localhost',
-    APPNAME: process.env.APPNAME || 'mcpServer',
-    PORT: process.env.APPPORT || 8080,
+    APPNAME: process.env.APPNAME || 'sas-score-mcp-serverjs',
+    PORT: process.env.PORT || 8080,
     HTTPS: https,
     store: null, /* for restaf users */
     storeConfig: {},
@@ -166,6 +171,8 @@ const appEnvBase = {
     ext: {} /* for additional extensions that a developer may want to add */
   }
 };
+
+process.env.APPPORT=appEnvBase.PORT;
 
 // setup TLS options for viya calls
 

@@ -6,15 +6,20 @@ import appServer from "@sassoftware/viya-serverjs";
 import handleRequest from "./handleRequest.js";
 import handleGetDelete from "./handleGetDelete.js";
 import urlOpen from "./urlOpen.js";
-//import { auth } from "@modelcontextprotocol/sdk/client/auth.js";
+
 
 async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
 
-  console.error(appServer);
-  appServer(mcpHandlers, true, 'app', null);
-  if (process.env.AUTOSTART === 'TRUE') {
-    await urlOpen();
+  console.error('Starting Hapi MCP server...');
+  console.error("[Note]: Hapi MCP server started...", baseAppEnvContext.AUTHFLOW);
+ let r = await appServer.asyncCore(mcpHandlers, true, 'app', null);
+ console.error('Hapi server running result:', r);
+  if (baseAppEnvContext.AUTHFLOW === 'code'){
+    await urlOpen(r);
   }
+  return r;
+  
+  // add MCP handlers to the app server
 
   function mcpHandlers() {
     let routes = [
