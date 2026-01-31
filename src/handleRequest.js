@@ -39,8 +39,6 @@ async function handleRequest(mcpServer, cache, req, h, credentials) {
         cache.set(sessionId, _appContext);
       }
       console.error("[Note] Using existing transport for session ID:", sessionId);
-      debugger;
-      console.error("calling transport.handleRequest");
       return await transport.handleRequest(req.raw.req, req.raw.res, req.payload);
     }
 

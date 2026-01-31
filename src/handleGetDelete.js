@@ -5,7 +5,7 @@
 
 async function handleGetDelete(mcpServer, cache, req, h) {
     const sessionId = req.headers["mcp-session-id"];
-    console.error("Handling GET/DELETE for session ID:", sessionId);
+    console.error(`Handling ${req.method} for session ID:`, sessionId);
     let transports = cache.get("transports");
     let transport = transports[sessionId];
     if (!sessionId || transport == null) {
