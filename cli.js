@@ -103,6 +103,7 @@ if (process.env.SUBCLASS != null) {
 let clientID = process.env.CLIENTID || process.env.CLIENTIDPW || null;
 let clientSecret = process.env.CLIENTSECRET || process.env.CLIENTSECRETPW || null;
 let https = process.env.HTTPS != null ? process.env.HTTPS.toUpperCase() : "FALSE";
+let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "TRUE";
 const appEnvBase = {
   version: version,
   mcpType: mcpType, 
@@ -114,6 +115,7 @@ const appEnvBase = {
   VIYACERT: process.env.VIYACERT || null,
 
   AUTHFLOW: process.env.AUTHFLOW || 'sascli',
+  AUTOLOGON: autoLogon,
   VIYA_SERVER: process.env.VIYA_SERVER,
   PORT: process.env.PORT || 8080,
   USERNAME: process.env.USERNAME || null,
