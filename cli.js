@@ -8,7 +8,9 @@
 
 
 import coreSSE from './src/coreSSE.js';
-import corehttp from './src/corehttp.js';
+import expressMcpServer from './src/expressMcpServer.js';
+import hapiMcpServer from './src/hapiMcpServer.js';
+
 import createMcpServer from './src/createMcpServer.js';
 // import dotenvExpand from 'dotenv-expand';
 import fs from 'fs';
@@ -27,24 +29,30 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let pkg = fs.readFileSync(__dirname + '/package.json', 'utf8');
 
-if (process.env.ENVFILE === 'NONE') {
+if (process.env.ENVFILE === 'FALSE') {
   //use this when using remote mcp server and no .env file is desired
-  console.error('[Note]: Skipping .env file as ENVFILE is set to NONE...');
+  console.error('[Note]: Skipping .env file as ENVFILE is set to FALSE...');
 } else {
-  let envf = __dirname + '\\.env';
-  console.error(envf);
+  console.error('Working Directory', process.cwd());
+  let envf = process.cwd() + '\\.env'; 
+  //__dirname + '\\.env';
+  console.error('Env file:', envf); 
   if (fs.existsSync(envf)) {
     console.error(`Loading environment variables rom ${envf}...`);
     let e = iconfig(envf); // avoid dotenv since it writes to console.log
     console.error('[Note]: Environment variables loaded from .env file...');
     console.error('Loaded env variables:', e);
-   // dotenvExpand.expand(e);
+    // dotenvExpand.expand(e);
   } else {
     console.error(
       '[Note]: No .env file found, Using default environment variables...'
     );
   }
 }
+
+if (process.env.APPHOST == null) {
+  process.env.APPHOST = 'localhost';
+} 
 /********************************* */
 const BRAND = 'sas-score'
 /********************************* */
@@ -90,26 +98,32 @@ if (process.env.SUBCLASS != null) {
 // setup base appEnv 
 // for stdio this is the _appContext
 // for http each session a copy of this as appEnvTemplate is created in corehttp
+
+// backward compability variables
+let clientID = process.env.CLIENTID || process.env.CLIENTIDPW || null;
+let clientSecret = process.env.CLIENTSECRET || process.env.CLIENTSECRETPW || null;
+let https = process.env.HTTPS != null ? process.env.HTTPS.toUpperCase() : "FALSE";
+let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "TRUE";
 const appEnvBase = {
   version: version,
-  mcpType: mcpType,
+  mcpType: mcpType, 
   brand: (process.env.BRAND == null) ? BRAND : process.env.BRAND,
-  HTTPS:
-    process.env.HTTPS != null && process.env.HTTPS.toUpperCase() === 'TRUE'
-      ? true
-      : false,
+  HTTPS: https,
   SAS_CLI_PROFILE: process.env.SAS_CLI_PROFILE || 'Default',
   SAS_CLI_CONFIG: process.env.SAS_CLI_CONFIG || process.env.HOME, // default to user home directory
   SSLCERT: process.env.SSLCERT || null,
   VIYACERT: process.env.VIYACERT || null,
 
   AUTHFLOW: process.env.AUTHFLOW || 'sascli',
+  AUTOLOGON: autoLogon,
   VIYA_SERVER: process.env.VIYA_SERVER,
   PORT: process.env.PORT || 8080,
   USERNAME: process.env.USERNAME || null,
   PASSWORD: process.env.PASSWORD || null,
-  CLIENTID: process.env.CLIENTID|| null,
-  CLIENTSECRET: process.env.CLIENTSECRET || null,
+  CLIENTID: clientID,
+  CLIENTSECRET: clientSecret,
+  PKCE: process.env.PKCE || null,
+
   TOKEN: process.env.TOKEN || null,
   REFRESH_TOKEN: process.env.REFRESH_TOKEN || null,
   TOKENFILE: process.env.TOKENFILE || null,
@@ -136,9 +150,20 @@ const appEnvBase = {
   logonPayload: null,
   bearerToken: null,
   tlsOpts: null,
+  oauthInfo: null,
   contexts: {
+    AUTHFLOW: process.env.AUTHFLOW || 'sascli',
+    host: process.env.VIYA_SERVER,
+    APPHOST: process.env.APPHOST || 'localhost',
+    APPNAME: process.env.APPNAME || 'sas-score-mcp-serverjs',
+    PORT: process.env.PORT || 8080,
+    HTTPS: https,
     store: null, /* for restaf users */
     storeConfig: {},
+    oauthInfo: null,
+    CLIENTID: clientID,
+    CLIENTSECRET: clientSecret,
+    pkce: process.env.PKCE || null,
     casSession: null, /* restaf cas session object */
     computeSession: null, /* restaf compute session object */
     viyaCert: null, /* ssl/tsl certificates to connect to viya */
@@ -150,6 +175,8 @@ const appEnvBase = {
     ext: {} /* for additional extensions that a developer may want to add */
   }
 };
+
+process.env.APPPORT=appEnvBase.PORT;
 
 // setup TLS options for viya calls
 
@@ -166,7 +193,7 @@ if (appEnvBase.TOKENFILE != null) {
     console.error(`[Note]Loading token from file: ${appEnvBase.TOKENFILE}...`);
     appEnvBase.TOKEN = fs.readFileSync(appEnvBase.TOKENFILE, { encoding: 'utf8' });
     appEnvBase.AUTHFLOW = 'token';
-    appEnvBase.contexts.logonPayload = {
+    appEnvBase.appContexts.logonPayload = {
       host: appEnvBase.VIYA_SERVER,
       authType: 'server',
       token: appEnvBase.TOKEN,
@@ -192,6 +219,7 @@ if (appEnvBase.REFRESH_TOKEN != null) {
   }
 }
 
+// if authflow is cli or code, postpone getting logonPayload until needed
 
 
 // setup mcpServer (both http and stdio use this)
@@ -209,6 +237,7 @@ sessionCache.set('transports', transports);
 
 // set this for stdio transport use
 // dummy sessionId for use in the tools  
+let useHapi = process.env.AUTHFLOW === 'code' ? true : false;
 if (mcpType === 'stdio') {
   let sessionId = randomUUID();
   sessionCache.set('currentId', sessionId);
@@ -219,31 +248,36 @@ if (mcpType === 'stdio') {
 
 } else {
   console.error('[Note] Starting HTTP MCP server...');
-  await corehttp(mcpServer, sessionCache, appEnvBase);
-  console.error('[Note] MCP HTTP server started on port ' + appEnvBase.PORT);
+  if (useHapi === true) {
+    await hapiMcpServer(mcpServer, sessionCache, appEnvBase);
+    console.error('[Note] Using HAPI HTTP server...')
+  } else {
+    await expressMcpServer(mcpServer, sessionCache, appEnvBase);
+    console.error('[Note] MCP HTTP server started on port ' + appEnvBase.PORT);
+  }
 }
 
 // custom reader for .env file to avoid dotenv logging to console
 function iconfig(envFile) {
-	try {
-		let data = fs.readFileSync(envFile, 'utf8');
-		let d = data.split(/\r?\n/);
+  try {
+    let data = fs.readFileSync(envFile, 'utf8');
+    let d = data.split(/\r?\n/);
     let envData = {};
-		d.forEach(l => {
-			if (l.length > 0 && l.indexOf('#') === -1) {
-				let la = l.split('=');
-				let envName = la[0];
-				if (la.length === 2 && la[1].length > 0) {
-					let t = la[1].trim();
-					process.env[envName] = t;
+    d.forEach(l => {
+      if (l.length > 0 && l.indexOf('#') === -1) {
+        let la = l.split('=');
+        let envName = la[0];
+        if (la.length === 2 && la[1].length > 0) {
+          let t = la[1].trim();
+          process.env[envName] = t;
           envData[envName] = t;
-				}
-			}
-		});
+        }
+      }
+    });
     return envData;
-	} catch (err) {
-		console.log(err);
-		process.exit(0);
-	}
+  } catch (err) {
+    console.log(err);
+    process.exit(0);
+  }
 }
 

@@ -21,7 +21,7 @@ import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 
 // setup express server
 
-async function corehttp(mcpServer, cache, currentAppEnvContext) {
+async function expressMcpServer(mcpServer, cache, currentAppEnvContext) {
   // setup for change to persistence session
   let headerCache = {};
 
@@ -228,7 +228,7 @@ async function corehttp(mcpServer, cache, currentAppEnvContext) {
   let appServer;
 
   // get TLS options
-  if (appEnvBase.HTTPS === true) {
+  if (appEnvBase.HTTPS === 'TRUE') {
     //appEnvBase.tlsOpts = getOpts(appEnvBase);
     if (appEnvBase.tlsOpts == null) {
       appEnvBase.tlsOpts = await getTls(appEnvBase);  
@@ -334,4 +334,4 @@ async function corehttp(mcpServer, cache, currentAppEnvContext) {
   }
 }
 
-export default corehttp;
+export default expressMcpServer;

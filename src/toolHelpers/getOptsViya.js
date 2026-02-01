@@ -2,13 +2,18 @@
  * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
-import fs from 'fs';
+import readCerts from './readCerts.js';
 function getOptsViya(_appContext) {
-    
-     if (_appContext.contexts.viyaCert != null) {
+
+    if (_appContext.contexts.viyaCert != null) {
         console.error('[Note] Using cached viyaOpts');
         return _appContext.contexts.viyaCert;
     }
+    let r = readCerts(_appContext.VIYACERT);
+    _appContext.contexts.viyaCert = r;
+    return r;
+
+    /*
     let tlsdir = _appContext.VIYACERT;
     if (tlsdir == null || tlsdir === 'NONE') {
         return {};
@@ -33,6 +38,7 @@ function getOptsViya(_appContext) {
     console.error('VIYACERT FILES', Object.keys(options));
     _appContext.contexts.viyaCert = options;
     return options;
-   
+    */
+
 }
 export default getOptsViya;

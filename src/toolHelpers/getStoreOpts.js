@@ -7,8 +7,6 @@ import getOptsViya from './getOptsViya.js';
 function getStoreOpts(_appContext) {
   
   let opts = getOptsViya(_appContext);
-
-  
   let storeOpts = {
     casProxy: true,
     httpOptions: { ...opts, rejectUnauthorized: true }

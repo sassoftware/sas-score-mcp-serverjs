@@ -9,12 +9,19 @@
  * if this function return a null, coreehttp will create unsigned certs
  * @param {Object} _appContext - Application context containing SSLCERT property
  */
-import fs from 'fs';
+
+import readCerts from './readCerts.js';
 function getOpts(_appContext) {
-    
-     if (_appContext.tlsOpts != null) {
+
+    if (_appContext.tlsOpts != null) {
         return _appContext.tlsOpts;
     }
+    let r = readCerts(_appContext.SSLCERT);
+    _appContext.tlsOpts = r;
+    return r;
+
+
+    /*
     let tlsdir = _appContext.SSLCERT;
     if (tlsdir == null || tlsdir === 'NONE') {
         return null;
@@ -38,6 +45,7 @@ function getOpts(_appContext) {
     console.error('TLS FILES', Object.keys(options));
     _appContext.tlsOpts = options;
     return options;
-   
+    */
+
 }
 export default getOpts;

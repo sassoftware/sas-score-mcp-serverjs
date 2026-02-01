@@ -9,6 +9,7 @@ function findJob(_appContext) {
   "purpose": "Map natural language requests to find a job in SAS Viya and return structured results.",
   "param_mapping": {
     "name": "required - single name. If missing, ask 'Which job name would you like to find?'.",
+    "_userPrompt": "the original user prompt that triggered this tool."
 
   },
   "response_schema": "{ jobs: Array<string|object> }",
@@ -77,7 +78,8 @@ function findJob(_appContext) {
     aliases: ['findJob','find job','find_job'],
     description: description,
     schema: {
-      name: z.string()
+      name: z.string(),
+      _userPrompt: z.string()
     },
     required: ['name'],
     handler: async (params) => {

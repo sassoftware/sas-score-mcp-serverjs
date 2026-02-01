@@ -25,7 +25,7 @@ See this [quick reference](sas-mcp-tools-reference.md) for details.
 SAS developers who want to extend the capabilities of the server with their own tools. See the [guide](tool-developer-guide.md) for details.
 
 ## Configuration Variables
-Typically these are set either in the .env file or as environment variables (or both). This is full list of the configuration variables used the mcp server.
+Typically these are set either in the .env file or as environment variables (or both). This is full list of the configuration variables used the mcp server. You will need only a subset of these for the different [transport,authentication] schemes
 
 ```env
 
@@ -33,7 +33,7 @@ Typically these are set either in the .env file or as environment variables (or 
 # http is useful for remote mcp servers
 # If running locally, recommend stdio
 
-MCPTYPE=http
+MCPTYPE=<stdio|http>
 
 # Port for http transport(default is 8080)
 
@@ -42,8 +42,7 @@ PORT=8080
 # If transport is http, optionally specify if the server
 # is using http or https
 
-HTTPS=FALSE
-
+HTTPS=TRUE|FALSE
 
 # Viya Authentication
 # The mcp server support different ways to authenticate(see section on Authentication)
@@ -51,9 +50,10 @@ HTTPS=FALSE
 # * sascli * will look for tokens created with sas-viya cli
 # * token * a custom token
 # * password * userid/password 
-# * none *  No aut tokens are created - useful if you want to control authentication
+# * code * Oauth using authorization_code flow(pkce not supported in this release)
 
-AUTHFLOW=sascli
+AUTHFLOW=sascli|token|password|code
+
 SAS_CLI_CONFIG=your-home-directory
 SAS_CLI_PROFILE=your-sas-cli-profile
 
@@ -64,9 +64,11 @@ VIYA_SERVER= your Viya server url
 # if AUTHFLOW=token, specify the file with the token
 TOKENFILE=
 
-# if password flow specify these
+# if password flow or oauth flow specify these
 CLIENTID=
 CLIENTSECRET=
+
+# specify this if password AUTHFLOW
 PASSWORD=
 
 # When HTTPS is TRUE, specify the folder with SSL certificates for the mcp server
@@ -130,8 +132,67 @@ Set the env TOKENFILE to a file containing the token.
 There seems to be a pattern of using a long-lived token.
 If this is your use case, set the TOKENFILE to a file containing this token.
 
-### Oauth
-This is under development.
+### Oauth - (experimental) Authentication handled by the mcp server
+
+In this approach, the mcp client does not participate in the Oauth authentication process. It is handled by the mcp server at startup. 
+
+> This is marked as experimental since the testing is not complete
+
+#### SAS viya setup.
+
+Create a Oauth client with the following properties
+
+```js
+{
+  auth flow: authorization_code|password
+  clientid: <your client id>
+  clientsecret: <some client secret - pkce not supported at this time>
+  redirect: https://localhost:8080/mcpserver  
+}
+
+#### Use an .env file as follows(sample values shown)
+
+```env
+PORT=8080
+AUTHFLOW=code
+SSLCERT=c:\Users\kumar\.tls 
+VIYACERT=c:\Users\kumar\viyaCert
+CAS_SERVER=cas-shared-default
+COMPUTECONTEXT=SAS Job Execution compute context
+
+PORT=8080
+HTTPS=true
+MCPTYPE=http
+USELOGON=FALSE
+USETOKEN=TRUE
+APPNAME=sas-score-mcp-serverjs
+
+CLIENTID=mcpserver
+CLIENTSECRET=xxxxxx
+
+
+# SAMESITE=Lax,secure
+
+```
+
+#### Usage
+
+Start the server with this command:
+
+```sh
+npx @sassoftware/sas-score-mcp-serverjs@latest
+```
+
+Then visit this site on your browser:
+
+```sh
+https://localhost:8080/mcpserver
+```
+
+You will be prompted to logon to SAS Viya.
+A dialog will be displayed if the logon was successful.
+Icon this window and proceed to your mcp client
+
 
 ## Transport Methods
 This server supports both stdio and http transport methods.
@@ -238,6 +299,14 @@ The implication of this design choice is felt most when the tool needs is creati
 ## Other Useful Tips
 
 ### mkcert
+
+### Install
+
+1. Visit this [site](https://github.com/FiloSottile/mkcert/releases)
+2. Download the proper version 
+  - rename the file as mkcert (with proper exetension for your os)
+  - move it to a directory that is in the PATH value
+
 To create a self-signed certificate for localhost:
 
 ```sh
@@ -251,7 +320,7 @@ Now go to the location where you want to store the certificates.
 Then create the certificates:
 
 ```sh
-mkcert -key-file key.pem -cert-file crt.pem localhost 127:0.0.1 ::1
+mkcert  localhost 127:0.0.1 ::1
 ```
 
 One last step for windows nodejs users.

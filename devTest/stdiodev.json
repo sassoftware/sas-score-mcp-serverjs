@@ -4,7 +4,7 @@
 			"type": "stdio",
 			"command": "node",
 			"args": [
-				"c:\\dev\\gitlab\\mcp-serverjs\\cli.js"
+				"c:\\dev\\github\\mcp-serverjs\\cli.js"
 			],
 			"env": {
 				"MCPTYPE": "stdio",
@@ -12,6 +12,7 @@
 				"SAS_CLI_PROFILE": "00m",
 				"SAS_CLI_CONFIG": "c:\\Users\\kumar",
 				"SSLCERT": "c:\\Users\\kumar\\.tls",
+				"VIYACERT": "c:\\Users\\kumar\\.tls",
 				"COMPUTECONTEXT": "SAS Job Execution compute context",
 				"CAS_SERVER": "cas-shared-default"
 			}

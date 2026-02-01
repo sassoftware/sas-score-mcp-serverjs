@@ -5,6 +5,7 @@
 
 import getToken from "./getToken.js";
 import refreshToken from "./refreshToken.js";
+import refreshTokenOauth from "./refreshTokenOauth.js";
 
 async function getLogonPayload(_appContext) {
   _appContext.contexts.logonPayload = await igetLogonPayload(_appContext);
@@ -15,14 +16,32 @@ async function igetLogonPayload(_appContext) {
 
   // Use cached logonPayload if available
   // This will cause timeouts if the token expires
-  if (_appContext.logonPayload != null && _appContext.tokenRefresh !== true) {
+  if (_appContext.contexts.logonPayload != null && _appContext.tokenRefresh !== true) {
     console.error("[Note] Using cached logonPayload information");
     return _appContext.contexts.logonPayload;
   }
 
+  if (_appContext.AUTHFLOW === 'code') {
+    let oauthInfo = _appContext.contexts.oauthInfo;
+    if (oauthInfo == null) {
+      return null;
+    }
+    _appContext.contexts.oauthInfo = await refreshTokenOauth(_appContext, oauthInfo);
+    if (_appContext.contexts.oauthInfo == null) {
+      return null;
+    }
+    let logonPayload = {
+      host: _appContext.VIYA_SERVER,
+      authType: "server",
+      token: _appContext.contexts.oauthInfo.accessToken,
+      tokenType: "Bearer",
+    }
+    return  logonPayload;
+  }
+
   // Use user supplied bearer token 
   if (_appContext.AUTHFLOW === "bearer") {
-    console.error("[Note] Using user suplied bearer token ");
+    console.error("[Note] Using user supplied bearer token ");
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
       authType: "server",
@@ -74,8 +93,8 @@ async function igetLogonPayload(_appContext) {
       authType: "password",
       user: _appContext.USERNAME,
       password: _appContext.PASSWORD,
-      clientID: _appContext.CLIENTID,
-      clientSecret: _appContext.CLIENTSECRET,
+      clientID: _appContext.CLIENTIDPW,
+      clientSecret: _appContext.CLIENTSECRETPW,
     };
 
     return logonPayload;
@@ -84,7 +103,7 @@ async function igetLogonPayload(_appContext) {
   // sascli auth flow - create from credentials file
   try {
     let { host, token } = await getToken(_appContext)
-    console.error("[Note] got refresh token from getToken() for host ", host);
+    console.error("[Note] Token refreshed ", host);
     let logonPayload = {
       host: host,
       authType: "server",
