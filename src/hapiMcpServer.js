@@ -12,6 +12,7 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
   console.error('Starting Hapi MCP server...');
   console.error("[Note]: Hapi MCP server started...", baseAppEnvContext.AUTHFLOW);
   process.env.REDIRECT=`/status`;
+  process.env.APPHOST='0.0.0.0';
  let r = await appServer.asyncCore(mcpHandlers, true, 'app', null);
  console.error('Hapi server running result:', r);
   if (baseAppEnvContext.AUTHFLOW === 'code' && baseAppEnvContext.AUTOLOGON !== 'FALSE') {

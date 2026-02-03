@@ -35,6 +35,12 @@
   "bin": {
     "@sassoftware/sas-score-mcp-serverjs": "./cli.js"
   },
+  "files": [
+    "src",
+    "cli.js",
+    "openApi.json",
+    "openApi.yaml"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.1",
     "@sassoftware/restaf": "^5.6.0",
