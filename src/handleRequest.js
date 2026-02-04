@@ -35,6 +35,10 @@ async function handleRequest(mcpServer, cache, req, h, credentials) {
         console.error("[Note] Creating new app context for session ID:", sessionId);
         let appEnvTemplate = cache.get("appEnvTemplate");
         _appContext = Object.assign({}, appEnvTemplate, headerCache);
+        if (headerCache.AUTHFLOW === 'bearer') {
+          _appContext.contexts.AUTHFLOW =  'bearer';
+          _appContext.contexts.bearerToken = headerCache.bearerToken;
+        }
         _appContext.contexts.oauthInfo = credentials;
         cache.set(sessionId, _appContext);
       }
