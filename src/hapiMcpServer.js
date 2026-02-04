@@ -6,20 +6,21 @@ import appServer from "@sassoftware/viya-serverjs";
 import handleRequest from "./handleRequest.js";
 import handleGetDelete from "./handleGetDelete.js";
 import urlOpen from "./urlOpen.js";
+import fs from "fs";
 
 async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
 
   console.error('Starting Hapi MCP server...');
   console.error("[Note]: Hapi MCP server started...", baseAppEnvContext.AUTHFLOW);
-  process.env.REDIRECT=`/status`;
-  process.env.APPHOST='0.0.0.0';
- let r = await appServer.asyncCore(mcpHandlers, true, 'app', null);
- console.error('Hapi server running result:', r);
+  process.env.REDIRECT = `/status`;
+  process.env.APPHOST = '0.0.0.0';
+  let r = await appServer.asyncCore(mcpHandlers, true, 'app', null);
+  console.error('Hapi server running result:', r);
   if (baseAppEnvContext.AUTHFLOW === 'code' && baseAppEnvContext.AUTOLOGON !== 'FALSE') {
     await urlOpen(r);
   }
   return r;
-  
+
   // add MCP handlers to the app server
 
   function mcpHandlers() {
@@ -96,7 +97,7 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
 </body>
 </html>
 `;
- 
+
     }
     let routes = [
       {
@@ -126,12 +127,25 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
       },
       {
         method: ["GET"],
+        path: "/apiMeta",
+        options: {
+          handler: async (req, h) => {
+            let spec = fs.readFileSync("./openApi.json", "utf8");
+            let specJson = JSON.parse(spec);
+            return h.response(specJson).code(200).type('application/json');
+          },
+          auth: false,
+          description: "API Metadata"
+        }
+      },
+      {
+        method: ["GET"],
         path: `/${baseAppEnvContext.contexts.APPNAME}/status`,
         options: {
           handler: async (req, h) => {
             let ht = getHtml();
             return h.response(ht).code(200).type('text/html');
-           // return h.abandon;
+            // return h.abandon;
           },
           auth: false,
           description: "Help",
