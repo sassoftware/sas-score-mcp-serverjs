@@ -103,7 +103,7 @@ if (process.env.SUBCLASS != null) {
 let clientID = process.env.CLIENTID || process.env.CLIENTIDPW || null;
 let clientSecret = process.env.CLIENTSECRET || process.env.CLIENTSECRETPW || null;
 let https = process.env.HTTPS != null ? process.env.HTTPS.toUpperCase() : "FALSE";
-let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "TRUE";
+let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "FALSE";
 const appEnvBase = {
   version: version,
   mcpType: mcpType, 

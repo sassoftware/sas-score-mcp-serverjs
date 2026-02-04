@@ -16,7 +16,7 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
   process.env.APPHOST = '0.0.0.0';
   let r = await appServer.asyncCore(mcpHandlers, true, 'app', null);
   console.error('Hapi server running result:', r);
-  if (baseAppEnvContext.AUTHFLOW === 'code' && baseAppEnvContext.AUTOLOGON !== 'FALSE') {
+  if (baseAppEnvContext.AUTHFLOW === 'code' && baseAppEnvContext.AUTOLOGON === 'TRUE') {
     await urlOpen(r);
   }
   return r;

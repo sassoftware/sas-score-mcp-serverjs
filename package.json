@@ -18,7 +18,7 @@
     "deploy": "bash ./deploy.sh",
     "push2acr": "bash ./push2acr.sh",
     "bump": "npm version prerelease",
-    "pub": "npm publish --tag alpha --access public"
+    "pub": "npm publish --tag dev --access public"
   },
   "repository": "https://github.com/sassoftware/sas-score-mcp-serverjs",
   "keywords": [

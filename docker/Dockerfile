@@ -21,5 +21,5 @@ ENV APPNAME=sas-score-mcp-serverjs
 ENV COMPUTECONTEXT="SAS Job Execution compute context"
 ENV SAMESITE="Lax,secure"
 ENV REDIRECT=/info
-ENV AUTOLOGON=TRUE
-CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.1-1"]
+ENV AUTOLOGON=FALSE
+CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.1"]
