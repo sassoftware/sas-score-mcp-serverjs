@@ -112,6 +112,7 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
               endpoints: {
                 mcp: "/mcp",
                 health: "/health",
+                apiMeta: "/apiMeta"
               },
               usage:
                 "Use with MCP Inspector or compatible MCP clients like vscode or your own MCP client",
@@ -165,8 +166,8 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
           },
 
           auth: {
-            strategy: "session",
-            mode: 'try'
+            strategy: "sas",
+            mode: 'required' 
           },
           description: "The main route for MCP requests",
           notes: "Requires a valid session",

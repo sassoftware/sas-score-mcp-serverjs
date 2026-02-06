@@ -3,13 +3,16 @@ LABEL maintainer="deva.kumar@sas.com"
 RUN apk add --no-cache --upgrade bash
 WORKDIR /usr/src/app
 COPY ./xf1 ./sslCert
+COPY openAPI.json ./openAPI.json
+COPY openAPI.yaml ./openAPI.yaml
+
 EXPOSE 8080
 ENV APPHOST=0.0.0.0
 # RUN npm install
 ENV PORT=8080
 ENV HTTPS=FALSE
 ENV MCPTYPE=http
-ENV AUTHFLOW=code
+ENV AUTHFLOW=sascli
 ENV CLIENTID=sasscore
 ENV CLIENTSECRET=jellico
 # VIYA_SERVER= set globally
@@ -22,4 +25,4 @@ ENV COMPUTECONTEXT="SAS Job Execution compute context"
 ENV SAMESITE="Lax,secure"
 ENV REDIRECT=/info
 ENV AUTOLOGON=FALSE
-CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.1"]
+CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.2"]
