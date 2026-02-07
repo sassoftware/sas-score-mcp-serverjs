@@ -2,116 +2,156 @@
  * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
-function openAPIJson() {
-let spec = 
-  {
-  "swagger": "2.0",
-  "info": {
-    "title": "SAS Viya Sample MCP Server",
-    "version": "1.0.0",
-    "description": "OpenAPI 2.0 spec for the SAS Viya Sample MCP Server"
-  },
-  "host": "localhost:8080",
-  "schemes": ["http", "https"],
-  "basePath": "/",
-  "paths": {
-    "/health": {
-      "get": {
-        "summary": "Health check endpoint",
-        "description": "Returns server health and metadata",
-        "produces": ["application/json"],
-        "responses": {
-          "200": {
-            "description": "Health info",
-            "schema": { "type": "object" }
-          }
-        }
-      }
+export default function openAPIJson() {
+  return {
+    swagger: "2.0",
+    info: {
+      title: "SAS Viya Sample MCP Server API",
+      version: "1.0.0",
+      description: "API for interacting with the SAS Viya Sample MCP Server."
     },
-    "/": {
-      "get": {
-        "summary": "Root endpoint",
-        "description": "Returns server info and usage",
-        "produces": ["application/json"],
-        "responses": {
-          "200": {
-            "description": "Server info",
-            "schema": { "type": "object" }
-          }
-        }
-      }
-    },
-    "/mcp": {
-      "get": {
-        "summary": "MCP endpoint (GET)",
-        "description": "Handles MCP protocol requests (GET)",
-        "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string",
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "MCP response",
-            "schema": { "type": "object" }
+    host: "localhost:8080",
+    basePath: "/",
+    schemes: ["http", "https"],
+    consumes: ["application/json"],
+    produces: ["application/json"],
+    paths: {
+      "/health": {
+        get: {
+          summary: "Health check",
+          description: "Returns health and version information.",
+          responses: {
+            200: {
+              description: "Health information",
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  version: { type: "string" },
+                  description: { type: "string" },
+                  endpoints: { type: "object" },
+                  usage: { type: "string" }
+                }
+              }
+            }
           }
         }
       },
-      "post": {
-        "summary": "MCP endpoint (POST)",
-        "description": "Handles MCP protocol requests (POST)",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string",
-            "required": false
-          },
-          {
-            "name": "X-VIYA-SERVER",
-            "in": "header",
-            "type": "string",
-            "required": false
-          },
-          {
-            "name": "X-REFRESH-TOKEN",
-            "in": "header",
-            "type": "string",
-            "required": false
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": { "type": "object" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "MCP response",
-            "schema": { "type": "object" }
+      "/apiMeta": {
+        get: {
+          summary: "API metadata",
+          description: "Returns the OpenAPI specification for this server.",
+          responses: {
+            200: {
+              description: "OpenAPI document",
+              schema: { type: "object" }
+            }
           }
         }
       },
-      "options": {
-        "summary": "CORS preflight",
-        "description": "CORS preflight for MCP endpoint",
-        "responses": {
-          "204": {
-            "description": "No Content"
+      "/mcp": {
+        options: {
+          summary: "CORS preflight",
+          description: "CORS preflight endpoint.",
+          responses: {
+            204: { description: "No Content" }
+          }
+        },
+        post: {
+          summary: "MCP request",
+          description: "Handles MCP JSON-RPC requests.",
+          parameters: [
+            {
+              name: "body",
+              in: "body",
+              required: true,
+              schema: { type: "object" }
+            },
+            {
+              name: "Authorization",
+              in: "header",
+              required: false,
+              type: "string",
+              description: "Bearer token for authentication"
+            },
+            {
+              name: "X-VIYA-SERVER",
+              in: "header",
+              required: false,
+              type: "string",
+              description: "Override VIYA server"
+            },
+            {
+              name: "X-REFRESH-TOKEN",
+              in: "header",
+              required: false,
+              type: "string",
+              description: "Refresh token for authentication"
+            },
+            {
+              name: "mcp-session-id",
+              in: "header",
+              required: false,
+              type: "string",
+              description: "Session ID"
+            }
+          ],
+          responses: {
+            200: {
+              description: "MCP response",
+              schema: { type: "object" }
+            },
+            500: {
+              description: "Server error",
+              schema: { type: "object" }
+            }
+          }
+        },
+        get: {
+          summary: "Get MCP session",
+          description: "Retrieves information for an MCP session.",
+          parameters: [
+            {
+              name: "mcp-session-id",
+              in: "header",
+              required: true,
+              type: "string",
+              description: "Session ID"
+            }
+          ],
+          responses: {
+            200: {
+              description: "Session information",
+              schema: { type: "object" }
+            },
+            400: {
+              description: "Invalid or missing session ID"
+            }
+          }
+        },
+        delete: {
+          summary: "Delete MCP session",
+          description: "Deletes an MCP session.",
+          parameters: [
+            {
+              name: "mcp-session-id",
+              in: "header",
+              required: true,
+              type: "string",
+              description: "Session ID"
+            }
+          ],
+          responses: {
+            200: {
+              description: "Session deleted",
+              schema: { type: "object" }
+            },
+            400: {
+              description: "Invalid or missing session ID"
+            }
           }
         }
       }
     }
-  }
-};  
-
-return spec;
+  };
 }
-
-export default openAPIJson;
