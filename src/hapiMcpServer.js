@@ -131,9 +131,8 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
         path: "/apiMeta",
         options: {
           handler: async (req, h) => {
-            let spec = fs.readFileSync("./openApi.json", "utf8");
-            let specJson = JSON.parse(spec);
-            return h.response(specJson).code(200).type('application/json');
+            let spec = openAPIJson();
+            return h.response(spec).code(200).type('application/json');
           },
           auth: false,
           description: "API Metadata"
