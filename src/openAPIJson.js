@@ -2,13 +2,13 @@
  * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
-function openAPIJson() {
-  return {
+function openAPIJson(version) {
+  let spec = {
   "swagger": "2.0",
   "info": {
-    "title": "SAS Viya Sample MCP Server API",
-    "version": "1.0.0",
-    "description": "API for interacting with the SAS Viya Sample MCP Server."
+    "title": "sas-score-mcp-serverjs  API",
+    "version": version,
+    "description": "sas-score-mcp-serverjs is a mcp server for SAS Viya"
   },
   "host": "localhost:8080",
   "basePath": "/",
@@ -38,6 +38,18 @@ function openAPIJson() {
       }
     },
     "/apiMeta": {
+      "get": {
+        "summary": "API metadata",
+        "description": "Returns the OpenAPI specification for this server.",
+        "responses": {
+          "200": {
+            "description": "OpenAPI document",
+            "schema": { "type": "object" }
+          }
+        }
+      }
+    },
+     "/openapi.json": {
       "get": {
         "summary": "API metadata",
         "description": "Returns the OpenAPI specification for this server.",
@@ -153,6 +165,8 @@ function openAPIJson() {
       }
     }
   }
-}
+};
+  spec.info.version = version;
+  return spec;
 };
 export default openAPIJson;
