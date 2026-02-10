@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "SAS Viya Sample MCP Server API",
+    "title": "sas-score-mcp-serverjs API",
     "version": "1.0.0",
     "description": "API for interacting with the SAS Viya Sample MCP Server."
   },

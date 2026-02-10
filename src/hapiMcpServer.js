@@ -140,6 +140,18 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
       },
       {
         method: ["GET"],
+        path: "/openapi.json",
+        options: {
+          handler: async (req, h) => {
+            let spec = openAPIJson();
+            return h.response(spec).code(200).type('application/json');
+          },
+          auth: false,
+          description: "API Metadata"
+        }
+      },
+      {
+        method: ["GET"],
         path: `/${baseAppEnvContext.contexts.APPNAME}/status`,
         options: {
           handler: async (req, h) => {

@@ -80,8 +80,14 @@ app.get("/", (req, res) => {
   });
 });
 
-// api metadata endpoint
+// api metadata endpoint(for sas specs)
 app.get("/apiMeta", (req, res) => {
+  let spec = openAPIJson();
+  res.json(spec);
+});
+
+// for azure container apps
+app.get("/openapi.json", (req, res) => {
   let spec = openAPIJson();
   res.json(spec);
 });
