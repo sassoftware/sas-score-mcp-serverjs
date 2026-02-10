@@ -1,8 +1,8 @@
 #
-# syntax: push2acr.sh <tag>
+# syntax: push2acr.sh 
 #
 docker rmi sas-score-mcp-serverjs
-az acr login --name viyafseditcr
+az acr login --name sasscore
 docker build --no-cache -t sas-score-mcp-serverjs .
-docker tag sas-score-mcp-serverjs:latest viyafseditcr.azurecr.io/sas-score-mcp-serverjs:$1
-docker push viyafseditcr.azurecr.io/sas-score-mcp-serverjs:$1
+docker tag sas-score-mcp-serverjs:latest sasscore.azurecr.io/sas-score-mcp-serverjs:latest
+docker push sasscore.azurecr.io/sas-score-mcp-serverjs:latest
