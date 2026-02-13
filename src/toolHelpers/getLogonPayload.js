@@ -41,6 +41,10 @@ async function igetLogonPayload(_appContext) {
 
   // Use user supplied bearer token 
   if (_appContext.AUTHFLOW === "bearer") {
+    if (_appContext.bearerToken == null) {
+      console.error("[Error] AUTHFLOW set to bearer but no bearer token supplied");
+      return null;
+    }
     console.error("[Note] Using user supplied bearer token ");
     let logonPayload = {
       host: _appContext.VIYA_SERVER,

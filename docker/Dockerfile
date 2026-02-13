@@ -13,7 +13,7 @@ ENV MCPTYPE=http
 ENV AUTHFLOW=bearer
 ENV CLIENTID=mcpserver
 ENV CLIENTSECRET=jellico
-# VIYA_SERVER= set globally
+ENV VIYA_SERVER=https://viya-00m2kebi2b.engage.sas.com
 ENV SSLCERT=./sslCert
 # ENV VIYACERT=c:\Users\kumar\viyaCert\xf1
 ENV CAS_SERVER=cas-shared-default
@@ -23,4 +23,4 @@ ENV COMPUTECONTEXT="SAS Job Execution compute context"
 ENV SAMESITE="Lax,secure"
 ENV REDIRECT=/info
 ENV AUTOLOGON=FALSE
-CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.6"]
+CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.7"]

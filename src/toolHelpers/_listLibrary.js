@@ -16,10 +16,10 @@ async function _listLibrary(params ){
     source: (server === 'sas') ? 'compute' : server,
     table: null
   };
-
+  let appControl;
   try {
     // setup request control
-    let appControl = await restafedit.setup(
+    appControl = await restafedit.setup(
       _appContext.logonPayload,
       config
       ,null,{},'user',{}, {}, _appContext.storeConfig
@@ -48,7 +48,9 @@ async function _listLibrary(params ){
     };
   } catch (err) {
     console.error(JSON.stringify(err));
-    await deleteSession(appControl);
+    if (appControl != null) {
+      await deleteSession(appControl);
+    }
     return { isError: true, content: [{ type: 'text', text: JSON.stringify(err) }] };
   }
 }
