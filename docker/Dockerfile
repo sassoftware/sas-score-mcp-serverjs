@@ -2,13 +2,13 @@ FROM node:25-alpine
 LABEL maintainer="deva.kumar@sas.com"
 RUN apk add --no-cache --upgrade bash
 WORKDIR /usr/src/app
-COPY ./xf1 ./sslCert
+COPY ./00m ./sslCert
 
 EXPOSE 8080
 ENV APPHOST=0.0.0.0
 # RUN npm install
 ENV PORT=8080
-ENV HTTPS=TRUE
+ENV HTTPS=FALSE
 ENV MCPTYPE=http
 ENV AUTHFLOW=bearer
 ENV CLIENTID=copilot
