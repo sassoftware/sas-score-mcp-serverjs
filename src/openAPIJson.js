@@ -17,8 +17,9 @@ function openAPIJson(version) {
   "produces": ["application/json"],
   "paths": {
     "/health": {
-      "get": {
+      "GET": {
         "summary": "Health check",
+        "operationId": "GetHealth",
         "description": "Returns health and version information.",
         "responses": {
           "200": {
@@ -38,9 +39,9 @@ function openAPIJson(version) {
       }
     },
     "/apiMeta": {
-      "get": {
-        "summary": "API metadata",
-        "description": "Returns the OpenAPI specification for this server.",
+      "GET": {
+        "summary": "API metadata using apiMeta",
+        "operationId": "GetApiMeta",
         "responses": {
           "200": {
             "description": "OpenAPI document",
@@ -50,8 +51,9 @@ function openAPIJson(version) {
       }
     },
      "/openapi.json": {
-      "get": {
-        "summary": "API metadata",
+      "GET": {
+        "summary": "API metadata using openapi.json",
+        "operationId": "GetOpenApiJson",
         "description": "Returns the OpenAPI specification for this server.",
         "responses": {
           "200": {
@@ -62,16 +64,17 @@ function openAPIJson(version) {
       }
     },
     "/mcp": {
-      "options": {
+      "OPTIONS": {
         "summary": "CORS preflight",
+        "operationId": "OptionsMcp",
         "description": "CORS preflight endpoint.",
         "responses": {
           "204": { "description": "No Content" }
         }
       },
-      "post": {
+      "POST": {
         "summary": "MCP request",
-        "description": "Handles MCP JSON-RPC requests.",
+        "operationId": "PostMcp",
         "parameters": [
           {
             "name": "body",
@@ -119,8 +122,9 @@ function openAPIJson(version) {
           }
         }
       },
-      "get": {
+      "GET": {
         "summary": "Get MCP session",
+        "operationId": "GetMcp",
         "description": "Retrieves information for an MCP session.",
         "parameters": [
           {
@@ -141,9 +145,9 @@ function openAPIJson(version) {
           }
         }
       },
-      "delete": {
+      "DELETE": {
         "summary": "Delete MCP session",
-        "description": "Deletes an MCP session.",
+        "operationId": "DeleteMcp",
         "parameters": [
           {
             "name": "mcp-session-id",
