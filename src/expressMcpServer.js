@@ -160,6 +160,7 @@ const handleRequest = async (req, res) => {
       console.error("[Note] Using existing transport for session ID:", sessionId);
 
       await transport.handleRequest(req, res, req.body);
+      return;
     }
 
     // initialize request
@@ -169,8 +170,10 @@ const handleRequest = async (req, res) => {
       transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: () => randomUUID(),
         enableJsonResponse: true,
+        enableDnsRebindingProtection: true,
         onsessioninitialized: (sessionId) => {
           // Store the transport by session ID
+          console.error("++++++++++++++++++++++++++++++ Transport initialized with ID:", sessionId);
           transports[sessionId] = transport;
         },
       });
@@ -186,9 +189,9 @@ const handleRequest = async (req, res) => {
       await mcpServer.connect(transport);
 
       // Save transport data and app context for use in tools
-      console.error('connected mcpServe with session ID:', transport.sessionId);
+      console.error('connected mcpServer');
       cache.set("transports", transports);
-      await transport.handleRequest(req, res, req.body);
+      return await transport.handleRequest(req, res, req.body);
       // cache transport
   
     }

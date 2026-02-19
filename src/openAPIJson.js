@@ -7,7 +7,7 @@ function openAPIJson(version) {
   "swagger": "2.0",
   "info": {
     "title": "sas-score-mcp-serverjs  API",
-    "version": version,
+    "version": "1.0.0",
     "description": "sas-score-mcp-serverjs is a mcp server for SAS Viya"
   },
   "host": "localhost:8080",
@@ -17,9 +17,9 @@ function openAPIJson(version) {
   "produces": ["application/json"],
   "paths": {
     "/health": {
-      "GET": {
+      "get": {
         "summary": "Health check",
-        "operationId": "GetHealth",
+        "operationId": "getHealth",
         "description": "Returns health and version information.",
         "responses": {
           "200": {
@@ -39,7 +39,7 @@ function openAPIJson(version) {
       }
     },
     "/apiMeta": {
-      "GET": {
+      "get": {
         "summary": "API metadata using apiMeta",
         "operationId": "GetApiMeta",
         "responses": {
@@ -50,8 +50,8 @@ function openAPIJson(version) {
         }
       }
     },
-     "/openapi.json": {
-      "GET": {
+    "/openapi.json": {
+      "get": {
         "summary": "API metadata using openapi.json",
         "operationId": "GetOpenApiJson",
         "description": "Returns the OpenAPI specification for this server.",
@@ -64,7 +64,7 @@ function openAPIJson(version) {
       }
     },
     "/mcp": {
-      "OPTIONS": {
+      "options": {
         "summary": "CORS preflight",
         "operationId": "OptionsMcp",
         "description": "CORS preflight endpoint.",
@@ -72,7 +72,7 @@ function openAPIJson(version) {
           "204": { "description": "No Content" }
         }
       },
-      "POST": {
+      "post": {
         "summary": "MCP request",
         "operationId": "PostMcp",
         "parameters": [
@@ -122,8 +122,8 @@ function openAPIJson(version) {
           }
         }
       },
-      "GET": {
-        "summary": "Get MCP session",
+      "get": {
+        "summary": "get MCP session",
         "operationId": "GetMcp",
         "description": "Retrieves information for an MCP session.",
         "parameters": [
@@ -145,7 +145,7 @@ function openAPIJson(version) {
           }
         }
       },
-      "DELETE": {
+      "delete": {
         "summary": "Delete MCP session",
         "operationId": "DeleteMcp",
         "parameters": [
@@ -169,7 +169,7 @@ function openAPIJson(version) {
       }
     }
   }
-};
+}
   spec.info.version = version;
   return spec;
 };
