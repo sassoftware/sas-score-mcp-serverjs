@@ -23,4 +23,4 @@ ENV COMPUTECONTEXT="SAS Job Execution compute context"
 ENV SAMESITE="Lax,secure"
 ENV REDIRECT=/info
 ENV AUTOLOGON=FALSE
-CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.14"]
+CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.15"]

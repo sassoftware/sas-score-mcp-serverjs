@@ -236,6 +236,18 @@ app.options("/mcp", (_, res) => res.sendStatus(204));
 app.post("/mcp", requireBearer, handleRequest);
 app.get("/mcp", handleGetDelete);
 app.delete("/mcp", handleGetDelete);
+app.get("/startup", (_req, res) => {
+  if (appServer == null) {
+    return res.status(500).json({ status: "starting" });
+  }
+  return res.status(200).json({ status: "started" });
+});
+app.get("/ready", (_req, res) => {
+  if (appServer == null) {
+     return res.status(500).json({ status: "not ready" });
+  }
+  return res.status(200).json({ status: "ready" });
+});
 
 // Start the server
 let appEnvBase = cache.get("appEnvBase");
