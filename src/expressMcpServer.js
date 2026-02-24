@@ -140,7 +140,9 @@ const handleRequest = async (req, res) => {
       transport = transports[sessionId];
       console.error("Found transport:", transport != null);
       if (transport == null) {
-        throw new Error(`No transport found for session ID: ${sessionId}`);
+        console.error("[Error] No transport found for session ID:", sessionId, "Returning a 400 error with instructions for the user");
+        res.status(400).send(`Invalid or missing session ID ${sessionId}. Please ensure your MCP client is configured to use the correct session ID returned in the 'mcp-session-id' header of the response from the /mcp endpoint.`);
+        return;
       }
 
       // post the curren session - used to pass _appContext to tools
@@ -167,6 +169,7 @@ const handleRequest = async (req, res) => {
     else if (!sessionId && isInitializeRequest(req.body)) {
       // create transport
       console.error("[Note] Initializing new transport for MCP session...");
+      console.error({body: JSON.stringify(req.body)});
       transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: () => randomUUID(),
         enableJsonResponse: true,
