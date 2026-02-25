@@ -26,6 +26,7 @@ async function expressMcpServer(mcpServer, cache, baseAppEnvContext) {
   cache.set("headerCache", {});
 
   const app = express();
+  let appStatus = false;
 
   app.use(express.json({ limit: "50mb" }));
   app.use(
@@ -49,6 +50,9 @@ async function expressMcpServer(mcpServer, cache, baseAppEnvContext) {
   // setup routes
   app.get("/health", (req, res) => {
     console.error("Received request for health endpoint");
+    if (appStatus === false) {
+      return res.status(500).json({ status: "not healthy" });
+    }
     let health = {
       name: "@sassoftware/mcp-server",
       version: baseAppEnvContext.version,
@@ -237,18 +241,28 @@ app.post("/mcp", requireBearer, handleRequest);
 app.get("/mcp", handleGetDelete);
 app.delete("/mcp", handleGetDelete);
 app.get("/startup", (_req, res) => {
-  if (appServer == null) {
+  console.error("Received request for startup endpoint");
+  if (appStatus === false) {
     return res.status(500).json({ status: "starting" });
   }
   return res.status(200).json({ status: "started" });
 });
-app.get("/ready", (_req, res) => {
-  if (appServer == null) {
+
+app.get("/status", (_req, res) => {
+  console.error("Received request for status endpoint. Current app status:", appStatus);
+  if (appStatus === false) {
      return res.status(500).json({ status: "not ready" });
   }
   return res.status(200).json({ status: "ready" });
 });
 
+app.get("/ready", (_req, res) => {
+  console.error("Received request for ready endpoint. Current app status:", appStatus);
+  if (appStatus === false) {
+     return res.status(500).json({ status: "not ready" });
+  }
+  return res.status(200).json({ status: "ready" });
+});
 // Start the server
 let appEnvBase = cache.get("appEnvBase");
 
@@ -279,7 +293,10 @@ if (appEnvBase.HTTPS === 'TRUE') {
   console.error("[Note] Press Ctrl+C to stop the server");
 
   appServer = https.createServer(appEnvBase.tlsOpts, app);
-  appServer.listen(PORT, "0.0.0.0", () => { });
+  appServer.listen(PORT, "0.0.0.0", () => { 
+     console.error( `[Note] Express server successfully bound to 0.0.0.0:${PORT}` );
+     appStatus= true;
+  });
 } else {
   console.error(`[Note] MCP Server listening on port ${PORT}`);
   console.error("[Note] Visit http://localhost:8080/health for health check");
@@ -289,6 +306,7 @@ if (appEnvBase.HTTPS === 'TRUE') {
   console.error("[Note] Press Ctrl+C to stop the server");
   try {
     appServer = app.listen(PORT, "0.0.0.0", () => {
+      appStatus = true;
       console.error(
         `[Note] Express server successfully bound to 0.0.0.0:${PORT}`
       );
