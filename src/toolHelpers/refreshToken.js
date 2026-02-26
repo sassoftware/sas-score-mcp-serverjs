@@ -7,12 +7,13 @@
  async function refreshToken(_appContext,params) {
   let {host, token} = params;
     const url = `${host}/SASLogon/oauth/token`;
+    console.error('[Info] Refresh token...', token);
     let opts = getOpts(_appContext);
-
+    console.error('opts: ', opts);
     const agent = new Agent({
       connect: opts
     });
-    
+    console.error('[Info] Refreshing token...', token);
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       refresh_token: token,
@@ -37,7 +38,7 @@
       }
 
       const data = await response.json();
-      
+      console.error('[Info] Token refreshed successfully: ', data.access_token);
       return data.access_token;
     } catch (err) {
       console.error('[Error] Failed to refresh token: ', err);
