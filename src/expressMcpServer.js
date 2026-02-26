@@ -136,14 +136,46 @@ const handleRequest = async (req, res) => {
   try {
 
     let sessionId = req.headers["mcp-session-id"];
+    console.error("========================================================");
+    console.error("post /mcp called with session ID:", sessionId);
+    let body = (req.body == null) ? 'no body' : JSON.stringify(req.body);
+    console.error('[Note] Payload is ', body);
+    if (/*!sessionId &&*/ isInitializeRequest(req.body)) {
+      // create transport
+      console.error("[Note] Initializing new transport for MCP session...");
+      
+      transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: () => randomUUID(),
+        enableJsonResponse: true,
+        enableDnsRebindingProtection: true,
+        onsessioninitialized: (sessionId) => {
+          // Store the transport by session ID
+          console.error('Session initialized');
+          console.error("[Note] Transport initialized with ID:", sessionId);
+          transports[sessionId] = transport;
+        },
+      });
+      // Clean up transport when closed
+      transport.onclose = () => {
+        if (transport.sessionId) {
+          delete transports[transport.sessionId];
+        }
+      };
+      console.error("[Note] Connecting mcpServer to new transport...");
+      await mcpServer.connect(transport);
 
-    // we have session id, get existing transport
-    console.error('>>>>>>>>>>>>>> Received request for MCP endpoint with session ID:', req.method, sessionId);
-    if (sessionId != null) {
-      console.error("Looking for transport with session ID:", sessionId);
+      // Save transport data and app context for use in tools
+      console.error('connected mcpServer');
+      cache.set("transports", transports);
+      return await transport.handleRequest(req, res, req.body);
+      // cache transport
+  
+    } else if (sessionId != null) {
+      console.error('[Note] Incoming session ID:', sessionId);
       transport = transports[sessionId];
-      console.error("Found transport:", transport != null);
+      console.error("[Note] Found transport:", transport != null);
       if (transport == null) {
+        // this can happen if client is holding on to old session id 
         console.error("[Error] No transport found for session ID:", sessionId, "Returning a 400 error with instructions for the user");
         res.status(400).send(`Invalid or missing session ID ${sessionId}. Please ensure your MCP client is configured to use the correct session ID returned in the 'mcp-session-id' header of the response from the /mcp endpoint.`);
         return;
@@ -170,38 +202,7 @@ const handleRequest = async (req, res) => {
     }
 
     // initialize request
-    else if (!sessionId && isInitializeRequest(req.body)) {
-      // create transport
-      console.error("[Note] Initializing new transport for MCP session...");
-      console.error({body: JSON.stringify(req.body)});
-      transport = new StreamableHTTPServerTransport({
-        sessionIdGenerator: () => randomUUID(),
-        enableJsonResponse: true,
-        enableDnsRebindingProtection: true,
-        onsessioninitialized: (sessionId) => {
-          // Store the transport by session ID
-          console.error("++++++++++++++++++++++++++++++ Transport initialized with ID:", sessionId);
-          transports[sessionId] = transport;
-        },
-      });
-      // Clean up transport when closed
-      transport.onclose = () => {
-        if (transport.sessionId) {
-          delete transports[transport.sessionId];
-        }
-      };
-      console.error("[Note] Connecting mcpServer to new transport...");
-      console.error('connecting mcp Server with session ID:', transport.sessionId);
-      console.error('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> connecting mcp Server with session ID:', transport.sessionId);
-      await mcpServer.connect(transport);
-
-      // Save transport data and app context for use in tools
-      console.error('connected mcpServer');
-      cache.set("transports", transports);
-      return await transport.handleRequest(req, res, req.body);
-      // cache transport
-  
-    }
+    
   }
   catch (error) {
     console.error("Error handling MCP request:", error);
