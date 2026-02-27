@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
  import { Agent, fetch } from 'undici';
- import getOpts from './getOpts.js';
+ //import getOpts from './getOpts.js';
  async function refreshTokenOauth(_appContext, oauthInfo ){
  
     const url = `${process.env.VIYA_SERVER}/SASLogon/oauth/token`;
-    let opts = getOpts(_appContext);
+    let opts = _appContext.contexts.appCert;
 
     const agent = new Agent({
       connect: opts

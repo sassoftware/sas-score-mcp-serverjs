@@ -57,8 +57,8 @@ async function igetLogonPayload(_appContext) {
 
   // Use user supplied refresh token-
   if (_appContext.AUTHFLOW === "refresh") {
-    console.error("[Note] Using user supplied refresh token"); 
-    let token = await refreshToken(_appContext,{token: _appContext.refreshToken, host: _appContext.VIYA_SERVER});
+    console.error("[Note] Using user supplied refresh token", _appContext.REFRESH_TOKEN); 
+    let token = await refreshToken(_appContext,{token: _appContext.REFRESH_TOKEN, host: _appContext.VIYA_SERVER});
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
       authType: "server",
@@ -97,8 +97,8 @@ async function igetLogonPayload(_appContext) {
       authType: "password",
       user: _appContext.USERNAME,
       password: _appContext.PASSWORD,
-      clientID: _appContext.CLIENTIDPW,
-      clientSecret: _appContext.CLIENTSECRETPW,
+      clientID: _appContext.CLIENTID,
+      clientSecret: _appContext.CLIENTSECRET,
     };
 
     return logonPayload;

@@ -274,7 +274,6 @@ let appServer;
 
 // get TLS options
 if (appEnvBase.HTTPS === 'TRUE') {
-  //appEnvBase.tlsOpts = getOpts(appEnvBase);
   if (appEnvBase.tlsOpts == null) {
     appEnvBase.tlsOpts = await getTls(appEnvBase);
     console.error(Object.keys(appEnvBase.tlsOpts));

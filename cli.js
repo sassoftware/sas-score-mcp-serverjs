@@ -16,14 +16,15 @@ import createMcpServer from './src/createMcpServer.js';
 import fs from 'fs';
 import { randomUUID } from 'node:crypto';
 
-import refreshToken from './src/toolHelpers/refreshToken.js';
-import getOptsViya from './src/toolHelpers/getOptsViya.js';
+//import refreshToken from './src/toolHelpers/refreshToken.js';
+//import getOptsViya from './src/toolHelpers/getOptsViya.js';
+import readCerts from './src/toolHelpers/readCerts.js';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 import NodeCache from 'node-cache';
-import getOpts from './src/toolHelpers/getOpts.js';
+//import getOpts from './src/toolHelpers/getOpts.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -167,6 +168,7 @@ const appEnvBase = {
     casSession: null, /* restaf cas session object */
     computeSession: null, /* restaf compute session object */
     viyaCert: null, /* ssl/tsl certificates to connect to viya */
+    appCert: null,
     logonPayload: null, /* viya logon payload  to connect to viya */
     casServerId: null,
     computeSessonId: null,
@@ -179,10 +181,14 @@ const appEnvBase = {
 process.env.APPPORT=appEnvBase.PORT;
 
 // setup TLS options for viya calls
-
 console.error('[Note]Viya SSL dir set to: ' + appEnvBase.VIYACERT);
-await getOptsViya(appEnvBase); /* appEnvBase.contexts.viyaCert is set here */
-appEnvBase.tlsOpts = getOpts(appEnvBase);
+appEnvBase.contexts.viyaCert = readCerts(appEnvBase.VIYACERT); /* appEnvBase.contexts.viyaCert is set here */
+
+// setup TLS options for app server (expressMcpServer or hapiMcpServer)
+
+appEnvBase.tlsOpts = readCerts(appEnvBase.SSLCERT);
+appEnvBase.contexts.appCert = appEnvBase.tlsOpts; /* just for completeness */
+
 appEnvBase.contexts.storeConfig = {
   casProxy: true,
   options: { ns: null, proxyServer: null, httpOptions: appEnvBase.contexts.viyaCert }
@@ -207,6 +213,7 @@ if (appEnvBase.TOKENFILE != null) {
 
 // handle refresh token flow 
 // use this for testing only. 
+/*
 if (appEnvBase.REFRESH_TOKEN != null) {
   appEnvBase.refreshToken = appEnvBase.REFRESH_TOKEN;
   appEnvBase.AUTHFLOW = 'refresh';
@@ -218,7 +225,7 @@ if (appEnvBase.REFRESH_TOKEN != null) {
     tokenType: 'Bearer'
   }
 }
-
+*/
 // if authflow is cli or code, postpone getting logonPayload until needed
 
 

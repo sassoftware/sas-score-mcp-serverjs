@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
  import { Agent, fetch } from 'undici';
- import getOpts from './getOpts.js';
+
  async function refreshToken(_appContext,params) {
   let {host, token} = params;
-    const url = `${host}/SASLogon/oauth/token`;
+    let url = `${host}/SASLogon/oauth/token`;
+    console.error('[Info] url:', url);
     console.error('[Info] Refresh token...', token);
-    let opts = getOpts(_appContext);
-    console.error('opts: ', opts);
+
+    let opts = _appContext.contexts.appCert;
     const agent = new Agent({
       connect: opts
     });
