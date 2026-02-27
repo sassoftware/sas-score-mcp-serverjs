@@ -17,6 +17,7 @@ import fs from "fs";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { randomUUID } from "node:crypto";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
+import tlogon from "./toolHelpers/tlogon.js";
 
 
 // setup express server
@@ -248,7 +249,15 @@ app.get("/startup", (_req, res) => {
   }
   return res.status(200).json({ status: "started" });
 });
-
+app.get("/tlogon", async (_req, res) => {
+  console.error(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Testing logon");
+  if (appStatus === false) {
+     return res.status(500).json({ status: "not ready" });
+  }
+  let r = await tlogon(baseAppEnvContext);
+  console.error(r);
+  return res.status(200).json(r);
+});
 app.get("/status", (_req, res) => {
   console.error("Received request for status endpoint. Current app status:", appStatus);
   if (appStatus === false) {

@@ -13,7 +13,7 @@ async function getLogonPayload(_appContext) {
 }
 
 async function igetLogonPayload(_appContext) {
-
+  console.error('[Info] Getting logon payload...',_appContext.AUTHFLOW);
   // Use cached logonPayload if available
   // This will cause timeouts if the token expires
   if (_appContext.contexts.logonPayload != null && _appContext.tokenRefresh !== true) {

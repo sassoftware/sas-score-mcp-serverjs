@@ -186,6 +186,7 @@ appEnvBase.contexts.viyaCert = readCerts(appEnvBase.VIYACERT); /* appEnvBase.con
 
 // setup TLS options for app server (expressMcpServer or hapiMcpServer)
 
+console.error('[Note]App SSL dir set to: ' + appEnvBase.SSLCERT);
 appEnvBase.tlsOpts = readCerts(appEnvBase.SSLCERT);
 appEnvBase.contexts.appCert = appEnvBase.tlsOpts; /* just for completeness */
 
@@ -211,21 +212,7 @@ if (appEnvBase.TOKENFILE != null) {
   }
 }
 
-// handle refresh token flow 
-// use this for testing only. 
-/*
-if (appEnvBase.REFRESH_TOKEN != null) {
-  appEnvBase.refreshToken = appEnvBase.REFRESH_TOKEN;
-  appEnvBase.AUTHFLOW = 'refresh';
-  let t = await refreshToken(appEnvBase, { token: appEnvBase.REFRESH_TOKEN, host: appEnvBase.VIYA_SERVER });
-  appEnvBase.contexts.logonPayload = {
-    host: appEnvBase.VIYA_SERVER,
-    authType: 'server',
-    token: t,
-    tokenType: 'Bearer'
-  }
-}
-*/
+
 // if authflow is cli or code, postpone getting logonPayload until needed
 
 

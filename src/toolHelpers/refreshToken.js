@@ -10,17 +10,19 @@
     console.error('[Info] url:', url);
     console.error('[Info] Refresh token...', token);
 
-    let opts = _appContext.contexts.appCert;
+    let opts = _appContext.contexts.viyaCert;
+    console.error('[Info] TLS options for token refresh:', opts);
     const agent = new Agent({
       connect: opts
     });
     console.error('[Info] Refreshing token...', token);
-    const body = new URLSearchParams({
+    const ibody = {
       grant_type: 'refresh_token',
       refresh_token: token,
       client_id: 'sas.cli'
-    });
-    
+    };
+    console.error('[Info] Refresh token request body:', JSON.stringify(ibody));
+    let body = new URLSearchParams(ibody);
     try {
       const response = await fetch(url, {
         method: 'POST',
