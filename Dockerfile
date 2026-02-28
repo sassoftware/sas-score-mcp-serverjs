@@ -11,12 +11,15 @@ ENV APPHOST=0.0.0.0
 ENV PORT=8080
 ENV HTTPS=FALSE
 ENV MCPTYPE=http
+ENV AUTHTYPE=refresh
+ENV REFRESH_TOKEN=203512c9e4df49fba76074dd20d7798e-r
+
 # ENV AUTHFLOW=bearer
 ENV CLIENTID=mcpserver
 ENV CLIENTSECRET=jellico
 # ENV VIYA_SERVER=
 # ENV SSLCERT=./sslCert
-ENV VIYACERT=./00m
+ENV VIYACERT=./ssl_00m
 ENV CAS_SERVER=cas-shared-default
 # APPNAME defaults to sas-score-mcp-serverjs but you can override it here
 ENV APPNAME=sas-score-mcp-serverjs
