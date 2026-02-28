@@ -7,15 +7,17 @@
  async function refreshToken(_appContext,params) {
   let {host, token} = params;
     let url = `${host}/SASLogon/oauth/token`;
-    url = url.replace('https', 'http'); // token refresh endpoint does not support https even if viya server is https
     console.error('[Info] url:', url);
     console.error('[Info] Refresh token...', token);
 
-    let opts = _appContext.contexts.viyaCert;
+    let opts =  _appContext.contexts.viyaCert;
     console.error('[Info] TLS options for token refresh:', opts);
+    
     const agent = new Agent({
-      connect: null
+      connect: opts
     });
+  
+   // const agent = new https.Agent(opts);
     console.error('[Info] Refreshing token...', token);
     const ibody = {
       grant_type: 'refresh_token',

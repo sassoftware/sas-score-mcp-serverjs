@@ -10,7 +10,7 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node  cli.js",
+    "start": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 node  cli.js",
     "testi": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 npx @modelcontextprotocol/inspector",
     "test": "cd test && node",
     "debug": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0  node --inspect-brk cli.js",

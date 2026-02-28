@@ -288,6 +288,7 @@ if (appEnvBase.HTTPS === 'TRUE') {
     console.error(Object.keys(appEnvBase.tlsOpts));
     appEnvBase.tlsOpts.requestCert = false;
     appEnvBase.tlsOpts.rejectUnauthorized = false;
+    appEnvBase.contexts.appCert = appEnvBase.tlsOpts; /* just for completeness */
   }
 
   cache.set("appEnvBase", appEnvBase);
