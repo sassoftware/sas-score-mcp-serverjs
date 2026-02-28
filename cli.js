@@ -233,6 +233,7 @@ sessionCache.set('transports', transports);
 // set this for stdio transport use
 // dummy sessionId for use in the tools  
 let useHapi = process.env.AUTHFLOW === 'code' ? true : false;
+console.error('[Note] appEnvBase is', JSON.stringify(appEnvBase, null,2));
 if (mcpType === 'stdio') {
   let sessionId = randomUUID();
   sessionCache.set('currentId', sessionId);

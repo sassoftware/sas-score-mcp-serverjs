@@ -10,7 +10,7 @@
     console.error('[Info] url:', url);
     console.error('[Info] Refresh token...', token);
 
-    let opts =  _appContext.contexts.viyaCert;
+    let opts =  _appContext.contexts.appCert;
     console.error('[Info] TLS options for token refresh:', opts);
     
     const agent = new Agent({
