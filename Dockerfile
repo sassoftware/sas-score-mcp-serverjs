@@ -16,6 +16,7 @@ ENV AUTHFLOW=refresh
 ENV REFRESH_TOKEN=203512c9e4df49fba76074dd20d7798e-r
 
 # ENV AUTHFLOW=bearer
+
 ENV CLIENTID=mcpserver
 ENV CLIENTSECRET=jellico
 ENV VIYA_SERVER=https://viya-00m2kebi2b.engage.sas.com

@@ -122,10 +122,11 @@ function requireBearer(req, res, next) {
   // not ideal for production
   const hdr2 = req.header("X-REFRESH-TOKEN");
   if (hdr2 != null) {
-    headerCache.refreshToken = hdr2;
+    headerCache.REFRESH_TOKEN = hdr2;
     headerCache.AUTHFLOW = "refresh";
   }
   cache.set("headerCache", headerCache);
+  console.error('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>headerCache:', headerCache);
   next();
 }
 
@@ -193,6 +194,7 @@ const handleRequest = async (req, res) => {
 
         let appEnvTemplate = cache.get("appEnvTemplate");
         let headerCache = cache.get("headerCache");
+        console.log('+++ headerCache in handleRequest:', headerCache);
         _appContext = Object.assign({}, appEnvTemplate, headerCache);
         cache.set(sessionId, _appContext);
       }

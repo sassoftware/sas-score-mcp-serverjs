@@ -62,7 +62,7 @@ async function igetLogonPayload(_appContext) {
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
       authType: "server",
-      token: token,
+      token: token, 
       tokenType: "Bearer",
     };
 
