@@ -14,7 +14,7 @@
     console.error('[Info] TLS options for token refresh:', opts);
     
     const agent = new Agent({
-      connect: opts
+      connect: []
     });
   
    // const agent = new https.Agent(opts);
