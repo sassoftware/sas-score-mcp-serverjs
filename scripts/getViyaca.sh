@@ -5,4 +5,4 @@
 # 
 # Requirement: KUBECONFIG must be set to point to the target cluster
 # The namespace is assumed to be 'viya'
-kubectl -n viya get secret sas-viya-ca-certificate-secret -o go-template='{{(index .data "ca.crt")}}' | base64 -d > $HOME/viyaCert/ca.pem
+kubectl -n viya get secret sas-viya-ca-certificate-secret -o go-template='{{(index .data "ca.crt")}}' | base64 -d > ../.tls/ca.pem
