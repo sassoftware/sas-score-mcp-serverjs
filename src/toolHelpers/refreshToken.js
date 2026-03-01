@@ -14,10 +14,10 @@
     console.error('[Info] TLS options for token refresh:', opts);
     
     const agent = new Agent({
-      connect: []
+      connect: [opts.ca]
     });
   
-   // const agent = new https.Agent(opts);
+   console.error('[Info] TLS ', opts.ca);
     console.error('[Info] Refreshing token...', token);
     const ibody = {
       grant_type: 'refresh_token',
@@ -32,7 +32,7 @@
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/x-www-form-urlencoded',
-          dispatcher: agent
+          //dispatcher: agent
         },
         body: body.toString()
       });

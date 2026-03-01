@@ -2,9 +2,10 @@ FROM node:25-alpine
 LABEL maintainer="deva.kumar@sas.com"
 RUN apk add --no-cache --upgrade bash
 RUN apk add --no-cache curl
-WORKDIR /usr/src/app
-# COPY ./xf1 ./sslCert
+WORKDIR /app
 COPY . .
+
+ENV NODE_EXTRA_CA_CERTS=./.tls/ca.pem
 RUN rm .env
 EXPOSE 8080
 ENV APPHOST=0.0.0.0
@@ -29,4 +30,4 @@ ENV COMPUTECONTEXT="SAS Job Execution compute context"
 ENV SAMESITE="Lax,secure"
 ENV REDIRECT=/info
 ENV AUTOLOGON=FALSE
-CMD ["npm", "start"]
+CMD ["bash", "startServer.sh"]

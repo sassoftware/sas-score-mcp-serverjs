@@ -1,0 +1,1 @@
+export NODE_EXTRA_CA_CERTS=/app/certs/rootCA.pem
