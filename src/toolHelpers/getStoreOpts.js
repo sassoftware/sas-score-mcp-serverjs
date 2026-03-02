@@ -5,7 +5,7 @@
 
 function getStoreOpts(_appContext) {
   
-  let opts = _appContext.contexts.appCert;
+  let opts = _appContext.contexts.viyaCert;
   let storeOpts = {
     casProxy: true,
     httpOptions: { ...opts, rejectUnauthorized: true }
