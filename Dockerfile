@@ -22,7 +22,7 @@ ENV CLIENTID=mcpserver
 ENV CLIENTSECRET=jellico
 ENV VIYA_SERVER=https://viya-00m2kebi2b.engage.sas.com
 ENV SSLCERT=NONE
-ENV VIYACERT=./.tls
+ENV VIYACERT=./.viyatls
 ENV CAS_SERVER=cas-shared-default
 # APPNAME defaults to sas-score-mcp-serverjs but you can override it here
 ENV APPNAME=sas-score-mcp-serverjs
