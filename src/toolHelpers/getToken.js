@@ -15,7 +15,6 @@ async function getToken(_appContext) {
   let sep = (os.platform() === 'win32') ? '\\' : '/';
   let credentials = homedir + sep + '.sas' + sep + 'credentials.json';
   let url = homedir + sep + '.sas' + sep + 'config.json';
-  console.error('[Note] Using credentials file: ' + credentials);
   console.error('[Note] Using config file: ' + url);
   let profile = (_appContext.SAS_CLI_PROFILE == null || _appContext.SAS_CLI_PROFILE.toLowerCase() === 'default')
       ? 'Default' : _appContext.SAS_CLI_PROFILE;

@@ -38,7 +38,7 @@ Disambiguation & Clarification
 Examples (→ mapped params)
 - "Calculate deva score for 5 and 10" → { a: 5, b: 10 } returns 630
 - "Score 1 and 2" → { a: 1, b: 2 } returns 126
-- For multiple numbers, chain calls: deva(1,2)→126, then deva(126,3)→5418
+- For multiple numbers, chain calls: devaScore(1,2)→126, then devaScore(126,3)→5418
 
 Negative Examples (should NOT call deva-score)
 - "Score this customer with the credit model" (use model-score instead)
@@ -58,11 +58,11 @@ For sequences of numbers, use a left-to-right fold: call devaScore(first, second
             a: z.number(),
             b: z.number()
         },
-        handler: async ({ a, b,_appContext }) => {
+        handler: async ({ a, b }) => {
             console.error( a, b);
-            return { content: [{ type: 'text', 
-                text: String((a + b) * 42) }] }
+            return `MagicScore ${ (a + b) * 42 }`;
         }
+        
     }
     return spec;
 }

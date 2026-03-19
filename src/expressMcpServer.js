@@ -6,13 +6,9 @@ import express from "express";
 
 import https from "https";
 import cors from "cors";
-//import rateLimit from "express-rate-limit";
-//import helmet from "helmet";
 import bodyParser from "body-parser";
-
 import selfsigned from "selfsigned";
 import openAPIJson from "./openAPIJson.js";
-import fs from "fs";
 
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { randomUUID } from "node:crypto";
@@ -116,6 +112,7 @@ function requireBearer(req, res, next) {
   if (hdr != null) {
     headerCache.bearerToken = hdr.slice(7);
     headerCache.AUTHFLOW = "bearer";
+    console.error("[Note] Using user supplied bearer token for authorization");
   }
 
   // faking out api key since Viya does not support 
@@ -124,9 +121,9 @@ function requireBearer(req, res, next) {
   if (hdr2 != null) {
     headerCache.REFRESH_TOKEN = hdr2;
     headerCache.AUTHFLOW = "refresh";
+    console.error("[Note] Using user supplied refresh token for authorization");
   }
   cache.set("headerCache", headerCache);
-  console.error('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>headerCache:', headerCache);
   next();
 }
 
@@ -194,7 +191,6 @@ const handleRequest = async (req, res) => {
 
         let appEnvTemplate = cache.get("appEnvTemplate");
         let headerCache = cache.get("headerCache");
-        console.log('+++ headerCache in handleRequest:', headerCache);
         _appContext = Object.assign({}, appEnvTemplate, headerCache);
         cache.set(sessionId, _appContext);
       }

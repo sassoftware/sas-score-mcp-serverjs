@@ -71,7 +71,7 @@ console.error(
 // and storage provided by cloud providers
 console.error(process.env.COMPUTECONTEXT);
 debugger;
-let sessionCache = new NodeCache({ stdTTL: 0, checkperiod: 2 * 60, useClones: false });
+let sessionCache = new NodeCache({ stdTTL: 60*60, checkperiod: 2 * 60, useClones: false });
 
 //
 // Load environment variables from .env file if present

@@ -7,14 +7,12 @@ import { Agent, fetch } from 'undici';
 async function refreshToken(_appContext, params) {
   let { host, token } = params;
   let url = `${host}/SASLogon/oauth/token`;
-  console.error('[Info] url:', url);
-  console.error('[Info] Refresh token...', token);
 
   let aconnect = {
     ca: _appContext.contexts.viyaCert.ca,     // trust this CA
     rejectUnauthorized: false  // or false, if you really want to bypass checks
   }
-  console.error('[Info] Agent options:', aconnect);
+
   const agent = new Agent(aconnect);
 
   console.error('[Info] Refreshing token...', token);
@@ -23,7 +21,7 @@ async function refreshToken(_appContext, params) {
     refresh_token: token,
     client_id: 'sas.cli'
   };
-  console.error('[Info] Refresh token request body:', JSON.stringify(ibody));
+
   let body = new URLSearchParams(ibody);
   try {
     const response = await fetch(url, {
@@ -43,7 +41,6 @@ async function refreshToken(_appContext, params) {
     }
 
     const data = await response.json();
-    console.error('[Info] Token refreshed successfully: ', data.access_token);
     return data.access_token;
   } catch (err) {
     console.error('[Error] Failed to refresh token: ', err);
