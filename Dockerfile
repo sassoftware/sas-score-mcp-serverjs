@@ -18,8 +18,6 @@ ENV REFRESH_TOKEN=
 ENV VIYA_SERVER=https://viya-dtl7y642ta.engage.sas.com
 # ENV AUTHFLOW=bearer
 
-ENV CLIENTID=mcpserver
-ENV CLIENTSECRET=jellico
 ENV SSLCERT=NONE
 ENV VIYACERT=./.viyatls
 ENV CAS_SERVER=cas-shared-default
