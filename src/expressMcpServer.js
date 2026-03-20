@@ -220,12 +220,15 @@ const handleRequest = async (req, res) => {
 };
 const handleGetDelete = async (req, res) => {
   console.error(req.method, "/mcp called");
+
   const sessionId = req.headers["mcp-session-id"];
+  console.error("Headers:", sessionId);
   console.error("Handling GET/DELETE for session ID:", sessionId);
   let transports = cache.get("transports");
   let transport = (sessionId == null) ? null : transports[sessionId];
+  console.error("Found transport:", transport != null);
   if (!sessionId || transport == null) {
-    res.status(400).send(`[Error] In ${req.method}: Invalid or missing session ID ${sessionId}`);
+    res.status(200).send(`[Error] In ${req.method}: Invalid or missing session ID ${sessionId}`);
     return;
   }
   await transport.handleRequest(req, res);

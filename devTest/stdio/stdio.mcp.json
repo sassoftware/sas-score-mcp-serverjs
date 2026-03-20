@@ -9,10 +9,10 @@
 			"env": {
 				"MCPTYPE": "stdio",
 				"AUTHFLOW": "sascli",
-				"SAS_CLI_PROFILE": "xf1",
+				"SAS_CLI_PROFILE": "dtl",
 				"SAS_CLI_CONFIG": "c:\\Users\\kumar",
-				"SSLCERT": "c:\\Users\\kumar\\.tls",
-				"VIYACERT": "c:\\Users\\kumar\\viyaCert\\xf1\\viya",
+				"SSLCERT": "NONE",
+				"VIYACERT": "./.viyatls",
 				"CAS_SERVER": "cas-shared-default",
 				"COMPUTECONTEXT": "SAS Job Execution compute context",
 				"ENVFILE": "FALSE"
