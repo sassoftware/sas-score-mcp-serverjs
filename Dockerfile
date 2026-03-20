@@ -16,15 +16,13 @@ ENV MCPTYPE=http
 ENV AUTHFLOW=bearer
 ENV REFRESH_TOKEN=
 ENV VIYA_SERVER=https://viya-dtl7y642ta.engage.sas.com
-# ENV AUTHFLOW=bearer
 
 ENV SSLCERT=NONE
 ENV VIYACERT=./.viyatls
+ENV ENVFILE=NONE
 ENV CAS_SERVER=cas-shared-default
 # APPNAME defaults to sas-score-mcp-serverjs but you can override it here
 ENV APPNAME=sas-score-mcp-serverjs
 ENV COMPUTECONTEXT="SAS Job Execution compute context"
 ENV SAMESITE="Lax,secure"
-ENV REDIRECT=/info
-ENV AUTOLOGON=FALSE
 CMD ["npm", "start"]

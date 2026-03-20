@@ -4,17 +4,18 @@
 			"type": "stdio",
 			"command": "node",
 			"args": [
-				"c:\\dev\\github\\mcp-serverjs\\cli.js"
+				"c:\\dev\\github\\sas-score-mcp-serverjs\\cli.js"
 			],
 			"env": {
 				"MCPTYPE": "stdio",
-				"AUTHFLOW": "sascli", 
-				"SAS_CLI_PROFILE": "00m",
+				"AUTHFLOW": "sascli",
+				"SAS_CLI_PROFILE": "dtl",
 				"SAS_CLI_CONFIG": "c:\\Users\\kumar",
-				"SSLCERT": "c:\\Users\\kumar\\.tls",
-				"VIYACERT": "c:\\Users\\kumar\\.tls",
+				"SSLCERT": "NONE",
+				"VIYACERT": "c:\\dev\\github\\sas-score-mcp-serverjs\\.viyatls",
+				"CAS_SERVER": "cas-shared-default",
 				"COMPUTECONTEXT": "SAS Job Execution compute context",
-				"CAS_SERVER": "cas-shared-default"
+				"ENVFILE": "FALSE"
 			}
 		}
 	}

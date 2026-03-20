@@ -11,8 +11,7 @@ ENV PORT=8080
 ENV HTTPS=FALSE
 ENV MCPTYPE=http
 ENV AUTHFLOW=bearer
-ENV CLIENTID=mcpserver
-ENV CLIENTSECRET=jellico
+ENV ENVFILE=NONE
 # ENV VIYA_SERVER=
 # ENV SSLCERT=./sslCert
 # ENV VIYACERT=c:\Users\kumar\viyaCert\xf1
@@ -21,6 +20,4 @@ ENV CAS_SERVER=cas-shared-default
 ENV APPNAME=sas-score-mcp-serverjs
 ENV COMPUTECONTEXT="SAS Job Execution compute context"
 ENV SAMESITE="Lax,secure"
-ENV REDIRECT=/info
-ENV AUTOLOGON=FALSE
 CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@0.3.19"]
