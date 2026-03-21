@@ -243,17 +243,17 @@ app.options("/mcp", (_, res) => res.sendStatus(204));
 app.post("/mcp", requireBearer, handleRequest);
 app.get("/mcp", handleGetDelete);
 app.delete("/mcp", handleGetDelete);
-app.get("/startup", (_req, res) => {
+app.get("/StartUp", (_req, res) => {
   console.error("Received request for startup endpoint");
   if (appStatus === false) {
-    return res.status(500).json({ status: "starting" });
+    return res.status(503).json({ status: "starting" });
   }
   return res.status(200).json({ status: "started" });
 });
 app.get("/tlogon", async (_req, res) => {
   console.error(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Testing logon");
   if (appStatus === false) {
-     return res.status(500).json({ status: "not ready" });
+     return res.status(503).json({ status: "not ready" });
   }
   let r = await tlogon(baseAppEnvContext);
   console.error(r);
@@ -262,7 +262,7 @@ app.get("/tlogon", async (_req, res) => {
 app.get("/status", (_req, res) => {
   console.error("Received request for status endpoint. Current app status:", appStatus);
   if (appStatus === false) {
-     return res.status(500).json({ status: "not ready" });
+     return res.status(503).json({ status: "not ready" });
   }
   return res.status(200).json({ status: "ready" });
 });
