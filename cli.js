@@ -245,6 +245,7 @@ if (mcpType === 'stdio') {
 } else {
   console.error('[Note] Starting HTTP MCP server...');
   if (useHapi === true) {
+    process.env.AUTHTYPE = null;
     await hapiMcpServer(mcpServer, sessionCache, appEnvBase);
     console.error('[Note] Using HAPI HTTP server...')
   } else {

@@ -128,6 +128,36 @@ async function hapiMcpServer(mcpServer, cache, baseAppEnvContext) {
       },
       {
         method: ["GET"],
+        path: "/ready",
+        options: {
+          handler: async (req, h) => {
+            let status = {status: 1};
+            console.error("Ready check requested, returning:", status);
+            return h.response(status).code(200).type('application/json');
+          },
+          auth: false,
+          description: "probe readiness of the server",
+          notes: "Help",
+          tags: ["mcp"],
+        }
+      },
+      {
+        method: ["GET"],
+        path: "/StartUp",
+        options: {
+          handler: async (req, h) => {
+            let status = { status: 1 };
+            console.error("Startup check requested, returning:", status);
+            return h.response(status).code(200).type('application/json');
+          },
+          auth: false,
+          description: "probe startup of the server",
+          notes: "Help",
+          tags: ["mcp"],
+        }
+      },
+      {
+        method: ["GET"],
         path: "/apiMeta",
         options: {
           handler: async (req, h) => {
