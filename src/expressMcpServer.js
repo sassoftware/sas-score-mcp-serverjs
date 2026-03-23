@@ -219,16 +219,17 @@ const handleRequest = async (req, res) => {
   }
 };
 const handleGetDelete = async (req, res) => {
+  console.error("=========================================================");
   console.error(req.method, "/mcp called");
-
   const sessionId = req.headers["mcp-session-id"];
   console.error("Headers:", sessionId);
   console.error("Handling GET/DELETE for session ID:", sessionId);
+
   let transports = cache.get("transports");
   let transport = (sessionId == null) ? null : transports[sessionId];
   console.error("Found transport:", transport != null);
   if (!sessionId || transport == null) {
-    res.status(200).send(`[Error] In ${req.method}: Invalid or missing session ID ${sessionId}`);
+    res.status(404).send(`[Error] In ${req.method}: Invalid or missing session ID ${sessionId}`);
     return;
   }
   await transport.handleRequest(req, res);
@@ -236,6 +237,7 @@ const handleGetDelete = async (req, res) => {
     console.error("Deleting transport and cache for session ID:", sessionId);
     delete transports[sessionId];
     cache.del(sessionId);
+      res.status(201).send(`[Info] Deleted session ${sessionId}`);
   }
 }
 
@@ -244,7 +246,9 @@ app.post("/mcp", requireBearer, handleRequest);
 app.get("/mcp", handleGetDelete);
 app.delete("/mcp", handleGetDelete);
 app.get("/StartUp", (_req, res) => {
-  console.error("Received request for startup endpoint");
+  console.error("===================================================================")
+  console.error("Received request for status endpoint. Current app status:", appStatus);
+  console.error("===================================================================");
   if (appStatus === false) {
     return res.status(503).json({ status: "starting" });
   }
@@ -260,7 +264,9 @@ app.get("/tlogon", async (_req, res) => {
   return res.status(200).json(r);
 });
 app.get("/status", (_req, res) => {
+  console.error("===================================================================")
   console.error("Received request for status endpoint. Current app status:", appStatus);
+  console.error("===================================================================");
   if (appStatus === false) {
      return res.status(503).json({ status: "not ready" });
   }
@@ -268,9 +274,11 @@ app.get("/status", (_req, res) => {
 });
 
 app.get("/ready", (_req, res) => {
+  console.error("===================================================================")
   console.error("Received request for ready endpoint. Current app status:", appStatus);
+  console.error("===================================================================")
   if (appStatus === false) {
-     return res.status(500).json({ status: "not ready" });
+     return res.status(503).json({ status: "not ready" });
   }
   return res.status(200).json({ status: "ready" });
 });
