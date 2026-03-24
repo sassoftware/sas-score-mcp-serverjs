@@ -113,6 +113,7 @@ function requireBearer(req, res, next) {
     headerCache.bearerToken = hdr.slice(7);
     headerCache.AUTHFLOW = "bearer";
     console.error("[Note] Using user supplied bearer token for authorization");
+    console.error("[Debug] Bearer token starts with:", headerCache.bearerToken);
   }
 
   // faking out api key since Viya does not support 
@@ -131,6 +132,9 @@ function requireBearer(req, res, next) {
 const handleRequest = async (req, res) => {
   let transport;
   let transports = cache.get("transports");
+  console.error("=========================================================");
+  console.error("tranports cache", transports != null);
+
   console.error("current transports in cache:", Object.keys(transports)); 
   try {
 
@@ -175,8 +179,8 @@ const handleRequest = async (req, res) => {
       console.error("[Note] Found transport:", transport != null);
       if (transport == null) {
         // this can happen if client is holding on to old session id 
-        console.error("[Error] No transport found for session ID:", sessionId, "Returning a 400 error with instructions for the user");
-        res.status(400).send(`Invalid or missing session ID ${sessionId}. Please ensure your MCP client is configured to use the correct session ID returned in the 'mcp-session-id' header of the response from the /mcp endpoint.`);
+        console.error("[Error] No transport found for session ID:", sessionId, "Returning a 404 error with instructions for the user");
+        res.status(404).send(`Invalid or missing session ID ${sessionId}. Please ensure your MCP client is configured to use the correct session ID returned in the 'mcp-session-id' header of the response from the /mcp endpoint.`);
         return;
       }
 
