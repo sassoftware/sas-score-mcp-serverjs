@@ -98,7 +98,7 @@ function requireBearer(req, res, next) {
 
 
   // process any new header information
-
+  console.error("=======================================================");
   // Allow different VIYA server per sessionid(user)
   let headerCache = {};
   if (req.header("X-VIYA-SERVER") != null) {
@@ -114,6 +114,8 @@ function requireBearer(req, res, next) {
     headerCache.AUTHFLOW = "bearer";
     console.error("[Note] Using user supplied bearer token for authorization");
     console.error("[Debug] Bearer token starts with:", headerCache.bearerToken);
+  } else {
+    console.error("[Note] No bearer token supplied in Authorization header");
   }
 
   // faking out api key since Viya does not support 
@@ -130,10 +132,10 @@ function requireBearer(req, res, next) {
 
 // process mcp endpoint requests
 const handleRequest = async (req, res) => {
-  let transport;
+  let transport = null;
   let transports = cache.get("transports");
   console.error("=========================================================");
-  console.error("tranports cache", transports != null);
+  console.error(">>>>>>>>>>>>>>>>>>>>>>>>tranports cache", transports != null);
 
   console.error("current transports in cache:", Object.keys(transports)); 
   try {
