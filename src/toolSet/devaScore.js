@@ -60,10 +60,15 @@ For sequences of numbers, use a left-to-right fold: call devaScore(first, second
         },
         handler: async ({ a, b }) => {
             console.error( a, b);
-            return `MagicScore ${ (a + b) * 42 }`;
+            let r = {score: (a + b) * 42};
+            console.error('deva score result', r);
+            return {
+                content: [{type: 'text', text: 'deva score result: ' + JSON.stringify(r)}],
+                structuredContent: r
+             };
+            }
         }
         
-    }
     return spec;
 }
 export default devaScore;

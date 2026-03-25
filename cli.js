@@ -236,10 +236,10 @@ sessionCache.set('transports', transports);
 // dummy sessionId for use in the tools  
 let useHapi = process.env.AUTHFLOW === 'code' ? true : false;
 console.error('[Note] appEnvBase is', JSON.stringify(appEnvBase, null,2));
+// creat a dummy sessionId for stdio since there is only one session and transport in that case, and tools need a sessionId to access the appEnvBase and contexts
+let sessionId = randomUUID();
+sessionCache.set(sessionId, appEnvBase);
 if (mcpType === 'stdio') {
-  let sessionId = randomUUID();
-  sessionCache.set('currentId', sessionId);
-  sessionCache.set(sessionId, appEnvBase);
   console.error('[Note] Setting up stdio transport with sessionId:', sessionId);
   console.error('[Note] Used in setting up tools and some persistence(not all).');
   await coreSSE(mcpServer);

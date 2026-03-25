@@ -95,10 +95,9 @@ app.get("/openapi.json", (req, res) => {
 
 // handle processing of information in header.
 function requireBearer(req, res, next) {
-
-
   // process any new header information
   console.error("=======================================================");
+  console.error("Processing headers for incoming request to /mcp endpoint");
   // Allow different VIYA server per sessionid(user)
   let headerCache = {};
   if (req.header("X-VIYA-SERVER") != null) {
@@ -128,6 +127,8 @@ function requireBearer(req, res, next) {
   }
   cache.set("headerCache", headerCache);
   next();
+  console.error("Finished processing headers for /mcp request");
+  console.log("=======================================================");
 }
 
 // process mcp endpoint requests
@@ -135,14 +136,18 @@ const handleRequest = async (req, res) => {
   let transport = null;
   let transports = cache.get("transports");
   console.error("=========================================================");
-  console.error(">>>>>>>>>>>>>>>>>>>>>>>>tranports cache", transports != null);
+  console.error("Processing POST /mcp request");
+  if (transports == null) {
+    console.error("[Error] ***** transports cache is null. This is an error");
+    transports = {};
+    cache.set("transports", transports);
+  }
 
   console.error("current transports in cache:", Object.keys(transports)); 
   try {
 
     let sessionId = req.headers["mcp-session-id"];
-    console.error("========================================================");
-    console.error("post /mcp called with session ID:", sessionId);
+    console.error("[Note]Incoming session ID:", sessionId);
     let body = (req.body == null) ? 'no body' : JSON.stringify(req.body);
     console.error('[Note] Payload is ', body);
     if (/*!sessionId &&*/ isInitializeRequest(req.body)) {
@@ -162,7 +167,7 @@ const handleRequest = async (req, res) => {
       });
       // Clean up transport when closed
       transport.onclose = () => {
-        if (transport.sessionId) {
+        if (transport.sessionId && transports[transport.sessionId]) {
           delete transports[transport.sessionId];
         }
       };
@@ -170,9 +175,11 @@ const handleRequest = async (req, res) => {
       await mcpServer.connect(transport);
 
       // Save transport data and app context for use in tools
-      console.error('connected mcpServer');
+      console.error('[Note] Connected to mcpServer');
       cache.set("transports", transports);
+      console.error("=======================================================");
       return await transport.handleRequest(req, res, req.body);
+    
       // cache transport
   
     } else if (sessionId != null) {
@@ -201,7 +208,7 @@ const handleRequest = async (req, res) => {
         cache.set(sessionId, _appContext);
       }
       console.error("[Note] Using existing transport for session ID:", sessionId);
-
+      console.error("==========================================================");
       await transport.handleRequest(req, res, req.body);
       return;
     }
@@ -226,24 +233,26 @@ const handleRequest = async (req, res) => {
 };
 const handleGetDelete = async (req, res) => {
   console.error("=========================================================");
-  console.error(req.method, "/mcp called");
+  console.error(`[Note] ${req.method} /mcp called`);
   const sessionId = req.headers["mcp-session-id"];
-  console.error("Headers:", sessionId);
-  console.error("Handling GET/DELETE for session ID:", sessionId);
+  console.error("[Note] SessionId:", sessionId);
 
   let transports = cache.get("transports");
   let transport = (sessionId == null) ? null : transports[sessionId];
-  console.error("Found transport:", transport != null);
+  console.error("[Note] Transport found:", transport != null);
   if (!sessionId || transport == null) {
     res.status(404).send(`[Error] In ${req.method}: Invalid or missing session ID ${sessionId}`);
     return;
   }
-  await transport.handleRequest(req, res);
+  if (req.method === "GET") { 
+     await transport.handleRequest(req, res);
+     return;
+  }
   if (req.method === "DELETE" && sessionId != null) {
-    console.error("Deleting transport and cache for session ID:", sessionId);
+    console.error("[Note] Deleting transport and cache for session ID:", sessionId);
     delete transports[sessionId];
     cache.del(sessionId);
-      res.status(201).send(`[Info] Deleted session ${sessionId}`);
+    res.status(201).send(`[Info] Deleted session ${sessionId}`);
   }
 }
 
@@ -253,7 +262,7 @@ app.get("/mcp", handleGetDelete);
 app.delete("/mcp", handleGetDelete);
 app.get("/StartUp", (_req, res) => {
   console.error("===================================================================")
-  console.error("Received request for status endpoint. Current app status:", appStatus);
+  console.error("Received request for Startup  endpoint. Current app status:", appStatus);
   console.error("===================================================================");
   if (appStatus === false) {
     return res.status(503).json({ status: "starting" });
