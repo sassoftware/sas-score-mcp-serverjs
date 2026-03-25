@@ -71,7 +71,7 @@ console.error(
 // and storage provided by cloud providers
 console.error(process.env.COMPUTECONTEXT);
 debugger;
-let sessionCache = new NodeCache({ stdTTL: 60*60, checkperiod: 2 * 60, useClones: false });
+let sessionCache = new NodeCache({ stdTTL: 24 *60*60, checkperiod: 2 * 60, useClones: false });
 
 //
 // Load environment variables from .env file if present
@@ -227,7 +227,9 @@ let appEnvTemplate = Object.assign({}, appEnvBase);
 
 sessionCache.set('appEnvTemplate', appEnvTemplate);
 
-let transports = {};
+let transports = {
+  "dummy": null
+};
 sessionCache.set('transports', transports);
 
 // set this for stdio transport use
