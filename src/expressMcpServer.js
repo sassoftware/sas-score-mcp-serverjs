@@ -206,6 +206,9 @@ const handleRequest = async (req, res) => {
         let headerCache = cache.get("headerCache");
         _appContext = Object.assign({}, appEnvTemplate, headerCache);
         cache.set(sessionId, _appContext);
+      } else {
+        _appContext = Object.assign(_appContext, cache.get("headerCache"));
+        cache.set(sessionId, _appContext);
       }
       console.error("[Note] Using existing transport for session ID:", sessionId);
       console.error("==========================================================");
