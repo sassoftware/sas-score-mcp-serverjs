@@ -115,6 +115,7 @@ function requireBearer(req, res, next) {
     console.error("[Debug] Bearer token starts with:", headerCache.bearerToken);
   } else {
     console.error("[Note] No bearer token supplied in Authorization header");
+    headerCache.bearerToken = null;
   }
 
   // faking out api key since Viya does not support 
@@ -207,7 +208,10 @@ const handleRequest = async (req, res) => {
         _appContext = Object.assign({}, appEnvTemplate, headerCache);
         cache.set(sessionId, _appContext);
       } else {
-        _appContext = Object.assign(_appContext, cache.get("headerCache"));
+        let headerCache = cache.get("headerCache");
+        console.error('compare tokens', headerCache.bearerToken === _appContext.bearerToken);
+        _appContext = Object.assign(_appContext, headerCache);
+        console.error('New bearerToken:', _appContext.bearerToken);
         cache.set(sessionId, _appContext);
       }
       console.error("[Note] Using existing transport for session ID:", sessionId);

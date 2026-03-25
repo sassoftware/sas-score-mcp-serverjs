@@ -16,10 +16,11 @@ async function igetLogonPayload(_appContext) {
   console.error('[Info] Getting logon payload...',_appContext.AUTHFLOW);
   // Use cached logonPayload if available
   // This will cause timeouts if the token expires
-  if (_appContext.contexts.logonPayload != null && _appContext.tokenRefresh !== true) {
+  /*if (_appContext.contexts.logonPayload != null && _appContext.tokenRefresh !== true) {
     console.error("[Note] Using cached logonPayload information");
     return _appContext.contexts.logonPayload;
   }
+    */
 
   if (_appContext.AUTHFLOW === 'code') {
     let oauthInfo = _appContext.contexts.oauthInfo;
@@ -52,6 +53,7 @@ async function igetLogonPayload(_appContext) {
       token: _appContext.bearerToken,
       tokenType: "Bearer",
     };
+    console.error("[Note] Bearer token in logonPayload ", _appContext.bearerToken);
     return logonPayload;
   }
 

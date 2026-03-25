@@ -77,6 +77,7 @@ async function createMcpServer(cache, _appContext) {
     let toolHandler = wrapf(cache, tool.handler);
 
     mcpServer.tool(toolName, tool.description, tool.schema, toolHandler);
+    
     toolNames.push(toolName);
   });
   console.error(`[Note] Registered ${toolSet.length} tools: ${toolNames}`);
