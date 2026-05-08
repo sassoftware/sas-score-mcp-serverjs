@@ -196,15 +196,15 @@ NODE_EXTRA_CA_CERTS=c:\Users\<your_username>\AppData\Local\mkcert\rootCA.pem
 ```
 
 ## License
-
-
-This project is licensed under the Apache License 2.0. See LICENSE.
+This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE).
 
 The container image published from this repository also includes third-party software, each component under its own license:
 
-The npm dependencies that ship with this project, along with their respective licenses, are listed in LICENSES.json.
-The container is built from the 25-alpine base image; license texts for its included software ship inside the image itself.  License information for each Alpine package is available at pkgs.alpinelinux.org.
-As with any container image, direct and indirect dependencies are governed by their own licenses. Users of the published container image are responsible for ensuring that their use complies with all applicable licenses.
+- The npm dependencies that ship with this project, along with their respective licenses, are listed in [LICENSES.json](LICENSES.json).
+- The container is built from the 25-alpine base image; license texts for its included software ship inside the image itself. License information for each Alpine package is available at [pkgs.alpinelinux.org](https://pkgs.alpinelinux.org/packages).
+
+As with any container image, direct and indirect dependencies are governed by their own licenses.
+Users of the published container image are responsible for ensuring that their use complies with all applicable licenses.
 
 ## Additional Resources
 
