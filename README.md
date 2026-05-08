@@ -1,6 +1,14 @@
 # sas-score-mcp-serverjs
 A Model Context Protocol (MCP) Server for Scoring with SAS Viya
 
+## Major changes in release 1.0.0
+
+- Authentication: Oauth flow is now supported. 
+   - Note that for Claude the mcp server must be remote. (ex: as a Azure Client App, Azure Container App etc...). 
+
+- Agent - can be deployed as an agent
+
+
 ## Overview
 This MCP server is designed for scoring with SAS Viya.
 
@@ -24,257 +32,114 @@ See this [quick reference](sas-mcp-tools-reference.md) for details.
 ### MCP tool developers 
 SAS developers who want to extend the capabilities of the server with their own tools. See the [guide](tool-developer-guide.md) for details.
 
+
+## Transport Protocol supported
+
+- http
+- stdio
+
+
 ## Configuration Variables
-Typically these are set either in the .env file or as environment variables (or both). This is full list of the configuration variables used the mcp server. You will need only a subset of these for the different [transport,authentication] schemes
+Typically these are set either in the .env file or as environment variables or as command line options(if using npx).  You will need only a subset of these for the different [transport,authentication] schemes
+
+### Required Options
+
+VIYA_SERVER=<url for Viya server>
+MCPTYPE=http|stdio
+MCPHOST=<url for the mcp server = http://localhost:8080 or some remote mcp server>
+
+>Recommended authflow is oauth - the most secure of all the options since all oauth flow occurs in the server and the actual token is never sent to the client. Bearer authflow is useful when the mcp server is remote with its own authentication process
+
+AUTHFLOW=oauth|oauthclient|bearer|sascli|token|password
+
+> Options for oauth. The clientid must have a redirect of http://localhost:8080/callback,https://localhost:8080/callback
+
+CLIENTID=<pkce clientid>
+
+
+> OauthClient Flow. Clientid with redirect appropriate for the client. Some examples are shown below. Note that the explicit port used by github copilot is not guaranteed. 
+
+- github copilot: http://127.0.0.1:33418/
+- claude: https://claude.ai/api/mcp/auth_callback,https://claude.ai/api/auth/callback
+
+> bearer - Use this when the remote mcp server sends the token in the header.
+
+
+> sascli - Use sas-viya cli to create the token information. It is stored in ~/.sas folder by default
 
 ```env
-
-# Indicate what type of transport(stdio|http)
-# http is useful for remote mcp servers
-# If running locally, recommend stdio
-
-MCPTYPE=<stdio|http>
-
-# Port for http transport(default is 8080)
-
-PORT=8080
-
-# If transport is http, optionally specify if the server
-# is using http or https
-
-HTTPS=TRUE|FALSE
-
-# Viya Authentication
-# The mcp server support different ways to authenticate(see section on Authentication)
-
-# * sascli * will look for tokens created with sas-viya cli
-# * token * a custom token
-# * password * userid/password 
-# * code * Oauth using authorization_code flow(pkce not supported in this release)
-
-AUTHFLOW=sascli|token|password|code
-
-SAS_CLI_CONFIG=your-home-directory
-SAS_CLI_PROFILE=your-sas-cli-profile
-
-# VIYA_SERVER URL for AUTHFLOW of token and password
-
-VIYA_SERVER= your Viya server url
-
-# if AUTHFLOW=token, specify the file with the token
-TOKENFILE=
-
-# if password flow or oauth flow specify these
-CLIENTID=
-CLIENTSECRET=
-
-# specify this if password AUTHFLOW
-PASSWORD=
-
-# When HTTPS is TRUE, specify the folder with SSL certificates for the mcp server
-# All files in that folder will be loaded and used in the TLS connection
-# If not set and HTTPS is true, the server will create a self-signed certificate
-
-SSLCERT=<some folder>
-
-
-# This certificate isused in the http calls to SAS Viya from MCP server
-# Used in restaf (ultimately axios and fetch)
-# All files in the folder will be loaded and used in the TLS connection
-# if not set, no ssl certificates will be used
-# See the script in scripts/getViyaca.sh to get this certificate from the SAS Viya server
-
-VIYACERT=<some folder>
-
-# SAS Contexts
-# These are for the CAS and SAS sessions
-# Defaults are:
-COMPUTECONTEXT=SAS Job Execution compute context
-CASSERVER=cas-shared-default
-
+PROFILE=<profile name used by sas-cli to store the tokens in ~/.sas> 
 ```
 
-## Authentication
-The server supports multiple ways to authenticate.
-
-### sas-viya cli
-
-> Note: To use this, set `AUTHFLOW=sascli`
-
-This MCP server CLI works similar to SAS supplied sas-viya CLI commands.
-Use the following command to create the necessary token and refresh token.
-
-`create a default auth Profile`.
-Issue this command and follow instruction: `sas-viya profile init`
-
-`create token`
-Issue this command and follow the instructions: `sas-viya auth loginCode`
-
-You need to do this once every 90 days or whenever the refresh token expires.
-
-At this point the tools can make authenticated calls to SAS Viya.
-
-### Password
-
-> Note: To use this, set `AUTHTYPE=password`
-
-Ths requires additional setup:
-
-- Create a clientid and client password for Oauth password flow.
-- Set these in the .env file or the mcp configuration file
-
-### Custom token
-
-> Note: To use this,  set `AUTHTYPE=token`
-
-Set the env TOKENFILE to a file containing the token.
-
-There seems to be a pattern of using a long-lived token.
-If this is your use case, set the TOKENFILE to a file containing this token.
-
-### Oauth - (experimental) Authentication handled by the mcp server
-
-In this approach, the mcp client does not participate in the Oauth authentication process. It is handled by the mcp server at startup. 
-
-> This is marked as experimental since the testing is not complete
-
-#### SAS viya setup.
-
-Create a Oauth client with the following properties
-
-```js
-{
-  auth flow: authorization_code|password
-  clientid: <your client id>
-  clientsecret: <some client secret - pkce not supported at this time>
-  redirect: https://localhost:8080/mcpserver  
-}
-
-#### Use an .env file as follows(sample values shown)
+### Other options
 
 ```env
-PORT=8080
-AUTHFLOW=code
-SSLCERT=c:\Users\kumar\.tls 
-VIYACERT=c:\Users\kumar\viyaCert
-CAS_SERVER=cas-shared-default
-COMPUTECONTEXT=SAS Job Execution compute context
-
-PORT=8080
-HTTPS=true
-MCPTYPE=http
-USELOGON=FALSE
-USETOKEN=TRUE
-APPNAME=sas-score-mcp-serverjs
-
-CLIENTID=mcpserver
-CLIENTSECRET=xxxxxx
-
-
-# SAMESITE=Lax,secure
-
+PORT=<default is 8080>
+HTTPS=FALSE
+CASSERVER=CAS server name (default: cas-shared-default)
+COMPUTECONTEXT=Compute session name or context (default: SAS Job Execution compute context) 
 ```
 
-#### Usage
+## Agent
 
-Start the server with this command:
+> The mcp server can be deployed as an agent in github copilot
+> The configuration files for claude can be installed locally. You have to move the files to the appriopiate place.
 
-```sh
-npx @sassoftware/sas-score-mcp-serverjs@latest
+Specify the following configuration values to enable agent mode
+
+```env
+AGENT=TRUE
+MCPCLIENT=github|claude
 ```
 
-Then visit this site on your browser:
+By default the agent information is installed in the user's home directory as .github or .claude} To install it where the mcp server is running do the following:
 
-```sh
-https://localhost:8080/mcpserver
+```env
+MCPCLIENT=.github|.claude
 ```
 
-You will be prompted to logon to SAS Viya.
-A dialog will be displayed if the logon was successful.
-Icon this window and proceed to your mcp client
 
-
-## Transport Methods
-This server supports both stdio and http transport methods.
-
-### stdio transport
-This is ideal for running mcp servers locally.
-Most clients will autostart the mcp server for you.
-
-The env variables can be specified in two ways:
-
-1. As part of the mcp configuration as shown below.
-2. Create a .env file and specify the env variables in that file.
-
-
-> Note: You must set the MCPTYPE in the environment variable.
-
-```json
-  "sasmcp": {
-    "type": "stdio",
-    "command": "npx",
-    "args": [
-      "-y",
-      "@sassoftware/sas-score-mcp-serverjs@latest",
-    ],
-    "env": {
-      "MCPTYPE": "stdio",
-      "AUTHFLOW": "sascli",  // sascli|password|token|none
-      "SAS_CLI_PROFILE": "cli profile name or Default",
-      "SAS_CLI_CONFIG":"where sas-cli stores authentication information",
-      "SSLCERT": "where you have stored the tls information(see below)",
-      "VIYACERT": "where you have stored the viya server ssl certificates for calls to Viya server",
-      "VIYA_SERVER": "viya server if AUTHFLOW=password|token|refresh",
-      "PASSWORD": "password if AUTHFLOW is password",
-      "USERNAME": "username if AUTHFLOW is password",
-      "CLIENTID": "client password if AUTHFLOW is password",
-      "CLIENTSECRET": "client id if AUTHFLOW is password",
-      "TOKENFILE": "file if AUTHFLOW is token",
-      "COMPUTECONTEXT": "SAS Job Execution compute context",
-      "CASSERVER": "cas-shared-default",
-    }
-  }
-
-```
-
-### http transport
-
-This is an alternate to using stdio.
-This requires the .env file, which has the necessary configuration values described earlier in this document.
-It also requires the MCP server to be running (see step 2).
-
-> Remote MCP servers: This is under development
-
-#### Step 1: Configure the mcp client for localhost
+## Configure the mcp client for localhost
 
 The mcp configuration is show below
 
 ```json
  "sasmcp": {
     "type": "http",
-    "url": "http(s)//localhost:8080/mcp"``
+    "url": "http://localhost:8080/mcp"``
+    "oauth: {
+      "type": "oauth2"
+    }
  }
 ```
 
-Here is a typical .env file for http transport. Note the value of MCPTYPE.
-
-```env
-
-PORT=8080
-HTTPS=FALSE
-MCPTYPE=http
-VIYA_SERVER=https://myviya.com
-AUTHFLOW=sascli
-SAS_CLI_PROFILE=00m
-SAS_CLI_CONFIG=c:\Users\<yourusername>
-SSLCERT=c:\Users\yourusername\.tls 
-VIYACERT=c:\Users\yourusername\viyaCert
-CAS_SERVER=cas-shared-default
-COMPUTECONTEXT=SAS Job Execution compute context
-
+For remote mcp servers:
+```json
+ "sasmcp": {
+    "type": "http",
+    "url": "your remote mcp server`,
+    "oauth": {
+      "type": 'oauth2
+    }
+ }
 ```
-Use https if the environment variables HTTPS=TRUE
 
+For transport protocol stdio. For claude drop the type
+
+```json
+"sas-mcp-server": {
+      "type: "stdio"
+      "command": "npx",
+      "args": [
+      "-y",
+      "@sassoftware/sas-score-mcp-serverjs@1.0.0"
+      -v "<your viya url>"
+      -m "stdio"
+      --profile "dtl"
+      -a "sascli"
+      ]
+    }
+```
 
 #### Step 2: Start the mcp server
 
@@ -286,7 +151,7 @@ But this step is necessary of using http transport.
 npx @sassoftware/sas-score-mcp-serverjs@latest
 ```
 
-Make sure that the .env file is in the current working directory
+Make sure that the .env file is in the current working directory or specify the options in the command line
 
 
 ## Notes
@@ -331,7 +196,15 @@ NODE_EXTRA_CA_CERTS=c:\Users\<your_username>\AppData\Local\mkcert\rootCA.pem
 ```
 
 ## License
-This project is licensed under the [Apache 2.0 license](LICENSE).
+
+
+This project is licensed under the Apache License 2.0. See LICENSE.
+
+The container image published from this repository also includes third-party software, each component under its own license:
+
+The npm dependencies that ship with this project, along with their respective licenses, are listed in LICENSES.json.
+The container is built from the 25-alpine base image; license texts for its included software ship inside the image itself.  License information for each Alpine package is available at pkgs.alpinelinux.org.
+As with any container image, direct and indirect dependencies are governed by their own licenses. Users of the published container image are responsible for ensuring that their use complies with all applicable licenses.
 
 ## Additional Resources
 

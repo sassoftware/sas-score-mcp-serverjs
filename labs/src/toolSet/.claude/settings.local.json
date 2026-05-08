@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__sasmcp__sas-score-deva-score",
+      "mcp__sasmcp__sas-score-find-model",
+      "mcp__sasmcp__sas-score-model-info",
+      "Bash(cp \"C:/dev/github/7-skill-integration/.claude/skills/sas-read-and-score/SKILL.md\" \"C:/dev/github/7-skill-integration/skills/sas-read-and-score/SKILL.md\")",
+      "Bash(cp \"C:/dev/github/7-skill-integration/.claude/skills/sas-read-strategy/SKILL.md\" \"C:/dev/github/7-skill-integration/skills/sas-read-strategy/SKILL.md\")",
+      "Bash(cp \"C:/dev/github/7-skill-integration/.claude/skills/sas-score-workflow/SKILL.md\" \"C:/dev/github/7-skill-integration/skills/sas-score-workflow/SKILL.md\")",
+      "WebSearch"
+    ]
+  }
+}

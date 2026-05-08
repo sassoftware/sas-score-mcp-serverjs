@@ -15,10 +15,7 @@ Score a scenario using a model deployed as a SCR container  in Azure or another 
 
 Inputs
 - url (string, required): SCR model identifier (URL)
-- scenario (string | object | array, optional): Input values to score. Accepts:
-  - a comma-separated key=value string (e.g. "x=1, y=2"),
-  - a JSON object with field names and values (recommended for typed inputs),
-  - an array of objects for batch scoring. If omitted, the tool will return the model's input variable definitions.
+- scenario (object, optional): Input values to score as a JSON object (e.g. {age:45, income:60000}). If omitted, defaults to {} and the tool will return the model's input variable definitions.
 
 What it returns
 - When scoring: the SCR endpoint response (predictions, probabilities, scores) merged with or alongside the supplied inputs.
@@ -30,37 +27,30 @@ Usage notes
 - Ensure network connectivity and any required credentials for the target SCR service.
 
 Examples
-- scrScore with url="loan" and scenario="age=45, income=60000"
-- scrScore with url="https://scr-host/models/loan" and scenario={age:45, income:60000}
+- scrScore with url="loan" and scenario={age:45, income:60000}
 `;
 
   let spec = {
     name: 'scr-score',
-    aliases: ['scrScore','scr score','scr_score'],
     description: description,
-    schema: {
+    inputSchema: z.object({
       url: z.string(),
-      scenario: z.any()
-    },
-    required: ['url'],
+      scenario: z.union([z.record(z.any()), z.string()]).optional()
+    }),
+    
     handler: async (params) => {
-      let {url, scenario,_appContext} = params;
-  
+      let {url, _appContext} = params;
+      let scenario = params.scenario;
+      if (typeof scenario === 'string') {
+        try { scenario = JSON.parse(scenario); } catch { scenario = {}; }
+      }
       if (url === null) {
         return { status: { statusCode: 2, msg: `SCR model ${url} was not specified` }, results: {} };
       }
 
-      // Normalize simple string scenarios like "x=1, y=2" into an object
-      if (typeof scenario === 'string' && scenario.includes('=')) {
-        scenario = scenario.split(',').reduce((acc, pair) => {
-          const [k, ...rest] = pair.split('=');
-          if (!k) return acc;
-          acc[k.trim()] = rest.join('=').trim();
-          return acc;
-        }, {});
-      }
+      const scenarioObj = (scenario != null && typeof scenario === 'object') ? scenario : {};
 
-      let r = await _scrScore({ url: url, scenario: scenario , _appContext: _appContext});
+      let r = await _scrScore({ url: url, scenario: scenarioObj, _appContext: _appContext});
       return r;
     }
   }

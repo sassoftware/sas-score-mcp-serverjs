@@ -9,67 +9,62 @@ import _jobSubmit from '../toolHelpers/_jobSubmit.js';
 function runJob(_appContext) {
  
   let description = `
-## run-job — execute a deployed SAS Viya job
+run-job — score with a deployed SAS Viya job.
 
-LLM Invocation Guidance (When to use)
-Use THIS tool when:
-- You want to run a registered Job Execution asset by name
-- You have simple parameter inputs to pass to the job
+USE when: score with job, run job, execute job
+DO NOT USE for: arbitrary SAS code (use run-sas-program), macros (use run-macro), list/find jobs
 
-Do NOT use this tool for:
-- Running arbitrary SAS code (use run-sas-program)
-- Invoking pre-defined SAS macros (use run-macro)
-- Listing or finding jobs (use list-jobs / find-job)
+PARAMETERS
+- name: string — job name (required)
+- scenario: object — input parameters as JSON (optional, defaults to {}). Example: {month:10, year:2025}
 
-Parameters
-- name (string, required): The job name to execute
-- scenario (string | object, optional): Input values to the job. Accepts:
-  - a comma-separated key=value string (e.g. "x=1, y=2")
-  - a JSON object with field names and values (recommended)
+ROUTING RULES
+- "run job xyz" → { name: "xyz" }
+- "run job xyz with param1=10, param2=val2" → { name: "xyz", scenario: {param1:10, param2:"val2"} }
 
-Response
-- Log output, listings, and tables depending on the job’s design. Table outputs will be displayed when present.
+EXAMPLES
+- "run job xyz" → { name: "xyz" }
+- "run job monthly_etl with month=10, year=2025" → { name: "monthly_etl", scenario: {month:10, year:2025} }
 
-Examples (→ mapped params)
-- "run job xyz param1=10,param2=val2" → { name: "xyz", scenario: { param1: 10, param2: "val2" } }
-- "run-job name=monthly_etl, scenario=month=10,year=2025" → { name: "monthly_etl", scenario: { month: 10, year: 2025 } }
+NEGATIVE EXAMPLES (do not route here)
+- "run SAS code" (use run-sas-program)
+- "run macro X" (use run-macro)
+- "list jobs" (use list-jobs)
+- "find job X" (use find-job)
+
+ERRORS
+Returns log output, listings, tables from job. Error if job not found.
 `;
 
   let spec = {
-    aliases: ['run job', 'run-job', 'runjob'],
     name: 'run-job',
     description: description,
-    schema: {
+    inputSchema: z.object({
       name: z.string(),
-      scenario: z.any().default(''),
-    },
-    required: ['name'],
+      scenario: z.any()
+    }),
     handler: async (params) => {
       let scenario = params.scenario;
+
+      // Convert the scenario string to an object
+      // Example: "x=1, y=2, z=3" to { x: 1, y: 2, z: 3 }
       let scenarioObj = {};
       let count = 0;
-      // 
-      if (scenario == null) {
-        scenarioObj = {};
-      } else if (typeof scenario === 'object') {
+      if (typeof scenario === 'object') {
         scenarioObj = scenario;
       } else if (Array.isArray(scenario)) {
         scenarioObj = scenario[0];
-      } else if (typeof scenario === 'string') {
-        if (scenario.trim() === '') {
-          scenarioObj = {};
-        } else {
-         // console.error('Incoming scenario', scenario);
-          scenarioObj = scenario.split(',').reduce((acc, pair) => {
-            let [key, value] = pair.split('=');
-            acc[key.trim()] = value;
-            count++;
-            return acc;
-          }, {});
-        }
+      } else {
+        //console.error('Incoming scenario', scenario);
+        scenarioObj = scenario.split(',').reduce((acc, pair) => {
+          let [key, value] = pair.split('=');
+          acc[key.trim()] = value;
+          count++;
+          return acc;
+        }, {});
       }
+      params.scenario = scenarioObj; 
       params.type = 'job';
-      params.scenario = scenarioObj;
       // Provide runtime context for auth and server settings
       let r = await _jobSubmit(params);
       return r;
@@ -79,3 +74,4 @@ Examples (→ mapped params)
 }
 
 export default runJob;
+

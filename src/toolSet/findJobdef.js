@@ -15,76 +15,44 @@ function findJobdef(_appContext) {
   "behavior": "Return only JSON matching response_schema when invoked by an LLM. If no matches, return { jobs: [] }"
 };
   let description = `
-  ## find-jobdef — locate a specific SAS Viya job
+find-jobdef — locate a specific SAS Viya job definition.
 
-  LLM Invocation Guidance
-  Use THIS tool when the user intent is to check if ONE job exists or retrieve its metadata:
-  - "find jobdef cars_job_v4"
-  - "does jobdef sales_summary exist"
-  - "is there a jobdef named churnScorer"
-  - "lookup jobdef forecast_monthly"
-  - "verify jobdef ETL_Daily" 
+USE when: find jobdef, does jobdef exist, is there a jobdef named, lookup jobdef, verify jobdef exists
+DO NOT USE for: list jobdefs (use sas-score-list-jobdefs), run jobdef (use sas-score-run-jobdef), find job/lib/table/model (use respective tools)
 
-  Do NOT use this tool when the user asks for:
-  - find job  (use find-job)
-  - find table (use find-table
-  - find model (use find-model)
-  - find lib (use find-library)
-  - Executing a job (use job)
-  - Running a job definition (use jobdef)
-  - Submitting arbitrary code (use program)
+PARAMETERS
+- name: string (required) — jobdef name to locate; if multiple supplied, use first
 
-  Purpose
-  Quickly determine whether a named jobdef asset is present in the Viya environment and return its entry (or an empty result if not found).
+ROUTING RULES
+- "find jobdef <name>" → { name: "<name>" }
+- "does jobdef <name> exist" → { name: "<name>" }
+- "is there a jobdef named <name>" → { name: "<name>" }
+- "lookup/verify jobdef <name>" → { name: "<name>" }
+- "find jobdef" with no name → ask "Which jobdef name would you like to find?"
+- "find all jobdefs / list jobdefs" → use list-jobdefs instead
+- "run jobdef <name>" → use run-jobdef instead
 
-  Parameters
-  - name (string, required): Exact jobdef name (case preserved). If multiple tokens/names supplied, take the first and ignore the rest; optionally ask for a single name.
+EXAMPLES
+- "find jobdef cars_job_v4" → { name: "cars_job_v4" }
+- "does jobdef ETL exist" → { name: "ETL" }
+- "is there a jobdef named metricsRefresh" → { name: "metricsRefresh" }
 
-  Behavior & Matching
-  - Attempt exact match first (backend determines sensitivity).
-  - Returns { jobdefs: [...] } where array length is 0 (not found) or 1+ (if backend returns multiple with the same display name).
-  - No fuzzy guesses—never fabricate a job.
-  - If no name provided: ask "Which jobdef name would you like to find?".
+NEGATIVE EXAMPLES (do not route here)
+- "list jobdefs" (use sas-score-list-jobdefs)
+- "run jobdef cars_job_v4" (use sas-score-run-jobdef)
+- "find job ETL" (use sas-score-find-job)
+- "find table cars" (use sas-score-find-table)
 
-  Response Contract
-  - Always: { jobdefs: Array<string|object> }
-  - On error: propagate structured server error (do not wrap in prose when invoked programmatically).
-
-  Disambiguation Rules
-  - Input only "find job" → ask for missing name.
-  - Input contains verbs like "run" or "execute" → use run-job or run-jobdef instead.
-  - Input requesting many (e.g., "find all jobs") → use list-jobs.
-
-  Examples (→ mapped params)
-  - "find jobdef cars_job_v4" → { name: "cars_job_v4" }
-  - "does jobdef ETL exist" → { name: "ETL" }
-  - "is there a jobdef named metricsRefresh" → { name: "metricsRefresh" }
-
-  Negative Examples (should NOT call find-jobdef)
-  - find lib (use find-library)
-  - find table (use find-table)
-  - find model (use find-model)
-  - "list job" (list-jobdefs)
-  - "run job cars_job_v4" (run-job)
-  - "execute jobdef cars_job_v4" (run-jobdef)
-
-  Clarifying Question Template
-  - Missing name: "Which jobdef name would you like to find?"
-  - Multiple names: "Please provide just one jobdef name (e.g. 'cars_job_v4')."
-
-  Notes
-  - For bulk existence checks loop over names and call find-jobdef per name.
-  - Combine with run-jobdef tool if user wants to execute after confirming existence.
+ERRORS
+Returns { jobdefs: [] } if not found; { jobdefs: [name, ...] } if found. Never hallucinate jobdef names.
   `;
 
   let spec = {
     name: 'find-jobdef',
-    aliases: ['findJobdef','find jobdef','find_jobdef'],
     description: description,
-    schema: {
-      name: z.string()
-    },
-    required: ['name'],
+    inputSchema: z.object({
+        name: z.string()
+    }),
     handler: async (params) => {
       let r = await _listJobdefs(params);
       return r;
@@ -93,3 +61,4 @@ function findJobdef(_appContext) {
   return spec;
 }
 export default findJobdef;
+

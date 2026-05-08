@@ -1,0 +1,22 @@
+PORT=8080
+# set this to false if you want this to run azure
+HTTPS=FALSE
+MCPTYPE=http
+AUTHFLOW=oauth
+# PROVIDER=FALSE
+APPHOST=0.0.0.0
+APPNAME=sas-score-mcp-serverjs
+SAMESITE=Lax,secure
+# VIYACERT=c:\\dev\\github\\sas-score-mcp-serverjs\\.viyatls
+VIYA_SERVER=
+USEHAPI=FALS
+CLIENTSECRET=
+PKCE=TRUE
+
+# SAS_CLI_PROFILE=dtl
+CAS_SERVER=cas-shared-default
+COMPUTECONTEXT=SAS Job Execution compute context
+
+# SSLCERT=c:\\Users\\kumar\\.tls
+MCPCLIENT=vscode
+MCPHOST=http://localhost:8080

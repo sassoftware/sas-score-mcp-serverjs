@@ -3,6 +3,6 @@
 #
 docker rmi sas-score-mcp-serverjs
 az acr login --name viyafseditcr
-docker build --no-cache -t sas-score-mcp-serverjs .
-docker tag sas-score-mcp-serverjs:latest viyafseditcr.azurecr.io/sas-score-mcp-serverjs:latest
-docker push viyafseditcr.azurecr.io/sas-score-mcp-serverjs:latest
+docker build --no-cache --platform linux/amd64 -t sas-score-mcp-serverjs .
+docker tag sas-score-mcp-serverjs:latest viyafseditcr.azurecr.io/sas-score-mcp-serverjs:dev
+docker push viyafseditcr.azurecr.io/sas-score-mcp-serverjs:dev

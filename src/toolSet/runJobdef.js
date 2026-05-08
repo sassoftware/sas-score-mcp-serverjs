@@ -6,74 +6,66 @@
 import { z } from 'zod';
 import _jobSubmit from '../toolHelpers/_jobSubmit.js';
 
-
 function runJobdef(_appContext) {
   // JSON object for LLM/tooling
  
   let description = `
-## run-jobdef — execute a SAS Viya job definition
+run-jobdef — score with a deployed SAS Viya job definition.
 
-LLM Invocation Guidance (When to use)
-Use THIS tool when:
-- You want to run a registered Job Definition by name
-- You can pass parameters to the job definition
+USE when: score with jobdef, run jobdef, execute jobdef
+DO NOT USE for: arbitrary SAS code (use run-sas-program), macros (use run-macro), list/find jobdefs
 
-Do NOT use this tool for:
-- Running arbitrary SAS code (use run-program tool)
-- Invoking SAS macros (use run-macro tool)
-- Listing or finding jobdefs (use list-jobdefs tool / find-jobdef tool)
+PARAMETERS
+- name: string — jobdef name (required)
+- scenario: object — input parameters as JSON (optional, defaults to {}). Example: {month:10, year:2025}
 
-Parameters
-- name (string, required): The job definition name to execute
-- scenario (string | object, optional): Input values. Accepts:
-  - a comma-separated key=value string (e.g. "x=1, y=2")
-  - a JSON object with field names and values (recommended)
+ROUTING RULES
+- "run jobdef xyz" → { name: "xyz" }
+- "run jobdef xyz with param1=10, param2=val2" → { name: "xyz", scenario: {param1:10, param2:"val2"} }
 
-Response
-- Log output, listings, and tables depending on the job definition's design. Table outputs will be displayed when present.
+EXAMPLES
+- "run jobdef xyz" → { name: "xyz" }
+- "run jobdef monthly_report with month=10, year=2025" → { name: "monthly_report", scenario: {month:10, year:2025} }
 
-Examples (→ mapped params)
-- "jobdef xyz param1=10,param2=val2" → { name: "xyz", scenario: { param1: 10, param2: "val2" } }
-- "run jobdef name=monthly_report, scenario=month=10,year=2025" → { name: "monthly_report", scenario: { month: 10, year: 2025 } }
-- "run-jobdef xyz param1=10,param2=val2" → { name: "xyz", scenario: { param1: 10, param2: "val2" } }
-- "jobdef name=monthly_report, scenario=month=10,year=2025" → { name: "monthly_report", scenario: { month: 10, year: 2025 } 
-`;
+NEGATIVE EXAMPLES (do not route here)
+- "run SAS code" (use run-sas-program)
+- "run macro X" (use run-macro)
+- "list jobdefs" (use list-jobdefs)
+- "find jobdef X" (use find-jobdef)
+
+ERRORS
+Returns log output, listings, tables from jobdef. Error if jobdef not found.
+  `;
  
   let spec = {
-      name: 'run-jobdef',
-      aliases: ['jobDef','jobdef','jobdef'],
+    name: 'run-jobdef',
     description: description,
-    schema: {
+    inputSchema: z.object({
       name: z.string(),
-      scenario: z.any().default(''),
-    },
-    required: ['name'],
+      scenario: z.any()
+    }),
     handler: async (params) => {
       let scenario = params.scenario;
+
+      // Convert the scenario string to an object
+      // Example: "x=1, y=2, z=3" to { x: 1, y: 2, z: 3 }
       let scenarioObj = {};
       let count = 0;
-      // 
-      if (scenario == null) {
-        scenarioObj = {};
-      } else if (typeof scenario === 'object') {
+      if (typeof scenario === 'object') {
         scenarioObj = scenario;
       } else if (Array.isArray(scenario)) {
         scenarioObj = scenario[0];
-      } else if (typeof scenario === 'string') {
-        if (scenario.trim() === '') {
-          scenarioObj = {};
-        } else {
-         // console.error('Incoming scenario', scenario);
-          scenarioObj = scenario.split(',').reduce((acc, pair) => {
-            let [key, value] = pair.split('=');
-            acc[key.trim()] = value;
-            count++;
-            return acc;
-          }, {});
-        }
+      } else {
+        //console.error('Incoming scenario', scenario);
+        scenarioObj = scenario.split(',').reduce((acc, pair) => {
+          let [key, value] = pair.split('=');
+          acc[key.trim()] = value;
+          count++;
+          return acc;
+        }, {});
       }
+      params.scenario = scenarioObj;      
       params.type = 'def';
-      params.scenario = scenarioObj;
       // Provide runtime context for auth and server settings
       let r = await _jobSubmit(params);
       return r;
@@ -83,3 +75,4 @@ Examples (→ mapped params)
 }
 
 export default runJobdef;
+

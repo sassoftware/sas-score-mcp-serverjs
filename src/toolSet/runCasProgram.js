@@ -8,74 +8,53 @@ import _submitCode from '../toolHelpers/_submitCode.js';
 
 function runCasProgram(_appContext) {
   let description = `
-## run-cas-program
+run-cas-program — execute a CAS program on SAS Viya server.
 
-Execute a cas program on a SAS Viya server
+USE when: run cas program, execute cas, submit cas, cas action
+DO NOT USE for: macros (use run-macro), sas code (use run-sas-program), jobs (use run-job), jobdefs (use run-jobdef)
 
-Required Parameters
-- src(string, required): The cas program to execute. 
+PARAMETERS
+- src: string (required) — CAS program to execute verbatim
+- scenario: string or object (optional) — input parameters
+- folder: string — server folder path for .sas files
+- output: string — table name to return in response
+- limit: number (default: 100) — max rows to return
 
-Optional Parameters:
+ROUTING RULES
+- run cas program action echo → { src: action echo }
+- execute cas action simple.summary → { src: action simple.summary }
 
-- scenario (string | object ,optional): Input values to program/ Accepts:
-  - a comma-separated key=value string (e.g. "x=1, y=2"),
-  - a JSON object with field names and values (recommended for typed inputs),
+EXAMPLES
+- run cas program action echo → { src: action echo }
+- cas program sample folder=/Public/models → { src: sample, folder: /Public/models }
 
-LLM Invocation Guidance
-Use THIS tool when the user wants to run a Cas program on the server:
-- "run cas program 'action echo / code='aaaa'"
-- "cas program 'action echo / code='aaaa'"
-- 'submit cas "action echo / code='aaaa'"'
+NEGATIVE EXAMPLES (do not route here)
+- run sas macro (use run-macro)
+- submit sas code (use run-sas-program)
+- run job X (use run-job)
 
+NOTES
+Sends src verbatim without validation. For SAS macros use run-macro. For arbitrary SAS code use run-sas-program.
 
-Do NOT use this tool when the user wants:
-- run macro -> use run-macro
-- submit sas -> use run-sas-program
-- run job -> use run-job
-- run sas  -> use run-sas-program
-- run jobdef -> use run-jobdef
-- run job -> use run-job
-- list jobs -> use list-jobs
-- list jobdefs -> use list-jobdefs
-- find job -> use find-job
-- find jobdef -> use find-jobdef
-- find model -> use find-model
-
-
-Behavior & usage notes
-- This tool sends the supplied \`src\` verbatim to the SAS execution helper. It does not modify or validate the SAS code.
-- For invoking pre-defined SAS macros, prefer the \`runMacro\` helper which converts simple parameter formats into \`%let\` statements and invokes the macro cleanly.
-- Be cautious when executing arbitrary code — validate or sanitize inputs in untrusted environments.
-
-Response
-- If output is specified and the specified table exists in the response, display the data as a markdown table. 
-Examples
-- run program "data a; x=1; run;"  - this is the simplest usage  -- {src= "data a; x=1; run;", folder=" ", output=" ", limit=100}
-- program "data work.a; x=1; run;" output=a limit=50  -- {src= "data work.a; x=1; run;", folder=" ", output="a", limit=50}
-
-- run program sample folder=/Public/models output=A limit=50 -- {src= "sample", folder="/Public/models", output="A", limit=50}
-- run program sample folder=/Public/models scenario="name='John', age=45" output=a limit=50 -- {src= "sample", folder="/Public/models", scenario: {name: "John", age: 45}, output="a", limit=50}
-- run program sample folder=/Public/models with scenario name=John,age=45 output=a limit=50  -- {src= "sample.sas", folder="/Public/models", scenario: {name: "John", age: 45}, output="a", limit=50}
-  - this should be the same as the previous example and is just a different syntax. The result should be
-    {program: "sample", folder: "/Public/models", scenario: {name: "John", age: 45}, output: "a", limit: 50}
+RESPONSE
+Log output and CAS results. If output table specified, returned as markdown table.
 `;
 
   let spec = {
-    name: 'run-sas-program',
-    aliases: ['Program','run program'],
+    name: 'run-cas-program',
     description: description,
-    schema: {
+    inputSchema:z.object({
       src: z.string(),
-      scenario: z.any().default(''),
-      output: z.string().default(''),
-      folder: z.string().default(''),
-      limit: z.number().default(100)
-    },
+      scenario: z.any(),
+      output: z.string().optional(),
+      folder: z.string().optional(),
+      limit: z.number().optional()
+    }),
+    
   // NOTE: Previously 'required' incorrectly listed 'program' which does not
   // exist in the schema. This prevented execution in some orchestrators that
   // enforce required parameter presence, causing only descriptions to appear.
   // Corrected to 'src'.
-  required: ['src'],
     handler: async (params) => {
       let {src, folder, scenario, _appContext} = params;
       // figure out src
@@ -91,15 +70,26 @@ Examples
         `;
       }
       // figure out macros
-  
-      if (typeof scenario === 'string' && scenario.includes('=')) {
-        scenario = scenario.split(',').reduce((acc, pair) => {
-          const [k, ...rest] = pair.split('=');
-          if (!k) return acc;
-          acc[k.trim()] = rest.join('=').trim();
+
+      // Convert the scenario string to an object
+      // Example: "x=1, y=2, z=3" to { x: 1, y: 2, z: 3 }
+      let scenarioObj = {};
+      let count = 0;
+      if (typeof scenario === 'object') {
+        scenarioObj = scenario;
+      } else if (Array.isArray(scenario)) {
+        scenarioObj = scenario[0];
+      } else {
+        //console.error('Incoming scenario', scenario);
+        scenarioObj = scenario.split(',').reduce((acc, pair) => {
+          let [key, value] = pair.split('=');
+          acc[key.trim()] = value;
+          count++;
           return acc;
         }, {});
       }
+      params.scenario = scenarioObj;
+  
       let iparms = {
         args: scenario,
         output: params.output,
@@ -116,3 +106,4 @@ Examples
 }
 
 export default runCasProgram;
+

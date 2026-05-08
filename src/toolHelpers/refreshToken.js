@@ -9,10 +9,11 @@ async function refreshToken(_appContext, params) {
   let url = `${host}/SASLogon/oauth/token`;
 
   let aconnect = {
-    ca: _appContext.contexts.viyaCert.ca,     // trust this CA
     rejectUnauthorized: false  // or false, if you really want to bypass checks
   }
-
+  if (_appContext.contexts.viyaCert != null && _appContext.contexts.viyaCert.ca != null) {
+    aconnect.ca = _appContext.contexts.viyaCert.ca;
+  }
   const agent = new Agent(aconnect);
 
   console.error('[Info] Refreshing token...', token);

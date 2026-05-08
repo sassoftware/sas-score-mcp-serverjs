@@ -4,5 +4,6 @@ node_modules
 **/tls.key
 **/ca.pem
 mcpConfigs
+worktree
 
 

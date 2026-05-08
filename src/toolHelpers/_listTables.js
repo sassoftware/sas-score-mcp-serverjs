@@ -44,7 +44,7 @@ async function _listTables(params) {
       structuredContent: response};
   } catch (err) {
     console.error(JSON.stringify(err));
-    return {isError: true, content: [{ type: 'text', text: JSON.stringify(err) }] }
+    return {isError: true, content: [{ type: 'text', text: (typeof err === 'string') ? err : JSON.stringify(err) }] }
   }
 
 };
