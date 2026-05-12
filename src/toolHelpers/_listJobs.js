@@ -44,6 +44,7 @@ async function _listJobs(params) {
     });
 
     let response  = {jobs: Object.keys(names)};
+    console.error('names', JSON.stringify(response, null, 2));
 
     if (name != null) {
       response = { name: name, parameters: names[name].parameters };

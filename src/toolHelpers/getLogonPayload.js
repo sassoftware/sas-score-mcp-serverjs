@@ -47,6 +47,7 @@ async function igetLogonPayload(_appContext) {
       return null;
     }
     console.error("[Note] Using user supplied bearer token ");
+    console.error("[Note] Ensure this token is valid and not expired: ", _appContext.bearerToken.substring(0,20) + "...");
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
       authType: "server",
@@ -58,7 +59,7 @@ async function igetLogonPayload(_appContext) {
 
   // Use user supplied refresh token-
   if (_appContext.AUTHFLOW === "refresh") {
-    console.error("[Note] Using user supplied refresh token", _appContext.REFRESH_TOKEN); 
+    console.error("[Note] Using user supplied refresh token", _appContext.REFRESH_TOKEN.substring(0,20) + "..."); 
     let token = await refreshToken(_appContext,{token: _appContext.REFRESH_TOKEN, host: _appContext.VIYA_SERVER});
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
@@ -72,6 +73,7 @@ async function igetLogonPayload(_appContext) {
   
   if (_appContext.AUTHFLOW === "token") {
     console.error("[Note] Using token supplied by user");
+    console.error("[Note] Ensure this token is valid and not expired: ", _appContext.TOKEN.substring(0,20) + "...");
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
       authType: "server",
