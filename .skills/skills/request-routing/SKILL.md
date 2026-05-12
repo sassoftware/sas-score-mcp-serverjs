@@ -14,7 +14,7 @@ Before executing any action, verify that the target resources exist.
 
 | Resource Type | Find Tool | Notes |
 |---|---|---|
-| Library | `sas-score-find-library` | Specify server (cas or sas). For tables, determine server here. |
+| Library | `sas-score-find-library` | For tables, if server is not specified (cas or sas), determine server here. Other resource types do not require server specification. |
 | Table | `sas-score-find-table` | Requires library name and server. |
 | MAS Model | `sas-score-find-model` | No server selection. |
 | Job | `sas-score-find-job` | No server selection. |
@@ -50,15 +50,23 @@ Combine verification and execution results:
 
 ---
 
+
 ## Special Case: Read + Score (Combined Workflow)
 
-When the user requests scoring records from a table:
+When the user requests scoring records from a table, follow these sub-workflows in order:
 
-1. **Verify**: Find the table (determine server), find the model.
-2. **Read**: Fetch rows from the table using `sas-score-read-table` or `sas-score-sas-query`.
-3. **Map**: Check if table columns match model input variables. Ask user for mapping if needed.
-4. **Score**: Score each row using `sas-score-mas-score` (for MAS) or `sas-score-scr-score` (for SCR).
-5. **Merge**: Combine predictions with original rows.
+1. **Verify**
+  - Find the table (determine server as described above)
+  - Find the model
+2. **Read**
+  - Fetch rows from the table using `sas-score-read-table` or `sas-score-sas-query`
+3. **Map**
+  - Check if table columns match model input variables
+  - If not, ask user for mapping
+4. **Score**
+  - Score each row using `sas-score-mas-score` (for MAS) or `sas-score-scr-score` (for SCR)
+5. **Merge**
+  - Combine predictions with original rows
 
 ---
 

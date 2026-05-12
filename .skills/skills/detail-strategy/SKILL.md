@@ -2,41 +2,51 @@
 name: detail-strategy
 description: >
   Unified detail/information retrieval strategy. Handles MAS models, SCR models, and tables.
-  Always verify resources exist using find-resources skill before retrieving details.
+  Always verify resources exist using find-resources skill before retrieving details, except for SCR models (which do not require pre-verification).
 ---
 
 # Detail Strategy
 
+
 Use this strategy when the user requests information about a resource: model details, schema, metadata, inputs/outputs, or any descriptive information.
 
-## Prerequisites
+If the resource type is ambiguous or cannot be determined, ask the user for clarification.
+If the resource type is not MAS, SCR, or table, respond with: "Unsupported resource type. Please specify MAS model, SCR model, or table."
 
-1. Verify the resource exists using find-resources skill
-2. Determine resource type (MAS model, SCR model, or table)
+
+## Simplified Steps
+
+1. Determine resource type (MAS model, SCR model, or table)
+2. If MAS model or table, verify resource exists using find-resources skill
+  - If SCR model, skip verification and proceed to retrieval
+3. Retrieve details using the appropriate tool
 
 ---
+
 
 ## Step 1: Identify Resource Type
 
 Classify the resource based on naming convention or context:
 
-```
-model X.mas                  → MAS model (default for "model X")
-model X.scr                  → SCR model
-table X in library Y         → CAS or SAS table
-```
+| Pattern                        | Resource Type |
+|--------------------------------|--------------|
+| model X.mas or "model X"       | MAS model    |
+| model X.scr                    | SCR model    |
+| table X in library Y           | Table        |
+
+If resource type cannot be determined, ask the user for clarification.
 
 ---
 
-## Step 2: Verify Resource Exists
+## Step 2: Verify Resource Exists (if required)
 
-Use find-resources skill to confirm resource exists before retrieval:
+| Resource Type | Verification Required? | How to Verify |
+|---------------|-----------------------|---------------|
+| MAS model     | Yes                   | find-model    |
+| SCR model     | No                    | —             |
+| Table         | Yes                   | find-table    |
 
-### Find MAS Model
-```
-find-resources skill → find-model
-Tool: sas-score-find-model({ name: "<model>" })
-```
+If resource type is not supported, respond with: "Unsupported resource type. Please specify MAS model, SCR model, or table."
 
 ### Find SCR Model
 ```

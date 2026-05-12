@@ -2,14 +2,14 @@
 name: find-resources
 description: >
   Unified resource verification skill. Use the appropriate find tool before any execution.
-  Determines server for tables (CAS vs SAS). Never use list tools for finding; list tools are for discovery only.
+  Determines server for tables (CAS vs SAS). Never use list tools for verifying or finding specific resources; list tools are for discovery and exploration only.
 ---
 
 # Unified Resource Finding Strategy
 
 Use this strategy to verify that a resource exists before executing any action.
 
-Do **not** use list tools for finding specific resources. List tools are for listing available resources  and exploration, not verification.
+Do **not** use list tools for verifying or finding specific resources. List tools are for discovery and exploration only, not for confirming the existence of a specific resource.
 
 ## Resource Types and Find Tools
 
@@ -19,12 +19,13 @@ Do **not** use list tools for finding specific resources. List tools are for lis
 
 **Tool**: `sas-score-find-library`
 
+
 **Logic**:
-- If server is specified: Use that server directly
-- If server is not specified:
-  1. Try CAS first: `sas-score-find-library({ name: "<lib>", server: "cas" })`
-  2. If not found, uppercase Lib and try SAS with uppercase name: `sas-score-find-library({ name: "<LIB>", server: "sas" })`
-  3. Report which server (or not found in either)
+1. If server is specified: Use that server directly.
+2. If server is not specified:
+  - Step 1: Try CAS first: `sas-score-find-library({ name: "<lib>", server: "cas" })`
+  - Step 2: If not found in CAS, try SAS with the library name uppercased: `sas-score-find-library({ name: "<LIB>", server: "sas" })`
+  - Step 3: Report which server (or not found in either)
 
 **Known default libraries**:
 - CAS: Casuser, Formats, ModelPerformanceData, Models, Public, Samples, SystemData
@@ -43,22 +44,22 @@ Do **not** use list tools for finding specific resources. List tools are for lis
 - Table name
 - Server (determined from library context or user specification)
 
-**Logic**:
-- If you already know that the table exists in a specific server return that result directly,
-otherwise follow these steps:
-  1. If library is a known CAS library (Casuser, Public, Samples, etc.), use cas as server 
-  2. If library is a known SAS library (SASHELP, WORK, SASUUSER, etc.), use sas as server
-  3. If the server has been identified in an earlier step for this library, use that as the server
 
-  4. If server is known at this point:
-    1. if server is sas, uppercase library name and try: `sas-score-find-table({ lib: "<LIB>", name: "<table>", server: "sas" })`
-    2.find the table: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "<server" });`
-  5. If server is not known
-      1. Try CAS first: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "cas" })`
-      2. If not found, uppercase Lib and try SAS: `sas-score-find-table({ lib: "<LIBRARY>", name: "<table>", server: "sas" })`
-  6. If the table was found report success and server. 
-  7. If not found, report failure.
-  
+**Logic**:
+1. If you already know that the table exists in a specific server, return that result directly.
+2. Otherwise, follow these steps:
+  - Step 1: If library is a known CAS library (Casuser, Public, Samples, etc.), use CAS as server.
+  - Step 2: If library is a known SAS library (SASHELP, WORK, SASUSER, etc.), use SAS as server.
+  - Step 3: If the server has been identified in an earlier step for this library, use that as the server.
+3. If server is known at this point:
+  - If server is SAS, uppercase the library name and try: `sas-score-find-table({ lib: "<LIB>", name: "<table>", server: "sas" })`
+  - Otherwise, use the provided server: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "<server>" })`
+4. If server is not known:
+  - Step 1: Try CAS first: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "cas" })`
+  - Step 2: If not found in CAS, try SAS with the library name uppercased: `sas-score-find-table({ lib: "<LIBRARY>", name: "<table>", server: "sas" })`
+5. If the table was found, report success and server.
+6. If not found, report failure.
+
 **Output**: Table server location (CAS or SAS)
 
 ---
@@ -100,7 +101,9 @@ otherwise follow these steps:
 
 **Trigger**: "find scr model X", "does scr model X exist"
 
+
 **Action**: Ask user for the SCR URL/endpoint. SCR models do not have a pre-verification tool.
+If the SCR URL/endpoint is invalid or missing, prompt the user to provide a valid URL.
 
 
 ---
