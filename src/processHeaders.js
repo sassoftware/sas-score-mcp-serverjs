@@ -30,7 +30,6 @@ function processHeaders(req, res, next, cache, appContext) {
   const hdr = req.header("Authorization");
   //for now, ignore Authorization if authflow is not bearer
   let token = (hdr != null) ? hdr.slice(7) : null;
-  //console.error("[Note] Authorization token", token);
   debugger;
   console.error('[Note} AUTHFLOW=',   appContext.AUTHFLOW);
   console.error("[Note] External authorization :", appContext.AUTHEXTERNAL);
@@ -42,7 +41,6 @@ function processHeaders(req, res, next, cache, appContext) {
       console.error("[Note] Expecting external authorization"); 
       if (token != null) {
         console.error("[Note] Using user supplied token for authorization");
-        console.error("[Note] Incoming token:", token);
         headerCache.bearerToken = token;
       } else {
         console.error("[Note] No Authorization token provided in header for external authorization.");

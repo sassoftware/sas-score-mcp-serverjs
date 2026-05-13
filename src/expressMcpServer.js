@@ -9,6 +9,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import selfsigned from "selfsigned";
 import openAPIJson from "./openAPIJson.js";
+import createMcpServer from "./createMcpServer.js";
 
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { randomUUID } from "node:crypto";
@@ -21,7 +22,7 @@ import processHeaders from "./processHeaders.js";
 
 // setup express server
 
-async function expressMcpServer(mcpServer, cache, baseAppEnvContext) {
+async function expressMcpServer(_mcpServer, cache, baseAppEnvContext) {
   // setup for change to persistence session
   cache.del("headerCache");
   const app = express();
@@ -50,23 +51,8 @@ async function expressMcpServer(mcpServer, cache, baseAppEnvContext) {
   const pkceStore = new Map(); // ourState -> { codeVerifier, clientRedirectUri, clientState }
   const codeStore = new Map(); // ourCode   -> { access_token, refresh_token, expires_in }
 
-  // Create ONE shared transport for all sessions/users
-  const sharedTransport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: () => randomUUID(),
-    enableJsonResponse: true,
-    enableDnsRebindingProtection: true,
-    onsessioninitialized: (sessionId) => {
-      console.error("[Note] Session initialized with ID:", sessionId);
-    },
-  });
-
-  // Connect mcpServer to the shared transport ONCE
-  await mcpServer.connect(sharedTransport);
-  console.error("[Note] MCP Server connected to shared transport");
-
-  // Store the shared transport for use in request handlers
-  cache.set("sharedTransport", sharedTransport);
-  const transports = new Map(); // Track active session transports for cleanup
+  // Per-session transports — each initialize creates its own transport
+  const transports = new Map(); // sessionId -> transport
   cache.set("transports", transports);
 
   app.get('/.well-known/oauth-protected-resource', (req, res) => {
@@ -171,27 +157,53 @@ async function expressMcpServer(mcpServer, cache, baseAppEnvContext) {
 
   // process mcp endpoint requests
   const handleRequest = async (req, res) => {
-    let transport = cache.get("sharedTransport");
     console.error("=========================================================");
     console.error("Processing POST /mcp request");
-
-    console.error("current active sessions:", cache.get("transports").size);
+    console.error("current active sessions:", transports.size);
     try {
 
       let sessionId = req.headers["mcp-session-id"];
       console.error("[Note]Incoming session ID:", sessionId);
       let body = (req.body == null) ? 'no body' : JSON.stringify(req.body);
       console.error('[Note] Payload is ', body);
-      if (!sessionId && isInitializeRequest(req.body)) {
-        // Use the shared transport for new initialization request
-        console.error("[Note] Initializing new session with shared transport...");
+     
+      if (isInitializeRequest(req.body)) {
+        console.error("[Note]>>>>>>>>>>>>>>>>>>>>>>>>>  Creating  new MCP server");
+        let mcpServer = await createMcpServer(cache, baseAppEnvContext);
+        // New session — create a dedicated transport
+        console.error("[Note] Initializing new session with fresh transport...");
+        const isInitRequest = req.body?.method === 'initialize';
+
+        const transport = new StreamableHTTPServerTransport({
+          sessionIdGenerator: () => randomUUID(),
+          enableJsonResponse: true,
+          onsessioninitialized: (newSessionId) => {
+            console.error("[Note] Session initialized with ID:", newSessionId);
+            transports.set(newSessionId, transport);
+            cache.set("transports", transports);
+            console.error("[Note] Total active sessions:", Object.keys(transports));
+          },
+        });
+        transport.onclose = () => {
+          if (transport.sessionId) {
+            console.error("[Note] Session closed, removing transport:", transport.sessionId);
+            transports.delete(transport.sessionId);
+            cache.del(transport.sessionId);
+          }
+        };
+        await mcpServer.connect(transport);
         console.error("=======================================================");
         return await transport.handleRequest(req, res, req.body);
 
       } else if (sessionId != null) {
+        const transport = transports.get(sessionId);
+        if (!transport) {
+          console.error("[Note] Unknown session ID:", sessionId);
+          return res.status(404).json({ jsonrpc: "2.0", error: { code: -32000, message: "Session not found. Please re-initialize." }, id: null });
+        }
         console.error('[Note] Incoming session ID:', sessionId);
-        console.error("[Note] Using shared transport for session ID:", sessionId);
-        
+        console.error("[Note] Using transport for session ID:", sessionId);
+
         // post the current session - used to pass _appContext to tools
         cache.set("currentId", sessionId);
 
@@ -239,21 +251,28 @@ async function expressMcpServer(mcpServer, cache, baseAppEnvContext) {
     const sessionId = req.headers["mcp-session-id"];
     console.error("[Note] SessionId:", sessionId);
 
-    let transport = cache.get("sharedTransport");
-    console.error("[Note] Using shared transport");
-    /*
     if (!sessionId) {
-      res.status(404).send(`[Error] In ${req.method}: Invalid or missing session ID ${sessionId}`);
-      return;
+      console.error("[Note] No session ID on /DELETE — rejecting");
+      return res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request: Mcp-Session-Id header is required" }, id: null });
     }
-      */
+
+    const transport = transports.get(sessionId);
+    if (!transport) {
+      console.error("[Note] Unknown session ID:", sessionId);
+      return res.status(404).json({ jsonrpc: "2.0", error: { code: -32000, message: "Session not found. Please re-initialize." }, id: null });
+    }
+
     if (req.method === "GET") {
+      console.error("[Note] calling transport.handleRequest for GET /mcp");
       await transport.handleRequest(req, res);
       return;
     }
-    if (req.method === "DELETE" && sessionId != null) {
-      console.error("[Note] Deleting cache for session ID:", sessionId);
+    if (req.method === "DELETE") {
+      console.error("[Note] Deleting transport and cache for session ID:", sessionId);
+      transports.delete(sessionId);
       cache.del(sessionId);
+      console.error("[Note] Deleted session ID:", sessionId);
+      console.error("[Note] Total active sessions:", Object.keys(transports));
       res.status(201).send(`[Info] Deleted session ${sessionId}`);
     }
   }

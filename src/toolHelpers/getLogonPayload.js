@@ -47,7 +47,6 @@ async function igetLogonPayload(_appContext) {
       return null;
     }
     console.error("[Note] Using user supplied bearer token ");
-    console.error("[Note] Ensure this token is valid and not expired: ", _appContext.bearerToken.substring(0,20) + "...");
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
       authType: "server",
@@ -72,8 +71,7 @@ async function igetLogonPayload(_appContext) {
   }
   
   if (_appContext.AUTHFLOW === "token") {
-    console.error("[Note] Using token supplied by user");
-    console.error("[Note] Ensure this token is valid and not expired: ", _appContext.TOKEN.substring(0,20) + "...");
+    console.error("[Note] Using token supplied by user");  
     let logonPayload = {
       host: _appContext.VIYA_SERVER,
       authType: "server",
