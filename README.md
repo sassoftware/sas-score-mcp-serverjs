@@ -1,5 +1,6 @@
 # sas-score-mcp-serverjs
-A Model Context Protocol (MCP) Server for Scoring with SAS Viya
+A Model Context Protocol (MCP) Server for Scoring with SAS Viya. 
+See [wiki](https://github.com/sassoftware/sas-score-mcp-serverjs/wiki) for the capabilities of the server.
 
 ## Major changes in release 1.0.0
 
@@ -21,6 +22,17 @@ Some examples are:
   - SAS Studio Flow
   - job Definitions
   - jobs using SAS Studio or other interfaces
+
+## Capabilities
+
+The tools can be grouped into these categories
+
+- Scoring with MAS models, job, jobdef and scr
+- Viewing and querying tables
+
+Supporting tools can be grouped into these categories
+- Listing of  MAS models, job, jobdef , tables
+- Describing MAS models, job, jobdef, scr and tables
 
 ## Target Audience
 This MCP server was developed for two types of SAS users.
@@ -45,7 +57,9 @@ Typically these are set either in the .env file or as environment variables or a
 ### Required Options
 
 VIYA_SERVER=<url for Viya server>
+
 MCPTYPE=http|stdio
+
 MCPHOST=<url for the mcp server = http://localhost:8080 or some remote mcp server>
 
 >Recommended authflow is oauth - the most secure of all the options since all oauth flow occurs in the server and the actual token is never sent to the client. Bearer authflow is useful when the mcp server is remote with its own authentication process
@@ -80,28 +94,23 @@ CASSERVER=CAS server name (default: cas-shared-default)
 COMPUTECONTEXT=Compute session name or context (default: SAS Job Execution compute context) 
 ```
 
-## Agent
+## Agent and skills
 
 > The mcp server can be deployed as an agent in github copilot
 > The configuration files for claude can be installed locally. You have to move the files to the appriopiate place.
 
-Specify the following configuration values to enable agent mode
+To download the skills to your environment issue this command:
 
-```env
-AGENT=TRUE
-MCPCLIENT=github|claude
+```sh
+npx @sassoftware/sas-score-mcp-serverjs --skills github|claude
 ```
-
-By default the agent information is installed in the user's home directory as .github or .claude} To install it where the mcp server is running do the following:
-
-```env
-MCPCLIENT=.github|.claude
-```
+The skills and related files will be written to .github or .claude 
 
 
 ## Configure the mcp client for localhost
 
-The mcp configuration is show below
+The mcp configuration for oauth flow. For remote mcp, change the url to the
+appropriate url.
 
 ```json
  "sasmcp": {
@@ -113,18 +122,16 @@ The mcp configuration is show below
  }
 ```
 
-For remote mcp servers:
+For bearer authflow. 
 ```json
  "sasmcp": {
     "type": "http",
     "url": "your remote mcp server`,
-    "oauth": {
-      "type": 'oauth2
-    }
+    "headers" {
+      "Authorization": "bearer <tokenstring>"
+      }
  }
 ```
-
-For transport protocol stdio. For claude drop the type
 
 ```json
 "sas-mcp-server": {
@@ -144,12 +151,20 @@ For transport protocol stdio. For claude drop the type
 #### Step 2: Start the mcp server
 
 If using stdio transport, most of the mcp clients will start the server automatically.
-But this step is necessary of using http transport.
+But for http transport, the mcp server must be started. 
 
-
+If running locally
 ```sh
 npx @sassoftware/sas-score-mcp-serverjs@latest
 ```
+
+The mcp is also available as a docker image. Add or remove the env variables as needed.
+
+```sh
+docker run -p 8080:8080 --name sasscore -e VIYA_SERVER=<yourviayserver> -e AUTHFLOW=oauth ghcr.io/sassoftware/sas-score-mcp-serverjs:latest
+```
+
+If you want to run it in docker then use docker run:
 
 Make sure that the .env file is in the current working directory or specify the options in the command line
 

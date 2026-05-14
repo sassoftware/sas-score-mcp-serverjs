@@ -23,7 +23,8 @@ import setupSkills from './src/setupSkills.js';
 import { parseArgs } from "node:util";
 
 import NodeCache from 'node-cache';
-import { be } from 'zod/locales';
+//import { be } from 'zod/locales';
+//import { auth } from '@modelcontextprotocol/sdk/client/auth';
 //import getOpts from './src/toolHelpers/getOpts.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -266,8 +267,10 @@ let mcpHost = process.env.MCPHOST;
 if (authFlow === 'oauth' || authFlow === 'oauthclient') {
   authFlow = 'bearer';
   authExternal = (authFlow === 'oauthclient') ? true : false;
+} else if (authFlow === 'bearer') {
+  authExternal = true; // in bearer token flow we assume the token is generated externally and passed in via env variable or token file, so we set authExternal to true to indicate that  
 }
-let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "FALSE";
+  let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "FALSE";
 const appEnvBase = {
   version: version,
   mcpType: mcpType,

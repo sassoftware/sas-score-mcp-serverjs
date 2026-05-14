@@ -11,8 +11,8 @@ Use this strategy when the user requests to read, fetch, or query data from a ta
 ## Prerequisites
 
 Before reading:
-1. Verify the table exists using FIND-RESOURCE strategy
-2. Determine the server (CAS or SAS) from Step 1
+1. Verify the table exists using find-resource strategy
+2. Determine the server (CAS or SAS) from the find-resource verification step. If the server cannot be determined, ask the user to specify. Do not proceed with a default server unless explicitly instructed by the user.
 
 ---
 
@@ -31,9 +31,9 @@ Before reading:
 
 **Parameters**:
 ```
-lib: "<library>"           # from FIND-RESOURCE verification
-table: "<table>"           # from FIND-RESOURCE verification
-server: "cas" or "sas"     # from FIND-RESOURCE verification
+lib: "<library>"           # from find-resource verification
+table: "<table>"           # from find-resource verification
+server: "cas" or "sas"     # from find-resource verification
 start: <row number>        # default 1
 limit: <max rows>          # default 10, max 1000
 where: "<SQL WHERE clause>"  # optional filter
@@ -83,6 +83,7 @@ sas-score-sas-query({
 
 ---
 
+
 ## Decision Tree
 
 ```
@@ -91,6 +92,8 @@ User requests data from table
 Is it an aggregation? (count, sum, avg, group by, distinct, etc.)
   ├─ YES → Use sas-score-sas-query
   └─ NO → Use sas-score-read-table
+
+If the user's intent is ambiguous or mixes aggregation and raw reads, ask the user to clarify whether they want raw records or aggregated results before proceeding.
 ```
 
 ---
@@ -106,8 +109,8 @@ Is it an aggregation? (count, sum, avg, group by, distinct, etc.)
 
 | Error | Action |
 |---|---|
-| Table not found | Verify table exists with FIND-RESOURCE first |
-| Server mismatch | Use server from FIND-RESOURCE verification |
+| Table not found | Verify table exists with find-resource first |
+| Server mismatch | Use server from find-resource verification |
 | Empty result | Ask user to adjust WHERE clause or criteria |
 | Column not found | Ask user to verify column name (case sensitivity) |
 

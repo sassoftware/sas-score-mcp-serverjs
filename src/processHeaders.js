@@ -1,5 +1,3 @@
-import { start } from "node:repl";
-
 /*
  * Copyright © 2026, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
@@ -32,20 +30,25 @@ function processHeaders(req, res, next, cache, appContext) {
   const hdr = req.header("Authorization");
   //for now, ignore Authorization if authflow is not bearer
   let token = (hdr != null) ? hdr.slice(7) : null;
-  //console.error("[Note] Authorization token", token);
   debugger;
-  console.error('>>>',appContext.AUTHFLOW);
+  console.error('[Note} AUTHFLOW=',   appContext.AUTHFLOW);
+  console.error("[Note] External authorization :", appContext.AUTHEXTERNAL);
   if (appContext.AUTHFLOW === 'bearer') {
     debugger;
     let startAuth = false;
-    console.error("[Note] appContext.AUTHEXTERNAL:", appContext.AUTHEXTERNAL);
+    
     if (appContext.AUTHEXTERNAL === true) {
       console.error("[Note] Expecting external authorization"); 
       if (token != null) {
         console.error("[Note] Using user supplied token for authorization");
         headerCache.bearerToken = token;
       } else {
-        startAuth = true;
+        console.error("[Note] No Authorization token provided in header for external authorization.");
+        console.error("[Note] Returning 404 since we are configured for external token and no token provided in header.");
+        return res.status(404).json({
+          error: "unauthorized",
+          error_description: "[Error] Missing token for external authorization."
+        });
       }
     } else  if (token == null) {
       console.error("[Note] No Authorization token provided in header.");
@@ -55,7 +58,7 @@ function processHeaders(req, res, next, cache, appContext) {
       let tokenlist = cache.get("tokenlist");
       let tokenData = tokenlist[token];
       if (tokenData == null) {
-        return res.status(403).json({
+        return res.status(401).json({
           error: "unauthorized",
           error_description: "[Error] Expired token. Clear token and try again."
         });

@@ -3,6 +3,8 @@ name: score-strategy
 description: >
   Unified scoring workflow. Handles MAS, Job, JobDef, SCR, and combined read+score scenarios.
   Always verify resources before scoring.
+
+  To reduce cognitive load, follow the stepwise flowchart below for scoring requests.
 ---
 
 # Score Strategy
@@ -17,6 +19,7 @@ Use this strategy when the user requests model scoring, predictions, or running 
 
 ---
 
+
 ## Step 1: Parse the Score Request
 
 Identify the scoring target (model type) and input source:
@@ -28,7 +31,23 @@ score with model X.mas       → MAS model
 score with model X.job       → Job
 score with model X.jobdef    → JobDef
 score with model X.scr       → SCR model
-score with model X           → Default to MAS
+score with model X (default to MAS if type is not specified) → MAS model
+```
+
+### Visual Flowchart
+
+```mermaid
+flowchart TD
+  A[User score request] --> B{Model type specified?}
+  B -- .mas --> C[MAS model]
+  B -- .job --> D[Job]
+  B -- .jobdef --> E[JobDef]
+  B -- .scr --> F[SCR model]
+  B -- none --> C
+  C --> G[Verify MAS model]
+  D --> H[Verify Job]
+  E --> I[Verify JobDef]
+  F --> J[Skip verification]
 ```
 
 ### Identify Input Source

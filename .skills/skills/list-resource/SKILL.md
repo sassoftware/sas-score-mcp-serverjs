@@ -7,7 +7,20 @@ description: >
 
 # Unified Resource Listing Strategy
 
+
 Use this strategy to discover and browse available resources (libraries, tables, models, jobs, jobdefs).
+
+## Resource Type to Tool Mapping
+
+| Resource Type | List Tool |
+|--------------|-----------|
+| Libraries    | sas-score-list-libraries |
+| Tables       | sas-score-list-tables    |
+| Models       | sas-score-list-models    |
+| Jobs         | sas-score-list-jobs      |
+| JobDefs      | sas-score-list-jobdefs   |
+
+Use this table to select the correct tool for each resource type. Then follow the logic for parameters and pagination below.
 
 ## Resource Types and List Tools
 
@@ -58,8 +71,8 @@ sas-score-list-libraries({ server: "all", start: 11, limit: 10 })
 
 **Logic**:
 - If library is a known CAS library (Casuser, Public, Samples, etc.), use CAS
-- If library is a known SAS library (SASHELP, WORK, SASUUSER, etc.), use SAS
-- If ambiguous: Ask user or try both
+- If library is a known SAS library (SASHELP, WORK, SASUSER, etc.), use SAS
+- If ambiguous: Ask the user to clarify. If no clarification is provided, attempt both options (CAS and SAS) and return results for each, clearly labeled by server.
 
 **Parameters**:
 ```

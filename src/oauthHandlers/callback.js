@@ -1,3 +1,7 @@
+/*
+ * Copyright © 2026, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import baseUrl from "./baseUrl.js";
 import { Agent, fetch as undiciFetch } from "undici";
 import { randomUUID } from "node:crypto";
