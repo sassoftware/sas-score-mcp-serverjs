@@ -8,14 +8,14 @@ import fs from "fs";
 refreshToken()
 .then (token => {
   console.log(token);
-  fs.writeFileSync('token.txt', token, 'utf8');
+  fs.writeFileSync('token.txt', `"AUTHORIZATION": "Bearer ${token}"`, 'utf8');
 })
 .catch (err => {
   console.error('[Error] Failed to refresh token: ', err);
 });
 async function refreshToken(){
   let host = process.env.VIYA_SERVER;
-  let token = "8afd75c0df5141b1a1d27dfe9db06fa5-r";
+  let token = process.env.REFRESH_TOKEN;
   let url = `${host}/SASLogon/oauth/token`;
 
   let aconnect = {
