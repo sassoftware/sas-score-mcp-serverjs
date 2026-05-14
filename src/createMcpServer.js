@@ -86,7 +86,6 @@ async function createMcpServer(cache, _appContext) {
       inputSchema: tool.inputSchema
     }
     let toolHandler = wrapf(cache, tool.handler);
-  //  console.error(`[Note] Registering tool ${toolName} with config: ${JSON.stringify(config)}`);
     let r = mcpServer.registerTool(toolName, config, toolHandler);
     toolNames.push(toolName);
   });

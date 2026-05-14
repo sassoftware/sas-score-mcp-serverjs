@@ -5,7 +5,7 @@
 
 TBD
 
-## VSCODE Githu Copilot
+## VSCODE Github Copilot
 
 ### Scenario:
 
@@ -35,7 +35,7 @@ It appears that the / at the end of the redirect URI is important]
 }
 ```
 
-### pkce clientid when mcp server does teh oauth flow
+### pkce clientid when mcp server does the oauth flow
 
 ```js
 

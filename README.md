@@ -9,6 +9,8 @@ See [wiki](https://github.com/sassoftware/sas-score-mcp-serverjs/wiki) for the c
 
 - Agent - can be deployed as an agent
 
+- Docker image:  ghcr.io/sassoftware/sas-score-mcp-serverjs
+
 
 ## Overview
 This MCP server is designed for scoring with SAS Viya.
@@ -22,6 +24,22 @@ Some examples are:
   - SAS Studio Flow
   - job Definitions
   - jobs using SAS Studio or other interfaces
+
+## Start the mcp server
+
+If using stdio transport, most of the mcp clients will start the server automatically.
+But for http transport, the mcp server must be started. 
+
+If running locally
+```sh
+npx @sassoftware/sas-score-mcp-serverjs@latest
+```
+
+The mcp is also available as a docker image. Add or remove the env variables as needed.
+
+```sh
+docker run -p 8080:8080 --name sasscore -e VIYA_SERVER=<yourviyaserver> -e AUTHFLOW=oauth ghcr.io/sassoftware/sas-score-mcp-serverjs:latest
+```
 
 ## Capabilities
 
@@ -56,43 +74,60 @@ Typically these are set either in the .env file or as environment variables or a
 
 ### Required Options
 
-VIYA_SERVER=<url for Viya server>
+1. VIYA_SERVER=
+   <url for Viya server>. 
 
-MCPTYPE=http|stdio
+### Options with defaults
 
-MCPHOST=<url for the mcp server = http://localhost:8080 or some remote mcp server>
+These can be customized
 
->Recommended authflow is oauth - the most secure of all the options since all oauth flow occurs in the server and the actual token is never sent to the client. Bearer authflow is useful when the mcp server is remote with its own authentication process
+1. AUTHFLOW=**oauth**|oauthclient|bearer|sascli|token|password 
+    - Authentication method. Default is oauth
 
-AUTHFLOW=oauth|oauthclient|bearer|sascli|token|password
+2. CLIENTID=**vscodemcp** 
+     - Clientid for oauth and oauthclient AUTHFlOW. Must be PKCE clientid. 
+     
 
-> Options for oauth. The clientid must have a redirect of http://localhost:8080/callback,https://localhost:8080/callback
+3. MCPTYPE=**http**|stdio  
+    - The transport protocol for the mcp server. 
 
-CLIENTID=<pkce clientid>
+4. MCPHOST=**http://localhost:8080**
+   - URL of the mcp server. If using remote mcp server, set this to remote MCP server
 
+5. PROFILE=**~/.sas**
+    - profile name used by sas-cli to store the tokens 
+
+6. PORT=**8080**
+    - set it to what fits your environment. 
+
+7. CASSERVER=**cas-shared-default** 
+    - Set to a valid cas server
+
+8. COMPUTECONTEXT=**"SAS Job Execution compute context"**
+    - Use one that is appropriate
+
+### Clientid specifications
+
+If using remote mcp server, change the url in redirect to the remote url
+
+```js
+{
+  client_id: 'vscodemcp',
+  scope: [ 'openid' ],
+  resource_ids: [ 'none' ],
+  autoapprove: true,
+  authorized_grant_types: [ 'authorization_code' ],
+  access_token_validity: 86400,
+  allowpublic: true,
+  redirect_uri: [ 'http://localhost:8080/callback' ]
+}
+```
 
 > OauthClient Flow. Clientid with redirect appropriate for the client. Some examples are shown below. Note that the explicit port used by github copilot is not guaranteed. 
 
 - github copilot: http://127.0.0.1:33418/
 - claude: https://claude.ai/api/mcp/auth_callback,https://claude.ai/api/auth/callback
 
-> bearer - Use this when the remote mcp server sends the token in the header.
-
-
-> sascli - Use sas-viya cli to create the token information. It is stored in ~/.sas folder by default
-
-```env
-PROFILE=<profile name used by sas-cli to store the tokens in ~/.sas> 
-```
-
-### Other options
-
-```env
-PORT=<default is 8080>
-HTTPS=FALSE
-CASSERVER=CAS server name (default: cas-shared-default)
-COMPUTECONTEXT=Compute session name or context (default: SAS Job Execution compute context) 
-```
 
 ## Agent and skills
 
@@ -110,12 +145,12 @@ The skills and related files will be written to .github or .claude
 ## Configure the mcp client for localhost
 
 The mcp configuration for oauth flow. For remote mcp, change the url to the
-appropriate url.
+remote url.
 
 ```json
  "sasmcp": {
     "type": "http",
-    "url": "http://localhost:8080/mcp"``
+    "url": "http://localhost:8080/mcp"
     "oauth: {
       "type": "oauth2"
     }
@@ -126,13 +161,14 @@ For bearer authflow.
 ```json
  "sasmcp": {
     "type": "http",
-    "url": "your remote mcp server`,
+    "url": "http://localhost:8080/mcp`,
     "headers" {
       "Authorization": "bearer <tokenstring>"
       }
  }
 ```
 
+For stdio scenario
 ```json
 "sas-mcp-server": {
       "type: "stdio"
@@ -148,25 +184,7 @@ For bearer authflow.
     }
 ```
 
-#### Step 2: Start the mcp server
 
-If using stdio transport, most of the mcp clients will start the server automatically.
-But for http transport, the mcp server must be started. 
-
-If running locally
-```sh
-npx @sassoftware/sas-score-mcp-serverjs@latest
-```
-
-The mcp is also available as a docker image. Add or remove the env variables as needed.
-
-```sh
-docker run -p 8080:8080 --name sasscore -e VIYA_SERVER=<yourviayserver> -e AUTHFLOW=oauth ghcr.io/sassoftware/sas-score-mcp-serverjs:latest
-```
-
-If you want to run it in docker then use docker run:
-
-Make sure that the .env file is in the current working directory or specify the options in the command line
 
 
 ## Notes
