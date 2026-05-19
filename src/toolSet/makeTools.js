@@ -27,6 +27,8 @@ import runJobdef from './runJobdef.js';
 import findJob from './findJob.js';
 import listJobdefs from './listJobdefs.js';
 import findJobdef from './findJobdef.js';
+import jobInfo from './jobInfo.js';
+import jobdefInfo from './jobdefInfo.js';
 
 import sasQuery from './sasQuery.js';
 import setContext from './setContext.js';
@@ -63,6 +65,7 @@ function makeTools(_appContext) {
     runJob(_appContext),
     listJobdefs(_appContext),
     findJobdef(_appContext),
+    jobdefInfo(_appContext),
     runJobdef(_appContext),
 
     devaScore(_appContext),

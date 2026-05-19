@@ -10,7 +10,7 @@ const log = debug('tools');
 
 function modelInfo(_appContext) {
   let description = `
-model-info — retrieve detailed metadata for a deployed model.
+model-info — return detailed information about a specific MAS model, including its inputs, outputs, and metadata.
 
 USE when: what inputs does model need, describe model, show variables for model, model inputs/outputs
 DO NOT USE for: find model, list models, score model, table/job operations

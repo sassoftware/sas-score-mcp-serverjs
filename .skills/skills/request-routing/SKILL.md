@@ -37,6 +37,10 @@ Once resources are verified to exist, select the appropriate execution tool:
 | Run Job | `sas-score-run-jobdef` | job name, scenario parameters |
 | Run JobDef | `sas-score-run-jobdef` | jobdef name, scenario parameters |
 | Score with SCR model | `sas-score-scr-score` | SCR URL, scenario data |
+| Describe MAS model | `sas-score-model-info` | model name |
+| Describe Job/JobDef | `sas-score-job-info` | job or jobdef name |
+| Describe SCR model | `sas-score-scr-info` | SCR URL |
+| Describe table | `sas-score-table-info` | lib, table, server |
 
 ---
 

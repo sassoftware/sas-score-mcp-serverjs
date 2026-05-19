@@ -145,14 +145,15 @@ The skills and related files will be written to .github or .claude
 ## Configure the mcp client for localhost
 
 The mcp configuration for oauth flow. For remote mcp, change the url to the
-remote url.
+remote url
 
 ```json
  "sasmcp": {
     "type": "http",
     "url": "http://localhost:8080/mcp"
     "oauth: {
-      "type": "oauth2"
+      "type": "oauth2",
+      "clientId: "vscodemcp"
     }
  }
 ```

@@ -4,6 +4,7 @@
  */
 import { z } from 'zod';
 import _listJobs from '../toolHelpers/_listJobs.js';
+import _findJob from '../toolHelpers/_findJob.js';
 function findJob(_appContext) {
   
   let description = `
@@ -45,7 +46,7 @@ Returns { jobs: [] } if not found; { jobs: [name, ...] } if found. Never halluci
       name: z.string()
     }),
     handler: async (params) => {
-      let r = await _listJobs(params);
+      let r = await _findJob(params);
       return r;
     }
   }

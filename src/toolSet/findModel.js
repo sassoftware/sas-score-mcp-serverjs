@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import _listModels from '../toolHelpers/_listModels.js';
+import _findModel from '../toolHelpers/_findModel.js';
 
 
 function findModel(_appContext) {
@@ -49,7 +49,7 @@ Returns { models: [] } if not found; { models: [name, ...] } if found. Never hal
       name: z.string()
     }),
     handler: async (params) => { 
-      let r = await _listModels(params);
+      let r = await _findModel(params);
       return r;
     }
   }

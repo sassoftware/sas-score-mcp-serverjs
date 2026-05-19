@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 //import debug from 'debug';
-import _listTables from '../toolHelpers/_listTables.js';
+import _findTable from '../toolHelpers/_findTable.js';
 
 function findTable(_appContext) {
   let description = `
@@ -54,7 +54,7 @@ Returns { tables: [] } if not found; { tables: [name, ...] } if found. Never hal
     
     handler: async (params) => {
       // Check if the params.scenario is a string and parse it
-      let r = await _listTables(params);
+      let r = await _findTable(params);
       return r;
     }
   }

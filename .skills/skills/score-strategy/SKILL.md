@@ -83,9 +83,11 @@ score results of query...    → Query results
 ```
 sas-score-mas-score({
   model: "<model name>",
-  scenario: { a: 1, b: 2 }  
+  scenario: { a: 1, b: 2 }
+})
 ```
-**Parameters** (job):                                           ):
+
+**Parameters** (job):
 ```
 sas-score-run-job({
   name: "<job name>",

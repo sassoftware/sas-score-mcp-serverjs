@@ -32,6 +32,7 @@ When you receive a SAS request, classify it using request-routing skill:
 | Read | "read", "show", "fetch", "query", "how many", "count by" | read-strategy | sas-score-read-table, sas-score-sas-query |
 | Score | "score", "predict", "run model" | score-strategy | sas-score-mas-score, sas-score-run-jobdef, sas-score-scr-score |
 | List | "list", "show all", "browse" | — | sas-score-list-libraries, sas-score-list-tables, sas-score-list-models, etc. |
+| Describe | "describe", "what inputs", "show schema", "metadata", "information" | detail-strategy | sas-score-model-info, sas-score-job-info, sas-score-scr-info, sas-score-table-info |
 
 ---
 
@@ -78,9 +79,8 @@ These terms are overloaded in SAS and must be clarified:
 
 - **model**: MAS, Job, JobDef, or SCR?
 - **score/scoring**: Running a model on data (not code coverage)
-- **job**: SAS Job or SAS JobDef?
 - **table**: CAS table or SAS dataset? Which library?
-- **resource**: Library, table, model, job, or jobdef?
+- **resource**: Library, table, model, job,jobdef, scr?
 - **read/query**: Raw row read or aggregation?
 
 When ambiguous, ask one focused clarifying question.
@@ -95,12 +95,15 @@ See the strategies folder:
 - **find-resources** — How to verify resources exist
 - **read-strategy** — How to read/query tables
 - **score-strategy** — How to score/predict
+- **list-resource** — How to list resources
+- **detail-strategy** — How to retrieve details about a resource
 - **sas-score-mcp-serverjs-agent** — Main orchestration agent
 
 ---
 
 ## Response Format
 
+Whenever possible format the response as a markdown table or structured JSON for easy readability.
 After completing a SAS Viya request, append a brief **Strategy Summary**:
 
 ```
@@ -157,7 +160,7 @@ Example:
 4. Result: Aggregated data by make
 
 ### Example 3: Read Rows
-**User**: "read first 20 customers from Public"
+**User**: "read first 20 customers from Public.customers"
 
 **Process**:
 1. Classify: Read request, raw row read
@@ -166,7 +169,7 @@ Example:
 4. Result: 20 customer rows
 
 ### Example 4: Score Table Rows
-**User**: "score all active customers with model risk_model"
+**User**: "score all active customers in Public.customers with model risk_model"
 
 **Process**:
 1. Classify: Score request, table rows
@@ -197,6 +200,10 @@ Example:
 | | sas-score-list-models | Browse MAS models |
 | | sas-score-list-jobs | Browse jobs |
 | | sas-score-list-jobdefs | Browse jobdefs |
+| **Detail** | sas-score-model-info | Get MAS model details |
+| | sas-score-job-info | Get Job model details |
+| | sas-score-scr-info | Get SCR model details |
+| | sas-score-table-info | Get table details |
 
 ---
 

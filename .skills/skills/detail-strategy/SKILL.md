@@ -1,68 +1,64 @@
 ---
 name: detail-strategy
 description: >
-  Unified detail/information retrieval strategy. Handles MAS models, SCR models, and tables.
-  Always verify resources exist using find-resources skill before retrieving details, except for SCR models (which do not require pre-verification).
+  Unified detail/information/describe retrieval strategy. Handles MAS models, Job models, JobDef models, SCR models, and tables. Verify resources exist using find-resources skill before retrieving details (except SCR models, which can be queried directly).
 ---
 
 # Detail Strategy
 
+Use this strategy when the user requests information about a resource.
 
-Use this strategy when the user requests information about a resource: model details, schema, metadata, inputs/outputs, or any descriptive information.
+**Supported resource types**: MAS model, Job model, JobDef model, SCR model, or table.
 
-If the resource type is ambiguous or cannot be determined, ask the user for clarification.
-If the resource type is not MAS, SCR, or table, respond with: "Unsupported resource type. Please specify MAS model, SCR model, or table."
+If the specified resource is ambiguous, ask the user for clarification (e.g. "Are you asking about a MAS model, a Job model, a JobDef model, a SCR model or a table?").
 
+Verification vs Retrieval (simplified)
 
-## Simplified Steps
+- We separate the workflow into two clear, sequential phases to reduce branching and cognitive load:
+  1. Verification phase — confirm the resource exists and determine its exact type and server. Use the appropriate "find" tool for all resource types except SCR models.
+  2. Retrieval phase — after successful verification, call the detail/read tool appropriate for the identified resource type to fetch metadata or content.
 
-1. Determine resource type (MAS model, SCR model, or table)
-2. If MAS model or table, verify resource exists using find-resources skill
-  - If SCR model, skip verification and proceed to retrieval
-3. Retrieve details using the appropriate tool
+- Exception for SCR models: document the exception inline — SCR models may be queried directly with `sas-score-scr-info` when the user provides a specific SCR endpoint. Even when skipping verification, still validate the endpoint/URL format before calling the tool.
 
----
-
-
-## Step 1: Identify Resource Type
-
-Classify the resource based on naming convention or context:
-
-| Pattern                        | Resource Type |
-|--------------------------------|--------------|
-| model X.mas or "model X"       | MAS model    |
-| model X.scr                    | SCR model    |
-| table X in library Y           | Table        |
-
-If resource type cannot be determined, ask the user for clarification.
+Apply this separation consistently across MAS models, Job models, JobDef models, SCR models, and tables.
 
 ---
 
-## Step 2: Verify Resource Exists (if required)
+## Classification & Verification Process
 
-| Resource Type | Verification Required? | How to Verify |
-|---------------|-----------------------|---------------|
-| MAS model     | Yes                   | find-model    |
-| SCR model     | No                    | —             |
-| Table         | Yes                   | find-table    |
+### Phase 1: Classify the Resource Type
 
-If resource type is not supported, respond with: "Unsupported resource type. Please specify MAS model, SCR model, or table."
+Determine resource type from context/naming conventions:
 
-### Find SCR Model
-```
-find-resources skill → find-scr
-Tool: sas-score-find-scr({ url: "<scr-endpoint>" })
-```
+| Pattern                  | Resource Type |
+|--------------------------|---------------|
+| model X (or X.mas)       | MAS model     |
+| model X.scr              | SCR model     |
+| model X.job              | Job model     |
+| model X.jobdef           | JobDef model  |
+| table X in library Y     | Table         |
 
-### Find Table
-```
-find-resources skill → find-table
-Tool: sas-score-find-table({ lib: "<library>", name: "<table>", server: "<cas|sas>" })
-```
+If resource is ambiguous, ask user for clarification.
+
+### Phase 2: Verify Resource Exists (Skip for SCR Models)
+
+For each resource type, use the appropriate verification tool:
+
+| Resource Type | Tool              |
+|---------------|-------------------|
+| MAS model     | sas-score-find-model |
+| Job model     | sas-score-find-job   |
+| JobDef model  | sas-score-find-jobdef |
+| Table         | sas-score-find-table  |
+| SCR model     | *(no verification needed)* |
+
+If verification fails, inform the user and ask for additional details or corrections.
 
 ---
 
-## Step 3: Get Details
+## Detail Retrieval Process
+
+### Phase 3: Get Details
 
 ### Option A: MAS Model Details
 
@@ -153,20 +149,52 @@ User: "What columns are in the customers table in Public?"
 ```
 
 ---
+### Option D: Job Model Details
+
+**Trigger phrases**: "what inputs does job model X need", "describe job model X", "show variables for job model X", "job model X metadata", "job model X information"
+
+**Tool**: `sas-score-job-info`
+
+**Parameters**:
+```
+sas-score-job-info({
+  model: "<model name>"
+})
+```
+
+**Returns**:
+- Input variables (name, type, role)
+
+**Example**:
+```
+User: "What inputs does job model churnRisk need?"
+
+1. Find: sas-score-find-job({ name: "churnRisk" })
+2. Get info: sas-score-job-info({ model: "churnRisk" })
+3. Return: { inputs: [...] }
+```
 
 ## Decision Tree
 
 ```
 User requests information/details
   ├─ About a MAS model?
-  │   → Find model (find-resources)
+  │   → Verify: sas-score-find-model
   │   → Call: sas-score-model-info
   │
   ├─ About a SCR model?
-  │   → Call: sas-score-scr-info (can skip verification)
+  │   → Call: sas-score-scr-info (skip verification; validate URL first)
+  │
+  ├─ About a Job model?
+  │   → Verify: sas-score-find-job
+  │   → Call: sas-score-job-info
+  │
+  ├─ About a JobDef model?
+  │   → Verify: sas-score-find-jobdef
+  │   → Call: sas-score-job-info
   │
   └─ About a table?
-      → Find table (find-resources, determine server)
+      → Verify: sas-score-find-table (determine CAS or SAS server)
       → Call: sas-score-table-info
 ```
 
@@ -176,7 +204,7 @@ User requests information/details
 
 For each detail/information request:
 
-- [ ] **Classify** resource type (MAS/SCR/table)
+- [ ] **Classify** resource type (MAS / Job / JobDef / SCR / table)
 - [ ] **Verify** resource exists (use find-resources skill, except SCR)
 - [ ] **Determine** server for tables (CAS or SAS)
 - [ ] **Execute** appropriate detail tool

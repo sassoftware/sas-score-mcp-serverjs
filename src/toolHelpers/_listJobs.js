@@ -42,9 +42,9 @@ async function _listJobs(params) {
         names[jname] = {parameters: (value == null) ? {} : value.toJS() };
       }
     });
-
+    console.error('parameters', JSON.stringify(names, null, 2));
     let response  = {jobs: Object.keys(names)};
-    console.error('names', JSON.stringify(response, null, 2));
+    console.error('response', JSON.stringify(response, null, 2));
 
     if (name != null) {
       response = { name: name, parameters: names[name].parameters };

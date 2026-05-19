@@ -1,14 +1,14 @@
 ---
 name: list-resource
 description: >
-  Unified resource listing strategy. Use appropriate list tools for discovery and browsing.
-  Determines pagination parameters. Use list tools for discovery only; use find tools for verification.
+  Unified resource listing strategy. Use appropriate list tools for listing and browsing.
+  Determines pagination parameters. Use list tools for listing only; use find tools for verification of existence or discovery.
 ---
 
 # Unified Resource Listing Strategy
 
 
-Use this strategy to discover and browse available resources (libraries, tables, models, jobs, jobdefs).
+Use this strategy to list available resources (libraries, tables, models, jobs, jobdefs).
 
 ## Resource Type to Tool Mapping
 
@@ -252,7 +252,7 @@ What resource type?
 
 | Aspect | Find | List |
 |---|---|---|
-| Purpose | Verify existence | Browse/discover |
+| Purpose | Verify/discover existence | List available resources |
 | Returns | Single resource or not found | Multiple resources with pagination |
-| Use case | Before execution | Exploration/discovery |
+| Use case | Before execution | Listing of resources |
 | Tool suffix | `find-*` | `list-*` |
