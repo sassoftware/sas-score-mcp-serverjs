@@ -33,13 +33,14 @@ Once resources are verified to exist, select the appropriate execution tool:
 |---|---|---|
 | Read table rows | `sas-score-read-table` | lib, table, server (from Step 1) |
 | Query table (aggregation) | `sas-score-sas-query` | lib.table, SQL query |
-| Score with MAS model | `sas-score-mas-score` | model name, scenario data |
-| Run Job | `sas-score-run-jobdef` | job name, scenario parameters |
-| Run JobDef | `sas-score-run-jobdef` | jobdef name, scenario parameters |
-| Score with SCR model | `sas-score-scr-score` | SCR URL, scenario data |
-| Describe MAS model | `sas-score-model-info` | model name |
-| Describe Job/JobDef | `sas-score-job-info` | job or jobdef name |
-| Describe SCR model | `sas-score-scr-info` | SCR URL |
+| Score with MAS model / `mas model X` | `sas-score-mas-score` | model name, scenario data |
+| Score with Job model / `job model X` | `sas-score-run-job` | job name, scenario parameters |
+| Score with JobDef model / `jobdef model X` | `sas-score-run-jobdef` | jobdef name, scenario parameters |
+| Score with SCR model / `scr model X` | `sas-score-scr-score` | SCR URL, scenario data |
+| Describe MAS model / `mas model X` | `sas-score-mas-info` | model name |
+| Describe Job model / `job model X` | `sas-score-job-info` | job name |
+| Describe JobDef model / `jobdef model X` | `sas-score-jobdef-info` | jobdef name |
+| Describe SCR model / `scr model X` | `sas-score-scr-info` | SCR URL |
 | Describe table | `sas-score-table-info` | lib, table, server |
 
 ---

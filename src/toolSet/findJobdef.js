@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { z } from 'zod';
-import _findJobdeg from '../toolHelpers/_findJobdef.js';
+import _findJobdef from '../toolHelpers/_findJobdef.js';
 function findJobdef(_appContext) {
   let llmDescription= {
   "purpose": "Map natural language requests to find a jobdef (job definition) in SAS Viya and return structured results.",

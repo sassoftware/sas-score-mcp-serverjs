@@ -3,22 +3,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import listModels from './listModels.js';
-import listTables from './listTables.js';
-import modelScore from './modelScore.js';
-import modelInfo from './modelInfo.js';
+import listMas from './listMas.js';
+
+
+import masScore from './masScore.js';
+import masInfo from './masInfo.js';
+import findMas from './findMas.js';
+
 import findLibrary from './findLibrary.js';
-import readTable from './readTable.js';
-import tableInfo from './tableInfo.js';
 import listLibraries from './listLibraries.js';
+
+import listTables from './listTables.js';
+import findTable from './findTable.js';
+import tableInfo from './tableInfo.js';
+import readTable from './readTable.js';
 
 import scrInfo from './scrInfo.js';
 import scrScore from './scrScore.js';
 
 import devaScore from './devaScore.js';
 
-import findTable from './findTable.js';
-import findModel from './findModel.js';
+
+
 import runProgram from './runProgram.js';
 import runMacro from './runMacro.js';
 import runJob from './runJob.js';
@@ -40,11 +46,11 @@ function makeTools(_appContext) {
 
   // get the tool definitions and handler 
   let list = [
-    listModels(_appContext),
+    listMas(_appContext),
     
-    findModel(_appContext),
-    modelInfo(_appContext),
-    modelScore(_appContext),
+    findMas(_appContext),
+    masInfo(_appContext),
+    masScore(_appContext),
 
     scrInfo(_appContext),
     scrScore(_appContext),

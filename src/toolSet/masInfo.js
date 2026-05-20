@@ -8,9 +8,9 @@ import debug from 'debug';
 import _masDescribe from '../toolHelpers/_masDescribe.js';
 const log = debug('tools');
 
-function modelInfo(_appContext) {
+function masInfo(_appContext) {
   let description = `
-model-info — return detailed information about a specific MAS model, including its inputs, outputs, and metadata.
+mas-info — return detailed information about a specific MAS model, including its inputs, outputs, and metadata.
 
 USE when: what inputs does model need, describe model, show variables for model, model inputs/outputs
 DO NOT USE for: find model, list models, score model, table/job operations
@@ -19,26 +19,26 @@ PARAMETERS
 - model: string — model name (required, exact match)
 
 ROUTING RULES
-- "what inputs does model X need?" → { model: "X" }
-- "describe model Y" → { model: "Y" }
-- "show variables for Z" → { model: "Z" }
+- "what inputs does mas X need?" → { model: "X" }
+- "describe mas Y" → { model: "Y" }
+- "show variables for mas Z" → { model: "Z" }
 
 EXAMPLES
-- "What inputs does model churnRisk need?" → { model: "churnRisk" }
-- "Describe model creditScore" → { model: "creditScore" }
+- "What inputs does mas churnRisk need?" → { model: "churnRisk" }
+- "Describe mas creditScore" → { model: "creditScore" }
 - "Show variables for myModel" → { model: "myModel" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list models" (use list-models)
-- "find model X" (use find-model)
-- "score with model X" (use model-score)
+- "list mas" (use list-models)
+- "find mas X" (use find-model)
+- "score with mas X" (use model-score)
 
 ERRORS
 Returns model metadata: inputs (name, type, role), outputs (name, type, possible_values), model_type, description.
   `;
 
   let spec = {
-    name: 'model-info',
+    name: 'mas-info',
     description: description,
     inputSchema: z.object({
       model: z.string()
@@ -51,5 +51,5 @@ Returns model metadata: inputs (name, type, role), outputs (name, type, possible
   return spec;
 }
 
-export default modelInfo;
+export default masInfo;
 

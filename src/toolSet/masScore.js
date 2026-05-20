@@ -8,7 +8,7 @@ import debug from 'debug';
 import _masScoring from '../toolHelpers/_masScoring.js';
 const log = debug('tools');
 
-function modelScore(_appContext) {
+function masScore(_appContext) {
   let description = `
 mas-score — score data using a deployed model on MAS.
 
@@ -74,7 +74,7 @@ Returns predictions, probabilities, scores merged with input data. Returns error
         params.model = params.model.substring(0, params.model.lastIndexOf('.'));
       }
   
-      log('modelScore params', params);
+      log('masScore params', params);
       // Check if the params.scenario is a string and parse it
       let r = await _masScoring(params)
       return r;
@@ -83,5 +83,5 @@ Returns predictions, probabilities, scores merged with input data. Returns error
   return spec;
 }
 
-export default modelScore;
+export default masScore;
 

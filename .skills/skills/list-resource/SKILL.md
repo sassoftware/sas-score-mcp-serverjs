@@ -12,13 +12,16 @@ Use this strategy to list available resources (libraries, tables, models, jobs, 
 
 ## Resource Type to Tool Mapping
 
-| Resource Type | List Tool |
-|--------------|-----------|
-| Libraries    | sas-score-list-libraries |
-| Tables       | sas-score-list-tables    |
-| Models       | sas-score-list-models    |
-| Jobs         | sas-score-list-jobs      |
-| JobDefs      | sas-score-list-jobdefs   |
+| Resource Type        | Aliases / Adjective Form               | List Tool                  |
+|----------------------|----------------------------------------|----------------------------|
+| Libraries            | library                                | sas-score-list-libraries   |
+| Tables               | table                                  | sas-score-list-tables      |
+| MAS Models           | mas model, model (default)             | sas-score-list-mas         |
+| Job Models           | job model, models of type job          | sas-score-list-jobs        |
+| JobDef Models        | jobdef model, models of type jobdef    | sas-score-list-jobdefs     |
+| SCR Models           | scr model, models of type scr          | *(no list tool available)* |
+
+When the user says "model" as an adjective (e.g. "mas model", "job model", "jobdef model", "scr model"), route to the corresponding list tool. When the model type is unspecified, default to MAS.
 
 Use this table to select the correct tool for each resource type. Then follow the logic for parameters and pagination below.
 
@@ -97,14 +100,28 @@ sas-score-list-tables({ lib: "Public", server: "cas", start: 11, limit: 10 })
 
 ---
 
-### 3. List Models
+### 3. List Scoring Models
 
-**Trigger**: "list models", "show all models", "browse models", "what models are available"
+**Trigger**: "list models", "show all models", "what models are available",
+"list mas models", "list job models", "list jobdef models", "list scr models",
+"list models of type mas", "list models of type job", "list models of type jobdef",
+"list models of type scr", "show all scoring models"
 
-**Tool**: `sas-score-list-models`
+**Routing logic** — use the model type to pick the right tool:
 
-**Logic**: Lists all models published to the Model Administration Service (MAS).
-- No server selection required (MAS is centralized)
+| User phrase                              | Model type | Tool                   |
+|------------------------------------------|------------|------------------------|
+| "list models" (no type)                  | MAS (default) | `sas-score-list-mas` |
+| "list mas models" / "models of type mas" | MAS        | `sas-score-list-mas`   |
+| "list job models" / "models of type job" | Job        | `sas-score-list-jobs`  |
+| "list jobdef models" / "models of type jobdef" | JobDef | `sas-score-list-jobdefs` |
+| "list scr models" / "models of type scr" | SCR        | *(no list tool — inform user)* |
+
+#### 3a. MAS Models
+
+**Tool**: `sas-score-list-mas`
+
+**Logic**: Lists all models published to the Model Administration Service (MAS). No server selection required.
 
 **Parameters**:
 ```
@@ -114,21 +131,68 @@ limit: <size>    # items per page (default 10)
 
 **Examples**:
 ```
-# List first 10 models
-sas-score-list-models({ start: 1, limit: 10 })
-
-# List 25 models
-sas-score-list-models({ start: 1, limit: 25 })
+# List first 10 MAS models
+sas-score-list-mas({ start: 1, limit: 10 })
 
 # Pagination: show next page
-sas-score-list-models({ start: 11, limit: 10 })
+sas-score-list-mas({ start: 11, limit: 10 })
 ```
+
+#### 3b. Job Models
+
+**Tool**: `sas-score-list-jobs`
+
+**Logic**: Lists all SAS Viya job assets that can be used as scoring models.
+
+**Parameters**:
+```
+start: <offset>                # 1-based page number (default 1)
+limit: <page size>             # items per page (default 10)
+where: "<filter expression>"   # optional filter
+```
+
+**Examples**:
+```
+# List first 10 job models
+sas-score-list-jobs({ start: 1, limit: 10 })
+
+# Pagination: show next page
+sas-score-list-jobs({ start: 11, limit: 10 })
+```
+
+#### 3c. JobDef Models
+
+**Tool**: `sas-score-list-jobdefs`
+
+**Logic**: Lists all SAS Viya job definition assets that can be used as scoring models.
+
+**Parameters**:
+```
+start: <offset>                # 1-based page number (default 1)
+limit: <page size>             # items per page (default 10)
+where: "<filter expression>"   # optional filter
+```
+
+**Examples**:
+```
+# List first 10 jobdef models
+sas-score-list-jobdefs({ start: 1, limit: 10 })
+
+# Pagination: show next page
+sas-score-list-jobdefs({ start: 11, limit: 10 })
+```
+
+#### 3d. SCR Models
+
+No list tool is available for SCR models. Inform the user and ask for a specific SCR endpoint URL if they want to work with an SCR model.
 
 ---
 
-### 4. List Jobs
+### 4. List Jobs (non-model)
 
-**Trigger**: "list jobs", "show all jobs", "browse jobs", "what jobs are available"
+**Trigger**: "list jobs", "show all jobs", "what jobs are available"
+
+> **Note**: "list job models" also routes here — jobs and job models use the same list tool.
 
 **Tool**: `sas-score-list-jobs`
 
@@ -146,18 +210,17 @@ where: "<filter expression>"   # optional filter
 # List first 10 jobs
 sas-score-list-jobs({ start: 1, limit: 10 })
 
-# List 25 jobs
-sas-score-list-jobs({ start: 1, limit: 25 })
-
 # Pagination: show next page
 sas-score-list-jobs({ start: 11, limit: 10 })
 ```
 
 ---
 
-### 5. List JobDefs
+### 5. List JobDefs (non-model)
 
-**Trigger**: "list jobdefs", "show all jobdefs", "browse jobdefs", "what jobdefs are available"
+**Trigger**: "list jobdefs", "show all jobdefs", "what jobdefs are available"
+
+> **Note**: "list jobdef models" also routes here — jobdefs and jobdef models use the same list tool.
 
 **Tool**: `sas-score-list-jobdefs`
 
@@ -174,9 +237,6 @@ where: "<filter expression>"   # optional filter
 ```
 # List first 10 jobdefs
 sas-score-list-jobdefs({ start: 1, limit: 10 })
-
-# List 25 jobdefs
-sas-score-list-jobdefs({ start: 1, limit: 25 })
 
 # Pagination: show next page
 sas-score-list-jobdefs({ start: 11, limit: 10 })
@@ -219,7 +279,7 @@ User requests to list/browse resources
 What resource type?
   ├─ Libraries? → Use sas-score-list-libraries
   ├─ Tables in library X? → Use sas-score-list-tables
-  ├─ Models? → Use sas-score-list-models
+  ├─ Models? → Use sas-score-list-mas
   ├─ Jobs? → Use sas-score-list-jobs
   └─ JobDefs? → Use sas-score-list-jobdefs
 ```

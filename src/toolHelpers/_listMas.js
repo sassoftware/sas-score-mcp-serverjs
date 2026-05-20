@@ -5,7 +5,7 @@
 
 import restaf from '@sassoftware/restaf';
 
-async function _listModels(params) {
+async function _listMas(params) {
   let { limit, start , name, _appContext} = params;;
   // setup
 
@@ -27,9 +27,9 @@ async function _listModels(params) {
     }
     let result = await store.apiCall(microanalyticScore.links('modules'), payload);
     if (result.itemsList().size === 0) {
-      return { content: [{ type: 'text', text: `No models exist in MAS server` }]};
+      return { content: [{ type: 'text', text: `No MAS exist in MAS server` }]};
     }
-    let list = {models: result.itemsList().toJS()};
+    let list = {mas: result.itemsList().toJS()};
     return { content: [{ type: 'text', text: JSON.stringify(list) }],
       structuredContent: list
     };
@@ -38,4 +38,4 @@ async function _listModels(params) {
   }
 }
 
-export default _listModels;
+export default _listMas;

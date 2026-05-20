@@ -156,7 +156,7 @@ Always append a **Strategy Summary** to responses:
 **Workflow**:
 1. Classify: Score request with inline scenario
 2. Verify: Find job "simplejob" → Found ✓
-3. Execute: `sas-score-run-jobdef({ name: "simplejob", scenario: { a: 1, b: 2 } })`
+3. Execute: `sas-score-run-job({ name: "simplejob", scenario: { a: 1, b: 2 } })`
 4. Format: Return `{ a: 1, b: 2, c: 3 }`
 
 ### Example 2: Read + Aggregate

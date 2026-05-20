@@ -26,12 +26,28 @@ Identify the scoring target (model type) and input source:
 
 ### Identify Model Type
 
+Model type can be expressed as a **dot-suffix** (`X.mas`) or as an **adjective form** (`mas model X`). Both are equivalent:
+
 ```
+# Dot-suffix form
 score with model X.mas       → MAS model
 score with model X.job       → Job
 score with model X.jobdef    → JobDef
 score with model X.scr       → SCR model
 score with model X (default to MAS if type is not specified) → MAS model
+
+# Adjective form (equivalent)
+score with mas model X       → MAS model
+score with job model X       → Job
+score with jobdef model X    → JobDef
+score with scr model X       → SCR model
+
+# Short form (no "model" keyword)
+score with X.mas       → MAS model
+score with X.job       → Job
+score with X.jobdef    → JobDef
+score with X.scr       → SCR model
+score with X (default to MAS if type is not specified) → MAS model
 ```
 
 ### Visual Flowchart
@@ -218,7 +234,7 @@ If table columns don't match model input variable names:
 
 ### Example 3: Score table rows
 **Request**: "score all active customers with model risk_model and table Public.customers"
-1. Find model risk_model.mad using find-resources strategy
+1. Find model risk_model.mas using find-resources strategy
 2. Find table Public.customers using find-resources strategy
 3. Read: `sas-score-read-table({ lib: "Public", table: "customers", server: "cas", where: "status='active'" })`
 4. Score each row with risk_model

@@ -8,9 +8,11 @@ description: >
 
 Use this strategy when the user requests information about a resource.
 
-**Supported resource types**: MAS model, Job model, JobDef model, SCR model, or table.
+**Supported resource types**: MAS model, Job model, JobDef model, SCR model,  or table.
 
 If the specified resource is ambiguous, ask the user for clarification (e.g. "Are you asking about a MAS model, a Job model, a JobDef model, a SCR model or a table?").
+
+**Model**: If user just says "model X" without specifying type, default to MAS model (this is an explicit exception to the 'never invent' rule, but it is a predefined convention in SAS).
 
 Verification vs Retrieval (simplified)
 
@@ -32,21 +34,31 @@ Determine resource type from context/naming conventions:
 
 | Pattern                  | Resource Type |
 |--------------------------|---------------|
-| model X (or X.mas)       | MAS model     |
-| model X.scr              | SCR model     |
-| model X.job              | Job model     |
-| model X.jobdef           | JobDef model  |
-| table X in library Y     | Table         |
+| `mas X` or `X.mas`       | MAS model  X   |
+| `mas model X`            | MAS model  X   |
+| `scr X` or `X.scr`       | SCR model X    |
+| `scr model X`            | SCR model  X   |
+| `job model X`            | Job model  X   |
+| `jobdef X` or `X.jobdef` | JobDef model  X |
+| `jobdef model X`         | JobDef model  X |
+| `table X in library Y`   | Table  X in library Y |
+| `model X.mas`            | MAS model  X   |
+| `model X.job`            | Job model  X   |
+| `model X.jobdef`         | JobDef model  X |
+| `model X.scr`            | SCR model  X   |
+| `model X` (ambiguous)    | Default to MAS model (explicit convention) |
 
 If resource is ambiguous, ask user for clarification.
 
 ### Phase 2: Verify Resource Exists (Skip for SCR Models)
 
+**IMPORTANT**: Strip the suffix if user included it, use base name for lookup (e.g. "churnRisk.mas" → "churnRisk") to avoid lookup failures.
+
 For each resource type, use the appropriate verification tool:
 
 | Resource Type | Tool              |
 |---------------|-------------------|
-| MAS model     | sas-score-find-model |
+| MAS model     | sas-score-find-mas |
 | Job model     | sas-score-find-job   |
 | JobDef model  | sas-score-find-jobdef |
 | Table         | sas-score-find-table  |
@@ -62,13 +74,16 @@ If verification fails, inform the user and ask for additional details or correct
 
 ### Option A: MAS Model Details
 
-**Trigger phrases**: "what inputs does model X need", "describe model X", "show variables for model X", "model X metadata", "model X information"
+**Trigger phrases**: "what inputs does mas model X need", "describe mas X", "show variables for model mas X, describe X.mas",
+"mas model X metadata", "mas model X information", "describe model X" (default to MAS),
+"what inputs does mas X need", "describe mas X"
 
-**Tool**: `sas-score-model-info`
+**Tool**: `sas-score-mas-info`
 
 **Parameters**:
 ```
-sas-score-model-info({
+
+sas-score-mas-info({
   model: "<model name>"
 })
 ```
@@ -81,10 +96,10 @@ sas-score-model-info({
 
 **Example**:
 ```
-User: "What inputs does model churnRisk need?"
+User: "What inputs does mas model churnRisk need?"
 
 1. Find: sas-score-find-model({ name: "churnRisk" })
-2. Get info: sas-score-model-info({ model: "churnRisk" })
+2. Get info: sas-score-mas-info({ model: "churnRisk" })
 3. Return: { inputs: [...], outputs: [...], description: "..." }
 ```
 
@@ -92,7 +107,8 @@ User: "What inputs does model churnRisk need?"
 
 ### Option B: SCR Model Details
 
-**Trigger phrases**: "what does SCR model X need", "describe SCR model X", "SCR model X inputs", "SCR model X schema"
+**Trigger phrases**: "what does SCR model X need", "describe SCR model X", "scr model X inputs",
+"scr model X schema", "what inputs does scr model X need", "describe scr X"
 
 **Tool**: `sas-score-scr-info`
 
@@ -151,7 +167,9 @@ User: "What columns are in the customers table in Public?"
 ---
 ### Option D: Job Model Details
 
-**Trigger phrases**: "what inputs does job model X need", "describe job model X", "show variables for job model X", "job model X metadata", "job model X information"
+**Trigger phrases**: "what inputs does job model X need", "describe job model X",
+"show variables for job model X", "job model X metadata", "job model X information",
+"what inputs does job X need", "describe job X"
 
 **Tool**: `sas-score-job-info`
 
@@ -179,8 +197,8 @@ User: "What inputs does job model churnRisk need?"
 ```
 User requests information/details
   ├─ About a MAS model?
-  │   → Verify: sas-score-find-model
-  │   → Call: sas-score-model-info
+  │   → Verify: sas-score-find-mas
+  │   → Call: sas-score-mas-info
   │
   ├─ About a SCR model?
   │   → Call: sas-score-scr-info (skip verification; validate URL first)
