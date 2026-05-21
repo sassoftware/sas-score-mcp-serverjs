@@ -21,12 +21,12 @@ PARAMETERS
 
 
 ROUTING RULES
-- "score with model X using a=1, b=2" → { model: "X", scenario: {a:1, b:2} }
-- "predict using model Y with age=45, income=60000" → { model: "Y", scenario: {age:45, income:60000} }
+- "score with mas model X using a=1, b=2" → { model: "X", scenario: {a:1, b:2} }
+- "predict using mas model Y with age=45, income=60000" → { model: "Y", scenario: {age:45, income:60000} }
 
 EXAMPLES
-- "score with model churn using age=45, income=60000" → { model: "churn", scenario: {age:45, income:60000} }
-- "predict creditScore for credit=700, debt=20000" → { model: "creditScore", scenario: {credit:700, debt:20000} }
+- "score mas model churn with age=45, income=60000" → { model: "churn", scenario: {age:45, income:60000} }
+- "predict mas model creditScore for credit=700, debt=20000" → { model: "creditScore", scenario: {credit:700, debt:20000} }
 
 NEGATIVE EXAMPLES (do not route here)
 - "find model X" (use find-model)
@@ -69,8 +69,10 @@ Returns predictions, probabilities, scores merged with input data. Returns error
         }, {});
       }
       params.scenario = scenarioObj;
-      // Drop model extension (e.g., .job, .model)
-      if (params.model && params.model.includes('.')) {
+      // Drop model extension (e.g., .job, .mas)
+      if (params.model.endsWith('.mas') {
+          
+      }
         params.model = params.model.substring(0, params.model.lastIndexOf('.'));
       }
   
