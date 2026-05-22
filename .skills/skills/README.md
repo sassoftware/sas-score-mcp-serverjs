@@ -66,7 +66,7 @@ Always verify resources exist before executing (except SCR which has no pre-chec
 |---|---|
 | Find library | sas-score-find-library |
 | Find table | sas-score-find-table |
-| Find model (MAS) | sas-score-find-model |
+| Find model (MAS) | sas-score-find-mas |
 | Find job | sas-score-find-job |
 | Find jobdef | sas-score-find-jobdef |
 | Read table | sas-score-read-table |
