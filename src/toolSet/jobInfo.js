@@ -10,7 +10,7 @@ function jobInfo(_appContext) {
 job-info — return information about a specific SAS Viya job.
 
 USE when: find job, does job exist, is there a job named, lookup job, verify job exists
-DO NOT USE for: list jobs (use list-jobs), run job (use run-job), execute jobdef (use run-jobdef), find lib/table/model (use respective tools)
+DO NOT USE for: list jobs (use ${_appContext.brand}-list-jobs), run job (use ${_appContext.brand}-run-job), execute jobdef (use ${_appContext.brand}-run-jobdef), find lib/table/model (use respective tools)
 
 PARAMETERS
 - name: string (required) — name of job whose details are being requested. Should be exact match to job name.
@@ -24,9 +24,9 @@ EXAMPLES
 - "describe job cars_job_v4" → { name: "cars_job_v4" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list jobs" (use list-jobs)
-- "run job cars_job_v4" (use run-job)
-- "execute jobdef cars_job_v4" (use run-jobdef)
+- "list jobs" (use ${_appContext.brand}-list-jobs)
+- "run job cars_job_v4" (use ${_appContext.brand}-run-job)
+- "execute jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
 
 ERRORS
 Returns job metadata 

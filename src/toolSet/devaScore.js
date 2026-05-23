@@ -5,12 +5,12 @@
 import { z } from 'zod';
 
 function devaScore(_appContext) {
-
+let brand = _appContext.brand + '-';
     let description = `
 deva-score — compute a numeric score based on two input values.
 
 USE when: calculate deva score, score these values, compute score for numbers
-DO NOT USE for: model scoring (use model-score), statistical calculations, data lookup
+DO NOT USE for: model scoring (use ${brand}model-score), statistical calculations, data lookup
 
 PARAMETERS
 - a: number (required) — first input value
@@ -30,9 +30,9 @@ EXAMPLES
 - "Deva score 20 and 30" → { a: 20, b: 30 } returns 2100
 
 NEGATIVE EXAMPLES (do not route here)
-- "Score this customer with credit model" (use model-score)
-- "Calculate the mean of these values" (use run-sas-program or sas-query)
-- "Statistical analysis of numbers" (use sas-query)
+- "Score this customer with credit model" (use ${brand}model-score)
+- "Calculate the mean of these values" (use ${brand}run-sas-program or ${brand}sas-query)
+- "Statistical analysis of numbers" (use ${brand}sas-query)
 
 RESPONSE
 Returns { score: (a + b) * 42 }

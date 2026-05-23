@@ -10,7 +10,7 @@ function listJobdefs(_appContext) {
 list-jobdefs — enumerate SAS Viya job definitions (jobdefs) assets.
 
 USE when: list jobdefs, show jobdefs, browse jobdefs, list available jobdefs, next page
-DO NOT USE for: find single jobdef (use find-jobdef), execute jobdef (use run-jobdef), find job (use find-job), sas code (use run-sas-program)
+DO NOT USE for: find single jobdef (use ${_appContext.brand}-find-jobdef), execute jobdef (use ${_appContext.brand}-run-jobdef), find job (use ${_appContext.brand}-find-job), sas code (use ${_appContext.brand}-run-sas-program)
 
 PARAMETERS
 - limit: number (default: 10) — number of jobdefs per page
@@ -28,10 +28,10 @@ EXAMPLES
 - next jobdefs → { start: 11, limit: 10 }
 
 NEGATIVE EXAMPLES (do not route here)
-- find jobdef abc (use find-jobdef)
-- list jobs (use list-jobs)
-- run jobdef abc (use run-jobdef)
-- list models (use list-models)
+- find jobdef abc (use ${_appContext.brand}-find-jobdef)
+- list jobs (use ${_appContext.brand}-list-jobs)
+- run jobdef abc (use ${_appContext.brand}-run-jobdef)
+- list models (use ${_appContext.brand}-list-models)
 
 PAGINATION
 If returned length === limit, hint: next start = start + limit. Empty result with start > 1 means paged past end.

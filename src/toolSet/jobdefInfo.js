@@ -10,7 +10,7 @@ function jobdefInfo(_appContext) {
 jobdef    -info — return information about a specific SAS Viya jobdef.
 
 USE when: find jobdef, does jobdef exist, is there a jobdef named, lookup jobdef, verify jobdef exists
-DO NOT USE for: list jobdefs (use list-jobdefs), run jobdef (use run-jobdef), find lib/table/model (use respective tools)
+DO NOT USE for: list jobdefs (use ${_appContext.brand}-list-jobdefs), run jobdef (use ${_appContext.brand}-run-jobdef), find lib/table/model (use respective tools)
 
 PARAMETERS
 - name: string (required) — name of jobdef whose details are being requested. Should be exact match to jobdef name.
@@ -24,9 +24,9 @@ EXAMPLES
 - "describe jobdef cars_job_v4" → { name: "cars_job_v4" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list jobdefs" (use list-jobdefs)
-- "run jobdef cars_job_v4" (use run-jobdef)
-- "execute jobdef cars_job_v4" (use run-jobdef)
+- "list jobdefs" (use ${_appContext.brand}-list-jobdefs)
+- "run jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
+- "execute jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
 
 ERRORS
 Returns job metadata 

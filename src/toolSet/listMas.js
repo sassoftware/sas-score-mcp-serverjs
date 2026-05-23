@@ -32,10 +32,10 @@ EXAMPLES
 - "list 25 mas" → { start:1, limit:25 }
 
 NEGATIVE EXAMPLES (do not route here)
-- "find model X" (use find-model)
-- "describe model X" (use model-info)
-- "score model X" (use model-score)
-- "list jobs" (use list-jobs)
+- "find model X" (use ${_appContext.brand}-find-model)
+- "describe model X" (use ${_appContext.brand}-model-info)
+- "score model X" (use ${_appContext.brand}-model-score)
+- "list jobs" (use ${_appContext.brand}-list-jobs)
 
 ERRORS
 Returns empty array if no models found.

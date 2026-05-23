@@ -18,7 +18,7 @@ function findJobdef(_appContext) {
 find-jobdef — locate a specific SAS Viya job definition.
 
 USE when: find jobdef, does jobdef exist, is there a jobdef named, lookup jobdef, verify jobdef exists
-DO NOT USE for: list jobdefs (use sas-score-list-jobdefs), run jobdef (use sas-score-run-jobdef), find job/lib/table/model (use respective tools)
+DO NOT USE for: list jobdefs (use ${_appContext.brand}-list-jobdefs), run jobdef (use ${_appContext.brand}-run-jobdef), find job/lib/table/model (use respective tools)
 
 PARAMETERS
 - name: string (required) — jobdef name to locate; if multiple supplied, use first
@@ -29,8 +29,8 @@ ROUTING RULES
 - "is there a jobdef named <name>" → { name: "<name>" }
 - "lookup/verify jobdef <name>" → { name: "<name>" }
 - "find jobdef" with no name → ask "Which jobdef name would you like to find?"
-- "find all jobdefs / list jobdefs" → use list-jobdefs instead
-- "run jobdef <name>" → use run-jobdef instead
+- "find all jobdefs / list jobdefs" → use ${_appContext.brand}-list-jobdefs instead
+- "run jobdef <name>" → use ${_appContext.brand}-run-jobdef instead
 
 EXAMPLES
 - "find jobdef cars_job_v4" → { name: "cars_job_v4" }
@@ -38,10 +38,10 @@ EXAMPLES
 - "is there a jobdef named metricsRefresh" → { name: "metricsRefresh" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list jobdefs" (use sas-score-list-jobdefs)
-- "run jobdef cars_job_v4" (use sas-score-run-jobdef)
-- "find job ETL" (use sas-score-find-job)
-- "find table cars" (use sas-score-find-table)
+- "list jobdefs" (use ${_appContext.brand}-list-jobdefs)
+- "run jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
+- "find job ETL" (use ${_appContext.brand}-find-job)
+- "find table cars" (use ${_appContext.brand}-find-table)
 
 ERRORS
 Returns { jobdefs: [] } if not found; { jobdefs: [name, ...] } if found. Never hallucinate jobdef names.

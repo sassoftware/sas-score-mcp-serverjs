@@ -10,7 +10,7 @@ function findLibrary(_appContext) {
 find-library — locate a specific CAS or SAS library.
 
 USE when: find library, find lib, does library exist, is library available, lookup library
-DO NOT USE for: list libraries (use list-libraries), find table/job/jobdef/model (use respective tools), table structure (use table-info), create library (use run-sas-program)
+DO NOT USE for: list libraries (use ${_appContext.brand}-list-libraries), find table/job/jobdef/model (use respective tools), table structure (use ${_appContext.brand}-table-info), create library (use ${_appContext.brand}-run-sas-program)
 
 PARAMETERS
 - name: string (required) — library/caslib name; if multiple supplied, use first
@@ -22,8 +22,8 @@ ROUTING RULES
 - "find library <name> in sas" → { name: "<name>", server: "sas" }
 - "does library <name> exist" → { name: "<name>", server: "cas" }
 - "find lib" with no name → ask "Which library name would you like to find?"
-- "list libraries / list libs" → use list-libraries instead
-- "tables in <lib>" → use list-tables instead
+- "list libraries / list libs" → use ${_appContext.brand}-list-libraries instead
+- "tables in <lib>" → use ${_appContext.brand}-list-tables instead
 
 EXAMPLES
 - "find lib Public" → { name: "Public", server: "cas" }
@@ -31,10 +31,10 @@ EXAMPLES
 - "does library Formats exist" → { name: "Formats", server: "cas" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list libs" (use list-libraries)
-- "show tables in Public" (use list-tables)
-- "find table cars in sashelp" (use find-table)
-- "find job cars_job" (use find-job)
+- "list libs" (use ${_appContext.brand}-list-libraries)
+- "show tables in Public" (use ${_appContext.brand}-list-tables)
+- "find table cars in sashelp" (use ${_appContext.brand}-find-table)
+- "find job cars_job" (use ${_appContext.brand}-find-job)
 
 ERRORS
 Returns { libraries: [] } if not found; { libraries: [name, ...] } if found. Never hallucinate library names.

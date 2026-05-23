@@ -12,7 +12,7 @@ function findTable(_appContext) {
 find-table — locate a specific table in a CAS or SAS library.
 
 USE when: find table, does table exist, is table in library, verify table exists, locate table
-DO NOT USE for: list tables (use list-tables), table schema/columns (use table-info), read table data (use read-table), find lib/job/model (use respective tools)
+DO NOT USE for: list tables (use ${_appContext.brand}-list-tables), table schema/columns (use ${_appContext.brand}-table-info), read table data (use ${_appContext.brand}-read-table), find lib/job/model (use respective tools)
 
 PARAMETERS
 - lib: string (required) — library name (e.g., 'Public', 'sashelp')
@@ -25,7 +25,7 @@ ROUTING RULES
 - "does table <name> exist in <lib>" → { lib: "<lib>", name: "<name>", server: "cas" }
 - "find table" with missing lib → ask "Which library contains the table?"
 - "find table" with missing name → ask "Which table name would you like to find?"
-- "list tables in <lib>" → use list-tables instead
+- "list tables in <lib>" → use ${_appContext.brand}-list-tables instead
 
 EXAMPLES
 - "find table iris in Public" → { lib: "Public", name: "iris", server: "cas" }
@@ -34,10 +34,10 @@ EXAMPLES
 - "verify table orders in Samples" → { lib: "Samples", name: "orders", server: "cas" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list tables in Public" (use list-tables)
-- "find library Public" (use find-library)
-- "what columns in cars?" (use table-info)
-- "read data from customers" (use read-table)
+- "list tables in Public" (use ${_appContext.brand}-list-tables)
+- "find library Public" (use ${_appContext.brand}-find-library)
+- "what columns in cars?" (use ${_appContext.brand}-table-info)
+- "read data from customers" (use ${_appContext.brand}-read-table)
 
 ERRORS
 Returns { tables: [] } if not found; { tables: [name, ...] } if found. Never hallucinate table names.
