@@ -1,5 +1,5 @@
 {
-  "name": "@sassoftware/sas-score-mcp-serverjs",
+  "name": "@sassoftware/sas-score-mcp-serverjs-agent",
   "version": "1.0.1-34",
   "description": "A mcp server for SAS Viya",
   "author": "Deva Kumar <deva.kumar@sas.com>",
@@ -20,9 +20,9 @@
     "bump": "npm version prerelease",
     "pub": "npm publish --tag dev --access public"
   },
-  "repository": "https://github.com/sassoftware/sas-score-mcp-serverjs",
+  "repository": "https://github.com/sassoftware/sas-score-mcp-serverjs/tree/sas-score-mcp-serverjs-agent",
   "bugs": {
-    "url": "https://github.com/sassoftware/sas-score-mcp-serverjs/issues"
+    "url": "https://github.com/sassoftware/sas-score-mcp-serverjs/tree/sas-score-mcp-serverjs-agent/issues"
   },
   "keywords": [
     "SAS Viya",
@@ -36,7 +36,7 @@
   ],
   "main": "./cli.js",
   "bin": {
-    "@sassoftware/sas-score-mcp-serverjs": "./cli.js"
+    "@sassoftware/sas-score-mcp-serverjs-agent": "./cli.js"
   },
   "files": [
     "src",
