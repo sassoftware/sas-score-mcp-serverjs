@@ -142,7 +142,7 @@ sas-score-scr-score({
 1. Find model (find-resources)
 2. Find table (find-resources) → get server
 3. Read rows from table (read-strategy)
-4. Score each row (or batch score)
+4. Score each row (or batch score) — cap at 100 rows by default; ask user to confirm before proceeding with larger batches
 5. Merge predictions with original rows
 
 **Decision**: Read strategy first
@@ -228,7 +228,7 @@ If table columns don't match model input variable names:
 ### Example 1: Score with inline scenario
 **Request**: "score a=1, b=2 with model simplejob.job"
 1. Find job simplejob using find-resources strategy
-2. Run: `sas-score-run-jobdef({ name: "simplejob", scenario: { a: 1, b: 2 } })`
+2. Run: `sas-score-run-job({ name: "simplejob", scenario: { a: 1, b: 2 } })`
 3. Return: `{ c: 3 }`
 
 ### Example 2: Score with MAS model

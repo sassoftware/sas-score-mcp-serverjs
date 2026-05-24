@@ -15,6 +15,7 @@ Listing rules
 - Use `list-*` tools for discovery and browsing only; do not use `list-*` to verify a specific resource's existence.
 - If the user specifies a server, list from that server; otherwise list from all servers when appropriate.
 - When a library is ambiguous for table listing, attempt both CAS and SAS and label results by server, or ask the user to clarify.
+- Pagination: always pass `start=1` and `limit=10` explicitly unless the user specifies different values. Never omit these parameters.
 
 
 ## Resource Type to Tool Mapping
@@ -193,61 +194,9 @@ sas-score-list-jobdefs({ start: 11, limit: 10 })
 
 No list tool is available for SCR models. Inform the user and ask for a specific SCR endpoint URL if they want to work with an SCR model.
 
----
 
-### 4. List Jobs (non-model)
-
-**Trigger**: "list jobs", "show all jobs", "what jobs are available"
-
-> **Note**: "list job models" also routes here — jobs and job models use the same list tool.
-
-**Tool**: `sas-score-list-jobs`
-
-**Logic**: Lists all SAS Viya job assets.
-
-**Parameters**:
-```
-start: <offset>                # 1-based page number (default 1)
-limit: <page size>             # items per page (default 10)
-where: "<filter expression>"   # optional filter
-```
-
-**Examples**:
-```
-# List first 10 jobs
-sas-score-list-jobs({ start: 1, limit: 10 })
-
-# Pagination: show next page
-sas-score-list-jobs({ start: 11, limit: 10 })
-```
-
----
-
-### 5. List JobDefs (non-model)
-
-**Trigger**: "list jobdefs", "show all jobdefs", "what jobdefs are available"
-
-> **Note**: "list jobdef models" also routes here — jobdefs and jobdef models use the same list tool.
-
-**Tool**: `sas-score-list-jobdefs`
-
-**Logic**: Lists all SAS Viya job definition assets.
-
-**Parameters**:
-```
-start: <offset>                # 1-based page number (default 1)
-limit: <page size>             # items per page (default 10)
-where: "<filter expression>"   # optional filter
-```
-
-**Examples**:
-```
-# List first 10 jobdefs
-sas-score-list-jobdefs({ start: 1, limit: 10 })
-
-# Pagination: show next page
-sas-score-list-jobdefs({ start: 11, limit: 10 })
-```
+> **Note**: "list jobs" (non-model context) uses the same tool as "list job models" — see section 3b above.
+> **Note**: "list jobdefs" (non-model context) uses the same tool as "list jobdef models" — see section 3c above.
 
 ---
 
@@ -286,14 +235,17 @@ User requests to list/browse resources
 What resource type?
   ├─ Libraries? → Use sas-score-list-libraries
   ├─ Tables in library X? → Use sas-score-list-tables
-  ├─ Models? → Use sas-score-list-mas
+  ├─ Models (MAS)? → Use sas-score-list-mas
   ├─ Jobs? → Use sas-score-list-jobs
-  └─ JobDefs? → Use sas-score-list-jobdefs
+  ├─ JobDefs? → Use sas-score-list-jobdefs
+  └─ SCR models? → Inform user: no list tool available; ask for a specific SCR endpoint URL
 ```
 
 ---
 
 ## Known Default Libraries
+
+> See the authoritative list in `find-resources/SKILL.md`. Reproduced here for quick reference.
 
 ### CAS Libraries (server: "cas")
 - Casuser
@@ -319,7 +271,7 @@ What resource type?
 
 | Aspect | Find | List |
 |---|---|---|
-| Purpose | Verify/discover existence | List available resources |
+| Purpose | Verify/confirm existence | Browse/discover available resources |
 | Returns | Single resource or not found | Multiple resources with pagination |
-| Use case | Before execution | Listing of resources |
+| Use case | Before execution | Browsing/discovery |
 | Tool suffix | `find-*` | `list-*` |

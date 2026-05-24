@@ -191,6 +191,31 @@ User: "What inputs does job model churnRisk need?"
 3. Return: { inputs: [...] }
 ```
 
+### Option E: JobDef Model Details
+
+> **Note**: There is no separate `sas-score-jobdef-info` tool. JobDef detail retrieval reuses `sas-score-job-info` — do not attempt to call a `sas-score-jobdef-info` tool.
+
+**Trigger phrases**: "what inputs does jobdef model X need", "describe jobdef model X",
+"jobdef model X metadata", "what inputs does jobdef X need", "describe jobdef X"
+
+**Tool**: `sas-score-job-info` (shared with Job models)
+
+**Parameters**:
+```
+sas-score-job-info({
+  model: "<jobdef name>"
+})
+```
+
+**Example**:
+```
+User: "What inputs does jobdef model myScorer need?"
+
+1. Find: sas-score-find-jobdef({ name: "myScorer" })
+2. Get info: sas-score-job-info({ model: "myScorer" })
+3. Return: { inputs: [...] }
+```
+
 ## Decision Tree
 
 ```
@@ -232,16 +257,16 @@ For each detail/information request:
 
 ## Response Format
 
-Always append a **Strategy Summary** to responses:
+Always append a **Strategy Summary** to responses (canonical template from `request-routing/SKILL.md`):
 
 ```
 ---
-
 **Strategy Summary:**
-- **Classification**: [Resource type identified]
-- **Verification**: [Resource found or skipped (SCR)]
-- **Tool Used**: [Detail tool invoked]
-- **Server**: [CAS/SAS for tables, N/A for models]
+- **Classification**: [Find / Read / Score / List / Describe]
+- **Verification**: [Resources verified / skipped]
+- **Tool(s)**: [Primary tool(s) invoked]
+- **Decision**: [Server chosen, model type, mapping]
+- **Next steps**: [Follow-ups or clarifications]
 ```
 
 ---

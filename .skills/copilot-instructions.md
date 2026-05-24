@@ -16,6 +16,7 @@ Note: the five-step phrasing (Identify → Verify → Select → Execute → For
 - Append a **Strategy Summary** to every response.
 - Always determine table server (CAS vs SAS) during verification; ask if ambiguous.
 - Do not invent resource names, servers, or model types — verify or ask.
+- Pagination: always pass `start=1` and `limit=10` when calling any tool that accepts these parameters, unless the user specifies different values.
 
 ## Canonical tool mappings (short)
 - Find: `sas-score-find-library`, `sas-score-find-table`, `sas-score-find-mas`, `sas-score-find-job`, `sas-score-find-jobdef`
@@ -42,7 +43,11 @@ If a project-specific execution tool exists (for example a `run-sas-program` hel
 - Column-to-model-input mapping is unclear
 
 ## References
-- Canonical router and examples: `skills/request-routing/SKILL.md`
-- Agent defaults and orchestration: `agents/sas-score-mcp-serverjs-agent.md`
+- Canonical router, examples, and Strategy Summary template: `skills/request-routing/SKILL.md`
+- Find/verify resources: `skills/find-resources/SKILL.md`
+- List/browse resources: `skills/list-resource/SKILL.md`
+- Read/query data: `skills/read-strategy/SKILL.md`
+- Scoring workflows: `skills/score-strategy/SKILL.md`
+- Describe/detail resources: `skills/detail-strategy/SKILL.md`
 
 Keep this file short. Use the SKILLs for decision trees, examples, and edge-case rules.

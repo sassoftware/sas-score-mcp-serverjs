@@ -2,6 +2,8 @@
 
 This folder contains simplified, consolidated strategies for working with SAS Viya through the MCP server.
 
+> **Claude Code Plugin**: The parent `.skills/` directory is a Claude Code plugin. See [Plugin Usage](#plugin-usage) at the bottom of this file for installation instructions.
+
 ## Files
 
 ### Core Strategies
@@ -123,3 +125,63 @@ If you were using the old `.skills` folder:
 ## Questions?
 
 Each strategy file has detailed examples, decision trees, and error handling guidance. Start with the strategy that matches your request type.
+
+---
+
+## Plugin Usage
+
+The `.skills/` directory (one level up from here) is a Claude Code plugin. It bundles these skills, the agent instructions, and the MCP server configuration.
+
+### Plugin structure
+
+```
+.skills/
+├── .claude-plugin/plugin.json   ← plugin manifest
+├── .mcp.json                    ← MCP server config (stdio, npx)
+├── agents/
+│   └── sas-score-mcp-serverjs-agent.md
+└── skills/
+    ├── request-routing/SKILL.md
+    ├── find-resources/SKILL.md
+    ├── list-resource/SKILL.md
+    ├── read-strategy/SKILL.md
+    ├── score-strategy/SKILL.md
+    └── detail-strategy/SKILL.md
+```
+
+### Install (after npm install)
+
+```bash
+# Point Claude Code at the plugin directory inside the installed package
+/plugin install ./node_modules/@sassoftware/sas-score-mcp-serverjs/.skills
+
+# Or from the git repo directly
+/plugin install https://github.com/sassoftware/sas-score-mcp-serverjs --subdir .skills
+```
+
+### Required environment variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `VIYA_SERVER` | *(required)* | SAS Viya server URL, e.g. `https://my-viya.example.com` |
+| `AUTHFLOW` | `oauth` | Auth flow: `oauth`, `code`, `sascli`, `token`, `bearer` |
+| `CLIENTID` | `vscodemcp` | OAuth client ID registered on the Viya server |
+| `CASSERVER` | `cas-shared-default` | CAS server name |
+| `COMPUTECONTEXT` | `SAS Job Execution compute context` | Compute context name |
+
+Set these in your shell or a `.env` file before starting Claude Code.
+
+### HTTP transport (remote/production deployments)
+
+The default `.mcp.json` uses stdio (local npx). For a remotely deployed server (e.g. Docker on Azure), replace the entry in `.mcp.json` with:
+
+```json
+{
+  "mcpServers": {
+    "sas-score-mcp-serverjs": {
+      "type": "http",
+      "url": "https://<your-deployed-host>/mcp"
+    }
+  }
+}
+```

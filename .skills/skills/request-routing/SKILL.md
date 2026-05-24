@@ -21,7 +21,7 @@ Classification
 | Find resource | "find", "does X exist", "locate", "verify" | Verify resource | `sas-score-find-library`, `sas-score-find-table`, `sas-score-find-mas`, `sas-score-find-job`, `sas-score-find-jobdef` |
 | Read / Query | "read", "show rows", "how many", "count", "average", "query" | Read / aggregate | `sas-score-read-table`, `sas-score-sas-query` |
 | Score | "score", "predict", "run model" | Score inputs | `sas-score-mas-score`, `sas-score-run-job`, `sas-score-run-jobdef`, `sas-score-scr-score` |
-| List / Discover | "list", "show all", "browse" | List resources | `list-*` tools (e.g., `list-mas`, `list-jobs`) |
+| List / Discover | "list", "show all", "browse" | List resources | `sas-score-list-*` tools (e.g., `sas-score-list-mas`, `sas-score-list-jobs`) |
 | Describe | "describe", "what inputs", "metadata" | Return metadata | `sas-score-*-info` (mas/job/jobdef/scr), `sas-score-table-info` |
 
 Verification rules
@@ -41,6 +41,7 @@ Defaults & exceptions
 - Default model type: MAS unless the user specifies otherwise.
 - Skip `find-*` verification for SCR models; SCR endpoints may be scored directly.
 - If server determination is ambiguous, prompt the user for clarification.
+- Pagination: always pass `start=1` and `limit=10` when calling any tool that accepts these parameters, unless the user specifies different values. Never omit them and rely on tool-level defaults.
 
 Execute mapping (concise)
 - Read rows: `sas-score-read-table` (lib, table, server)
@@ -61,11 +62,11 @@ Combined Read + Score (short)
 Strategy Summary (append to responses)
 ---
 **Strategy Summary:**
-- Classification: [Find / Read / Score / List / Describe]
-- Verification: [Resources verified / skipped]
-- Tool(s): [Primary tool(s) invoked]
-- Decision: [Server chosen, model type, mapping]
-- Next steps: [Follow-ups or clarifications]
+- **Classification**: [Find / Read / Score / List / Describe]
+- **Verification**: [Resources verified / skipped]
+- **Tool(s)**: [Primary tool(s) invoked]
+- **Decision**: [Server chosen, model type, mapping]
+- **Next steps**: [Follow-ups or clarifications]
 ---
 
 Error handling (short)

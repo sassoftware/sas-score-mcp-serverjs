@@ -11,6 +11,7 @@ Use this strategy when the user requests to read, fetch, or query data from a ta
 Rules summary
 - Verification rules: verify the table exists using `find-*` and determine the server (CAS vs SAS); ask the user if ambiguous. Do not assume a default server unless explicitly instructed.
 - Execution rules: choose `sas-score-read-table` for raw row reads and `sas-score-sas-query` for aggregations/joins/groupings; if intent is ambiguous, ask the user.
+- Pagination: always pass `start=1` and `limit=10` explicitly for `sas-score-read-table` unless the user specifies different values.
 - Error handling: surface clear guidance when table or column names are missing or misspelled.
 
 ## Prerequisites
@@ -51,6 +52,7 @@ sas-score-read-table({
   lib: "Public",
   table: "customers",
   server: "cas",
+  start: 1,
   limit: 25,
   where: "status='active'"
 })
@@ -126,13 +128,13 @@ If the user's intent is ambiguous or mixes aggregation and raw reads, ask the us
 ### Example 1: Browse customer records
 **Request**: "read first 20 customers from Public"
 1. Find table customers in Public → CAS
-2. Read: `sas-score-read-table({ lib: "Public", table: "customers", server: "cas", limit: 20 })`
+2. Read: `sas-score-read-table({ lib: "Public", table: "customers", server: "cas", start: 1, limit: 20 })`
 3. Return 20 rows
 
 ### Example 2: Find active customers in a region
 **Request**: "fetch customers from Public where status='active' and region='East'"
 1. Find table customers in Public → CAS
-2. Read: `sas-score-read-table({ lib: "Public", table: "customers", server: "cas", where: "status='active' and region='East'" })`
+2. Read: `sas-score-read-table({ lib: "Public", table: "customers", server: "cas", start: 1, limit: 10, where: "status='active' and region='East'" })`
 3. Return matching rows
 
 ### Example 3: Aggregate customers by region
