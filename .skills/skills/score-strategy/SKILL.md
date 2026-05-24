@@ -11,6 +11,11 @@ description: >
 
 Use this strategy when the user requests model scoring, predictions, or running jobs/jobdefs.
 
+Rules summary
+- Verification rules: always verify model existence with `find-*` (except SCR); for table scoring verify both model and table and determine server.
+- Execution rules: inline scenarios → verify model → score; table rows → verify table → read → score (batch). Ask for column-to-input mapping when needed.
+- Defaults & exceptions: default model type to MAS when unspecified; skip pre-verification for SCR models and require a valid SCR endpoint.
+
 ## Prerequisites
 
 1. Verify the model/job exists using find-resources skill

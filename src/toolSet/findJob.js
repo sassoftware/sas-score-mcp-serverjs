@@ -11,19 +11,23 @@ function findJob(_appContext) {
 find-job — locate a specific SAS Viya job.
 
 USE when: find job, does job exist, is there a job named, lookup job, verify job exists
-DO NOT USE for: list jobs (use list-jobs), run job (use run-job), execute jobdef (use run-jobdef), find lib/table/model (use respective tools)
+DO NOT USE for: list jobs (use ${_appContext.brand}-list-jobs), run job (use ${_appContext.brand}-run-job), execute jobdef (use ${_appContext.brand}-run-jobdef), find lib/table/model (use respective tools)
 
 PARAMETERS
 - name: string (required) — job name to locate; if multiple supplied, use first
 
+Naming Rules: 
+- If user provides name with "job" suffix ".job", strip the suffix (e.g., "cars_job_v4.job"), and look for "cars_job_v4".
+
 ROUTING RULES
 - "find job <name>" → { name: "<name>" }
+- "find name.job" → { name: "<name>" } 
 - "does job <name> exist" → { name: "<name>" }
 - "is there a job named <name>" → { name: "<name>" }
 - "lookup/verify job <name>" → { name: "<name>" }
 - "find job" with no name → ask "Which job name would you like to find?"
-- "find all jobs / list jobs" → use list-jobs instead
-- "run job <name>" → use run-job instead
+- "find all jobs / list jobs" → use ${_appContext.brand}-list-jobs instead
+- "run job <name>" → use ${_appContext.brand}-run-job instead
 
 EXAMPLES
 - "find job cars_job_v4" → { name: "cars_job_v4" }
@@ -31,9 +35,9 @@ EXAMPLES
 - "is there a job named metricsRefresh" → { name: "metricsRefresh" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list jobs" (use list-jobs)
-- "run job cars_job_v4" (use run-job)
-- "execute jobdef cars_job_v4" (use run-jobdef)
+- "list jobs" (use ${_appContext.brand}-list-jobs)
+- "run job cars_job_v4" (use ${_appContext.brand}-run-job)
+- "execute jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
 
 ERRORS
 Returns { jobs: [] } if not found; { jobs: [name, ...] } if found. Never hallucinate job names.
@@ -46,6 +50,11 @@ Returns { jobs: [] } if not found; { jobs: [name, ...] } if found. Never halluci
       name: z.string()
     }),
     handler: async (params) => {
+      if (params.name != null) {
+        if (params.name.endsWith('.job'))   {
+          params.name = params.name.slice(0, -4);
+        }
+      }
       let r = await _findJob(params);
       return r;
     }

@@ -10,7 +10,7 @@ function listJobs(_appContext) {
 list-jobs — enumerate SAS Viya job assets.
 
 USE when: list jobs, show jobs, browse jobs, list available jobs, next page
-DO NOT USE for: find single job (use find-job), execute job (use run-job), run job def (use run-jobdef), sas code (use run-sas-program)
+DO NOT USE for: find single job (use ${_appContext.brand}-find-job), execute job (use ${_appContext.brand}-run-job), run job def (use ${_appContext.brand}-run-jobdef), sas code (use ${_appContext.brand}-run-sas-program)
 
 PARAMETERS
 - limit: number (default: 10) — number of jobs per page
@@ -28,10 +28,10 @@ EXAMPLES
 - next jobs → { start: 11, limit: 10 }
 
 NEGATIVE EXAMPLES (do not route here)
-- find job abc (use find-job)
-- run job abc (use run-job)
-- list models (use list-models)
-- list tables in lib xyz (use list-tables)
+- find job abc (use ${_appContext.brand}-find-job)
+- run job abc (use ${_appContext.brand}-run-job)
+- list models (use ${_appContext.brand}-list-models)
+- list tables in lib xyz (use ${_appContext.brand}-list-tables)
 
 PAGINATION
 If returned length === limit, hint: next start = start + limit. Empty result with start > 1 means paged past end.

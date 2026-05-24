@@ -1,0 +1,57 @@
+---
+resource: "table"
+description: "Decision tree for table operations. Use sas-score-sas-query for aggregation/query requests; otherwise use sas-score-read-table for raw rows."
+intents:
+  list:
+    parse:
+      lib: "$lib"
+    exec:
+      tool: "list-tables"
+      args:
+        lib: "$lib"
+        start: 1
+        limit: 10
+    format: "list of tables"
+  find:
+    parse:
+      lib: "$lib"
+      name: "$name"
+    exec:
+      tool: "find-table"
+      args:
+        lib: "$lib"
+        name: "$name"
+    format: "find response"
+  read:
+    parse:
+      lib: "$lib"
+      table: "$table"
+      where: "$where"
+      aggregation_requested: "$aggregation_requested" # boolean inferred from request
+      aggregation_query: "$aggregation_query"
+    verify:
+      tool: "find-table"
+      args:
+        lib: "$lib"
+        name: "$table"
+    decision:
+      - condition: "aggregation_requested == true"
+        exec:
+          tool: "sas-score-sas-query"
+          args:
+            table: "$lib.$table"
+            query: "$aggregation_query"
+      - condition: "default"
+        exec:
+          tool: "sas-score-read-table"
+          args:
+            lib: "$lib"
+            table: "$table"
+            where: "$where"
+    format: "rows or aggregated result"
+  read_and_score:
+    description: "Compose read then score (read decision chooses sas-query vs read-table)."
+    compose:
+      - step: "table.read"
+      - step: "mas.score"
+    format: "rows with appended predictions"

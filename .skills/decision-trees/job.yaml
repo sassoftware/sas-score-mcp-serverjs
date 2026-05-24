@@ -1,0 +1,33 @@
+---
+resource: "job"
+description: "Decision tree for Jobs: list, find, run"
+intents:
+  list:
+    exec:
+      tool: "list-jobs"
+      args:
+        start: 1
+        limit: 10
+    format: "list of jobs"
+  find:
+    parse:
+      name: "$name"
+    exec:
+      tool: "find-job"
+      args:
+        name: "$name"
+    format: "find response"
+  run:
+    parse:
+      name: "$name"
+      scenario: "$scenario"
+    verify:
+      tool: "find-job"
+      args:
+        name: "$name"
+    exec:
+      tool: "sas-score-run-job"
+      args:
+        name: "$name"
+        scenario: "$scenario"
+    format: "job run output"

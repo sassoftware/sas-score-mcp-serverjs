@@ -15,7 +15,7 @@ function listTables(_appContext) {
 list-tables — enumerate tables within a library.
 
 USE when: list tables in <lib>, show tables in <lib>, next page
-DO NOT USE for: find table, list libraries, get table structure (use table-info), read data (use read-table)
+DO NOT USE for: find table, list libraries, get table structure (use ${_appContext.brand}-table-info), read data (use ${_appContext.brand}-read-table)
 
 PARAMETERS
 - lib: string — library to inspect (required)
@@ -34,10 +34,10 @@ EXAMPLES
 - "show 25 tables in sashelp" → { lib: "sashelp", limit: 25, start: 1 }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list libs" (use list-libraries)
-- "find lib Public" (use find-library)
-- "describe table cars" (use table-info)
-- "read table cars" (use read-table)
+-- "list libs" (use ${_appContext.brand}-list-libraries)
+-- "find lib Public" (use ${_appContext.brand}-find-library)
+-- "describe table cars" (use ${_appContext.brand}-table-info)
+-- "read table cars" (use ${_appContext.brand}-read-table)
 
 ERRORS
 Returns empty array if no tables found.

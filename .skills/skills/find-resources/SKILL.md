@@ -9,6 +9,12 @@ description: >
 
 Use this strategy to verify that a resource exists before executing any action.
 
+Verification rules
+- Use `find-*` tools to confirm resource existence; do not use `list-*` tools for verification.
+- For tables, determine server (CAS vs SAS) from the library; if unknown, try CAS first then SAS (uppercase lib for SAS).
+- For models with no explicit type, default to MAS unless the user specifies otherwise.
+- SCR models require a URL/endpoint; ask the user for the endpoint rather than attempting a find.
+
 Do **not** use list tools for verifying or finding specific resources. List tools are for discovery and exploration only, not for confirming the existence of a specific resource.
 
 ## Resource Types and Find Tools
@@ -66,7 +72,7 @@ Do **not** use list tools for verifying or finding specific resources. List tool
 
 ### 3. Find Scoring Model
 
-**Trigger**: "find model X", "find mas model X", "find job model X", "find jobdef model X",
+**Trigger**: "find model X.mas", "find mas model X", "find job model X", "find jobdef model X",
 "find scr model X", "does model X exist", "locate model X", "find job X", "does job X exist",
 "find jobdef X", "does jobdef X exist"
 
@@ -74,19 +80,19 @@ Do **not** use list tools for verifying or finding specific resources. List tool
 
 | User phrase / suffix                           | Model type | Find Tool              |
 |------------------------------------------------|------------|------------------------|
-| `find mas model X` / `X.mas` / `mas X`         | MAS        | `sas-score-find-model` |
+| `find mas model X` / `X.mas` / `mas X`         | MAS        | `sas-score-find-mas` |
 | `find job model X` / `X.job` / `job X`         | Job        | `sas-score-find-job`   |
 | `find jobdef model X` / `X.jobdef` / `jobdef X`| JobDef     | `sas-score-find-jobdef`|
 | `find scr model X` / `X.scr` / `scr X`         | SCR        | *(no tool — ask for URL)*|
-| `find model X` (no type)                       | MAS (default) | `sas-score-find-model` |
+
 
 #### MAS Model
 
-**Tool**: `sas-score-find-model`
+**Tool**: `sas-score-find-mas`
 
 **Logic**: Strip `.mas` suffix if present, use base name.
 ```
-sas-score-find-model({ name: "<model>" })
+sas-score-find-mas({ name: "<model>" })
 ```
 
 #### Job Model
@@ -123,11 +129,11 @@ If user says "find model X" without a type qualifier, infer the type from the su
 
 | Pattern                              | Type    | Find Tool               |
 |--------------------------------------|---------|-------------------------|
-| `X.mas` / `mas model X` / `mas X`    | MAS     | `sas-score-find-model`  |
+| `X.mas` / `mas model X` / `mas X`    | MAS     | `sas-score-find-mas`  |
 | `X.job` / `job model X` / `job X`    | Job     | `sas-score-find-job`    |
 | `X.jobdef` / `jobdef model X` / `jobdef X` | JobDef | `sas-score-find-jobdef` |
 | `X.scr` / `scr model X` / `scr X`    | SCR     | Skip (no find tool)     |
-| (none)                               | Default to MAS | `sas-score-find-model` |
+| (none)                               | Default to MAS | `sas-score-find-mas` |
 
 ---
 

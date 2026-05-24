@@ -21,6 +21,7 @@ PARAMETERS
 ROUTING RULES
 - "what inputs does mas X need?" → { model: "X" }
 - "describe mas Y" → { model: "Y" }
+- "describe mas Y.mas" → { model: "Y" }
 - "show variables for mas Z" → { model: "Z" }
 
 EXAMPLES
@@ -44,6 +45,11 @@ Returns model metadata: inputs (name, type, role), outputs (name, type, possible
       model: z.string()
     }),
     handler: async (params) => {
+      if (params.model != null) {
+        if (params.model.endsWith('.mas'))   {
+          params.model = params.model.slice(0, -4);
+        }
+      } 
       let r = await _masDescribe(params);
       return r;
     }

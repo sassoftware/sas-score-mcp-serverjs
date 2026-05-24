@@ -1,0 +1,35 @@
+---
+resource: "mas"
+description: "Decision tree for MAS models: list, find, score"
+intents:
+  list:
+    parse:
+      scope: "$scope" # optional scope/namespace
+    exec:
+      tool: "list-mas"
+      args:
+        start: 1
+        limit: 10
+    format: "list of MAS models"
+  find:
+    parse:
+      model: "$model"
+    exec:
+      tool: "find-mas"
+      args:
+        name: "$model"
+    format: "find response"
+  score:
+    parse:
+      model: "$model"
+      scenario: "$scenario"
+    verify:
+      tool: "find-mas"
+      args:
+        name: "$model"
+    exec:
+      tool: "sas-score-mas-score"
+      args:
+        model: "$model"
+        scenario: "$scenario"
+    format: "merge prediction with input"

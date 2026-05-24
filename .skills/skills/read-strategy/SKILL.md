@@ -8,6 +8,11 @@ description: >
 
 Use this strategy when the user requests to read, fetch, or query data from a table.
 
+Rules summary
+- Verification rules: verify the table exists using `find-*` and determine the server (CAS vs SAS); ask the user if ambiguous. Do not assume a default server unless explicitly instructed.
+- Execution rules: choose `sas-score-read-table` for raw row reads and `sas-score-sas-query` for aggregations/joins/groupings; if intent is ambiguous, ask the user.
+- Error handling: surface clear guidance when table or column names are missing or misspelled.
+
 ## Prerequisites
 
 Before reading:
@@ -100,7 +105,7 @@ If the user's intent is ambiguous or mixes aggregation and raw reads, ask the us
 
 ## Table Name Format
 
-- **CAS tables**: `Caslib.table` or `Public.customers` (lowercase caslib, mixed case table)
+- **CAS tables**: `Caslib.table` or `Public.customers` (mixed case table)
 - **SAS tables**: `LIBREF.table` or `SASHELP.cars` (uppercase libref, case-insensitive table)
 
 ---

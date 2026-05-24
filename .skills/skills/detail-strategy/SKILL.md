@@ -14,15 +14,14 @@ If the specified resource is ambiguous, ask the user for clarification (e.g. "Ar
 
 **Model**: If user just says "model X" without specifying type, default to MAS model (this is an explicit exception to the 'never invent' rule, but it is a predefined convention in SAS).
 
-Verification vs Retrieval (simplified)
+Verification rules
+- Always verify the target resource exists using the appropriate `find-*` tool before attempting retrieval, except for SCR models (see Exceptions below).
+- For tables, determine server (CAS vs SAS) during verification; if ambiguous, ask the user for the full `lib.table` or server.
+- For models, strip suffixes such as `.mas`, `.job`, `.jobdef` or `.scr` before lookup to avoid lookup failures.
 
-- We separate the workflow into two clear, sequential phases to reduce branching and cognitive load:
-  1. Verification phase — confirm the resource exists and determine its exact type and server. Use the appropriate "find" tool for all resource types except SCR models.
-  2. Retrieval phase — after successful verification, call the detail/read tool appropriate for the identified resource type to fetch metadata or content.
-
-- Exception for SCR models: document the exception inline — SCR models may be queried directly with `sas-score-scr-info` when the user provides a specific SCR endpoint. Even when skipping verification, still validate the endpoint/URL format before calling the tool.
-
-Apply this separation consistently across MAS models, Job models, JobDef models, SCR models, and tables.
+Defaults & exceptions
+- Default model type: MAS when the user says `model X` without specifying a type.
+- If verification fails, inform the user and ask for corrected or more specific identifiers.
 
 ---
 
@@ -98,7 +97,7 @@ sas-score-mas-info({
 ```
 User: "What inputs does mas model churnRisk need?"
 
-1. Find: sas-score-find-model({ name: "churnRisk" })
+1. Find: sas-score-find-mas({ name: "churnRisk" })
 2. Get info: sas-score-mas-info({ model: "churnRisk" })
 3. Return: { inputs: [...], outputs: [...], description: "..." }
 ```
@@ -267,7 +266,7 @@ If a request fails:
 **Workflow**:
 1. Classify: MAS model detail request
 2. Verify: Find model creditScore → Found ✓
-3. Execute: `sas-score-model-info({ model: "creditScore" })`
+3. Execute: `sas-score-mas-info({ model: "creditScore" })`
 4. Return: Model inputs, outputs, and description
 
 ### Example 2: SCR Model Schema

@@ -8,7 +8,14 @@ description: >
 # Unified Resource Listing Strategy
 
 
+
 Use this strategy to list available resources (libraries, tables, models, jobs, jobdefs).
+
+Listing rules
+- Use `list-*` tools for discovery and browsing only; do not use `list-*` to verify a specific resource's existence.
+- If the user specifies a server, list from that server; otherwise list from all servers when appropriate.
+- When a library is ambiguous for table listing, attempt both CAS and SAS and label results by server, or ask the user to clarify.
+
 
 ## Resource Type to Tool Mapping
 

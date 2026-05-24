@@ -9,7 +9,7 @@ function listLibraries(_appContext) {
 list-libraries — enumerate CAS or SAS libraries.
 
 USE when user asks to: list/show/enumerate libraries, caslibs, sas libs, or available libraries.
-DO NOT USE for: listing tables in a library (→ list-tables), column/table metadata, job execution, models, scoring.
+DO NOT USE for: listing tables in a library (→ ${_appContext.brand}-list-tables), column/table metadata, job execution, models, scoring.
 
 PARAMETERS
 - server: 'cas' | 'sas' | 'all' (default: 'all')
@@ -38,9 +38,9 @@ EXAMPLES
 - "filter cas libs" (no filter given) → ask: "What filter expression should I apply?"
 
 NEGATIVE EXAMPLES (do not route here)
-- "list tables in SASHELP"      → list-tables
-- "list models / jobs / jobdefs"→ respective tools
-- "run a program to create a lib" → run-sas-program
+-- "list tables in SASHELP"      → ${_appContext.brand}-list-tables
+-- "list models / jobs / jobdefs"→ respective tools
+-- "run a program to create a lib" → ${_appContext.brand}-run-sas-program
 
 PAGINATION
 If returned item count === limit, hint: next start = start + limit.

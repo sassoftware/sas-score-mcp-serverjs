@@ -1,0 +1,33 @@
+---
+resource: "jobdef"
+description: "Decision tree for JobDefs: list, find, run"
+intents:
+  list:
+    exec:
+      tool: "list-jobdefs"
+      args:
+        start: 1
+        limit: 10
+    format: "list of jobdefs"
+  find:
+    parse:
+      name: "$name"
+    exec:
+      tool: "find-jobdef"
+      args:
+        name: "$name"
+    format: "find response"
+  run:
+    parse:
+      name: "$name"
+      scenario: "$scenario"
+    verify:
+      tool: "find-jobdef"
+      args:
+        name: "$name"
+    exec:
+      tool: "sas-score-run-jobdef"
+      args:
+        name: "$name"
+        scenario: "$scenario"
+    format: "jobdef run output"
