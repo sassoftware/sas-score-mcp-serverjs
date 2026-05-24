@@ -18,6 +18,8 @@ import findTable from './findTable.js';
 import tableInfo from './tableInfo.js';
 import readTable from './readTable.js';
 
+import findScr from './findScr.js';
+import listScr from './listScr.js';
 import scrInfo from './scrInfo.js';
 import scrScore from './scrScore.js';
 
@@ -39,7 +41,6 @@ import jobdefInfo from './jobdefInfo.js';
 import sasQuery from './sasQuery.js';
 import setContext from './setContext.js';
 
-
 function makeTools(_appContext) {
   // wrap all tools with 
   let customTools = [];
@@ -47,13 +48,14 @@ function makeTools(_appContext) {
   // get the tool definitions and handler 
   let list = [
     listMas(_appContext),
-    
+    listScr(_appContext),
     findMas(_appContext),
     masInfo(_appContext),
     masScore(_appContext),
 
     scrInfo(_appContext),
     scrScore(_appContext),
+    findScr(_appContext),
 
     findLibrary(_appContext),
     listLibraries(_appContext),

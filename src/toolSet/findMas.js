@@ -19,6 +19,7 @@ PARAMETERS
 
 ROUTING RULES
 - "find mas <name>" → { name: "<name>" }
+- "find name.mas" → { name: "<name>" }
 - "does mas <name> exist" → { name: "<name>" }
 - "is mas <name> deployed" → { name: "<name>" }
 - "lookup/verify mas <name>" → { name: "<name>" }
@@ -48,6 +49,11 @@ Returns { mass: [] } if not found; { mass: [name, ...] } if found. Never halluci
       name: z.string()
     }),
     handler: async (params) => { 
+      if (params.name != null) {
+        if (params.name.endsWith('.mas'))   {
+          params.name = params.name.slice(0, -4);
+        }
+      }
       let r = await _findmas(params);
       return r;
     }

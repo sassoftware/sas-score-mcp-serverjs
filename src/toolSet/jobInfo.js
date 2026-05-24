@@ -22,6 +22,7 @@ ROUTING RULES
 
 EXAMPLES
 - "describe job cars_job_v4" → { name: "cars_job_v4" }
+- "describe metricsRefresh.job" → { name: "metricsRefresh" }
 
 NEGATIVE EXAMPLES (do not route here)
 - "list jobs" (use ${_appContext.brand}-list-jobs)

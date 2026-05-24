@@ -24,6 +24,8 @@ ROUTING RULES
 
 EXAMPLES
 - "run job xyz" → { name: "xyz" }
+- "run xyz.job with month=10, year=2025" → { name: "xyz", scenario: {month:10, year:2025} }
+- "score with job abc using month=10, year=2025" → { name: "abc", scenario: {month:10, year:2025} }
 - "run job monthly_etl with month=10, year=2025" → { name: "monthly_etl", scenario: {month:10, year:2025} }
 
 NEGATIVE EXAMPLES (do not route here)

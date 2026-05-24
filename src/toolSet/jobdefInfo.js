@@ -17,11 +17,14 @@ PARAMETERS
 
 ROUTING RULES
 - "describe jobdef <name>" → { name: "<name>" }
+- "describe <name.jobdef>"  
 - "describe model <name.jobdef>"
 - "info for jobdef <name>" → { name: "<name>" }
 
 EXAMPLES
 - "describe jobdef cars_job_v4" → { name: "cars_job_v4" }
+- "describe metricsRefresh.jobdef" → { name: "metricsRefresh" }
+- "info for jobdef ETL" → { name: "ETL" }
 
 NEGATIVE EXAMPLES (do not route here)
 - "list jobdefs" (use ${_appContext.brand}-list-jobdefs)

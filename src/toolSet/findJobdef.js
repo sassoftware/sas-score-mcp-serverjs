@@ -25,6 +25,7 @@ PARAMETERS
 
 ROUTING RULES
 - "find jobdef <name>" → { name: "<name>" }
+- "find name.jobdef" → { name: "<name>" }
 - "does jobdef <name> exist" → { name: "<name>" }
 - "is there a jobdef named <name>" → { name: "<name>" }
 - "lookup/verify jobdef <name>" → { name: "<name>" }
@@ -54,6 +55,11 @@ Returns { jobdefs: [] } if not found; { jobdefs: [name, ...] } if found. Never h
         name: z.string()
     }),
     handler: async (params) => {
+      if (params.name != null) {
+        if (params.name.endsWith('.jobdef'))   {
+          params.name = params.name.slice(0, -7);
+        }
+      }
       let r = await _findJobdef(params);
       return r;
     }

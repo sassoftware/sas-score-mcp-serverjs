@@ -21,6 +21,7 @@ Naming Rules:
 
 ROUTING RULES
 - "find job <name>" → { name: "<name>" }
+- "find name.job" → { name: "<name>" } 
 - "does job <name> exist" → { name: "<name>" }
 - "is there a job named <name>" → { name: "<name>" }
 - "lookup/verify job <name>" → { name: "<name>" }
@@ -49,6 +50,11 @@ Returns { jobs: [] } if not found; { jobs: [name, ...] } if found. Never halluci
       name: z.string()
     }),
     handler: async (params) => {
+      if (params.name != null) {
+        if (params.name.endsWith('.job'))   {
+          params.name = params.name.slice(0, -4);
+        }
+      }
       let r = await _findJob(params);
       return r;
     }
