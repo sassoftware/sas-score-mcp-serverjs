@@ -10,7 +10,7 @@ function listJobs(_appContext) {
 list-jobs — enumerate SAS Viya job assets.
 
 USE when: list jobs, show jobs, browse jobs, list available jobs, next page
-DO NOT USE for: find single job (use ${_appContext.brand}-find-job), execute job (use ${_appContext.brand}-run-job), run job def (use ${_appContext.brand}-run-jobdef), sas code (use ${_appContext.brand}-run-sas-program)
+DO NOT USE for: find single job (use ${_appContext.brand}-find-job), score job (use ${_appContext.brand}-score-job), score jobdef (use ${_appContext.brand}-score-jobdef), sas code (use ${_appContext.brand}-score-program)
 
 PARAMETERS
 - limit: number (default: 10) — number of jobs per page
@@ -29,7 +29,7 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - find job abc (use ${_appContext.brand}-find-job)
-- run job abc (use ${_appContext.brand}-run-job)
+- score job abc (use ${_appContext.brand}-score-job)
 - list models (use ${_appContext.brand}-list-models)
 - list tables in lib xyz (use ${_appContext.brand}-list-tables)
 

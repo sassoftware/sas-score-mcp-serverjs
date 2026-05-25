@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 import { z } from 'zod';
@@ -7,29 +7,29 @@ import _listJobs from '../toolHelpers/_listJobs.js';
 function listJobs(_appContext) {
 
   let description = `
-list-jobs — enumerate SAS Viya job assets.
+list-jobs â€” enumerate SAS Viya job assets.
 
 USE when: list jobs, show jobs, browse jobs, list available jobs, next page
-DO NOT USE for: find single job (use find-job), execute job (use run-job), run job def (use run-jobdef), sas code (use run-sas-program)
+DO NOT USE for: find single job (use find-job), execute job (use score-job), run job def (use score-jobdef), sas code (use score-program)
 
 PARAMETERS
-- limit: number (default: 10) — number of jobs per page
-- start: number (default: 1) — 1-based page offset
-- where: string (default: '') — optional filter expression
+- limit: number (default: 10) â€” number of jobs per page
+- start: number (default: 1) â€” 1-based page offset
+- where: string (default: '') â€” optional filter expression
 
 ROUTING RULES
-- list jobs → { start: 1, limit: 10 }
-- show me 25 jobs → { start: 1, limit: 25 }
-- next jobs → { start: previousStart + previousLimit, limit: previousLimit }
+- list jobs â†’ { start: 1, limit: 10 }
+- show me 25 jobs â†’ { start: 1, limit: 25 }
+- next jobs â†’ { start: previousStart + previousLimit, limit: previousLimit }
 
 EXAMPLES
-- list jobs → { start: 1, limit: 10 }
-- list 25 jobs → { start: 1, limit: 25 }
-- next jobs → { start: 11, limit: 10 }
+- list jobs â†’ { start: 1, limit: 10 }
+- list 25 jobs â†’ { start: 1, limit: 25 }
+- next jobs â†’ { start: 11, limit: 10 }
 
 NEGATIVE EXAMPLES (do not route here)
 - find job abc (use find-job)
-- run job abc (use run-job)
+- run job abc (use score-job)
 - list models (use list-models)
 - list tables in lib xyz (use list-tables)
 
@@ -58,4 +58,5 @@ Surface backend error directly; never fabricate job names.
   return spec;
 }
 export default listJobs;
+
 

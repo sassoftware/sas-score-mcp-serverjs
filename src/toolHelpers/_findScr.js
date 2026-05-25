@@ -6,10 +6,10 @@
 import axios from 'axios';
 
 async function _findScr(params) {
-  let {url} = params;
+  let {name} = params;
   let config = {
     method: 'HEAD',
-    url: url + '/apiMeta/api',
+    name: name + '/apiMeta/api',
     headers: {
       'Accept': 'application/json'
     }
@@ -19,9 +19,9 @@ async function _findScr(params) {
     let response = await axios(config);
     console.error('[Note] Response status:', response.status);
     if (response.status !== 200) {
-      return {isError: true, content: [{ type: 'text', text: `SCR model ${url} not found` }]};
+      return {isError: true, content: [{ type: 'text', text: `SCR model ${name} not found` }]};
     } else if (response.status === 200) {
-      return { content: [{ type: 'text', text: `Model ${url} is available` }]};
+      return { content: [{ type: 'text', text: `Model ${name} is available` }]};
     }
   }
   catch (error) {

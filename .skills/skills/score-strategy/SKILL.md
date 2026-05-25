@@ -90,8 +90,8 @@ score results of query...    → Query results
 
 **Tools**:
 - MAS: `sas-score-mas-score`
-- Job: `sas-score-run-job`
-- JobDef: `sas-score-run-jobdef`
+- Job: `sas-score-score-job`
+- JobDef: `sas-score-score-jobdef`
 - SCR: `sas-score-scr-score`
 
 **Flow**:
@@ -110,7 +110,7 @@ sas-score-mas-score({
 
 **Parameters** (job):
 ```
-sas-score-run-job({
+sas-score-score-job({
   name: "<job name>",
   scenario: { a: 1, b: 2 }
 })
@@ -118,7 +118,7 @@ sas-score-run-job({
 
 **Parameters** (jobdef):
 ```
-sas-score-run-jobdef({
+sas-score-score-jobdef({
   name: "<jobdef name>",
   scenario: { a: 1, b: 2 }
 })
@@ -127,7 +127,7 @@ sas-score-run-jobdef({
 **Parameters** (SCR):
 ```
 sas-score-scr-score({
-  url: "<scr endpoint>",
+  name: "<scr model name>",
   scenario: { a: 1, b: 2 }
 })
 ```
@@ -228,7 +228,7 @@ If table columns don't match model input variable names:
 ### Example 1: Score with inline scenario
 **Request**: "score a=1, b=2 with model simplejob.job"
 1. Find job simplejob using find-resources strategy
-2. Run: `sas-score-run-job({ name: "simplejob", scenario: { a: 1, b: 2 } })`
+2. Run: `sas-score-score-job({ name: "simplejob", scenario: { a: 1, b: 2 } })`
 3. Return: `{ c: 3 }`
 
 ### Example 2: Score with MAS model
@@ -247,6 +247,5 @@ If table columns don't match model input variable names:
 
 ### Example 4: Score with SCR model
 **Request**: "score age=50, income=75000 with model loan.scr"
-1. Prepare: SCR URL for "loan"
-2. Score: `sas-score-scr-score({ url: "loan", scenario: { age: 50, income: 75000 } })`
-3. Return predictions from SCR endpoint
+1. Score: `sas-score-scr-score({ name: "loan", scenario: { age: 50, income: 75000 } })`
+2. Return predictions from SCR endpoint

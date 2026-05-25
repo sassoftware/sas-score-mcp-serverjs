@@ -1,4 +1,4 @@
-# SAS MCP Server Tools Reference
+﻿# SAS MCP Server Tools Reference
 
 ## Overview
 
@@ -111,7 +111,7 @@ model-score model=cancer1 scenario="age=45, sex=M, tumor=stage2"
 
 ---
 
-### scr-info
+### scr-describe
 
 Return input/output schema and metadata for an SCR (Score Code Runtime) model.
 
@@ -124,7 +124,7 @@ Return input/output schema and metadata for an SCR (Score Code Runtime) model.
 
 **Example:**
 ```
-scr-info name="https://scr-host/models/loan"
+scr-describe name="https://scr-host/models/loan"
 ```
 
 ---
@@ -138,7 +138,7 @@ Score a scenario using an SCR container model.
 - `scenario` (string | object | array, optional): Input values
 
 **Usage:**
-- Run scrInfo first to inspect expected inputs
+- Run scrDescribe first to inspect expected inputs
 - Omit scenario to get model metadata
 
 **Example:**
@@ -243,7 +243,7 @@ find table cars in sashelp in sas
 
 ---
 
-### table-info
+### table-describe
 
 Return metadata about a table including columns, types, and statistics.
 
@@ -262,7 +262,7 @@ Return metadata about a table including columns, types, and statistics.
 
 **Example:**
 ```
-table-info table=cars lib=Public
+table-describe table=cars lib=Public
 describe table air in lib sashelp on sas server
 ```
 
@@ -363,7 +363,7 @@ find job cars_job_v4
 
 ---
 
-### run-job
+### score-job
 
 Execute a job on a SAS Viya server.
 
@@ -377,7 +377,7 @@ Execute a job on a SAS Viya server.
 **Example:**
 ```
 run job xyz param1=10,param2=val2
-run-job myjob scenario a=10,b=20
+score-job myjob scenario a=10,b=20
 job myjob scenario a=10,b=20
 ```
 
@@ -422,7 +422,7 @@ find jobdef metricsRefresh
 
 ---
 
-### run-jobdef
+### score-jobdef
 
 Execute a job definition on a SAS Viya server.
 
@@ -435,7 +435,7 @@ Execute a job definition on a SAS Viya server.
 
 **Example:**
 ```
-run-jobdef xyz param1=10,param2=val2
+score-jobdef xyz param1=10,param2=val2
 jobdef myjobdef scenario a=10,b=20
 ```
 
@@ -443,7 +443,7 @@ jobdef myjobdef scenario a=10,b=20
 
 ## Program Execution
 
-### run-program
+### score-program
 
 Execute arbitrary SAS code or stored programs on a SAS Viya server.
 
@@ -469,7 +469,7 @@ program sample folder=/Public/models scenario="name='John', age=45" output=a
 
 ---
 
-### run-macro
+### score-macro
 
 Submit and execute a SAS macro on a SAS Viya server.
 
@@ -478,8 +478,8 @@ Submit and execute a SAS macro on a SAS Viya server.
 - `scenario` (string, optional): Parameters or SAS setup code
 
 **Scenario formats:**
-- Comma-separated: `"x=1, y=abc"` → converted to %let statements
-- Raw SAS: `"%let x=1; %let y=abc;"` → passed through unchanged
+- Comma-separated: `"x=1, y=abc"` â†’ converted to %let statements
+- Raw SAS: `"%let x=1; %let y=abc;"` â†’ passed through unchanged
 
 **Example:**
 ```
@@ -520,14 +520,14 @@ Use this to verify that the mcp server is up and running.
 
 ### deva-score
 
-Compute a numeric score based on two input values using the formula: (a + b) × 42
+Compute a numeric score based on two input values using the formula: (a + b) Ã— 42
 
 **Parameters:**
 - `a` (number, required): First numeric input
 - `b` (number, required): Second numeric input
 
 **Returns:**
-- Numeric result: (a + b) × 42
+- Numeric result: (a + b) Ã— 42
 
 **Usage:**
 - "Calculate deva score for 5 and 10"
@@ -545,11 +545,11 @@ deva-score a=1 b=2   // returns 126
 
 | Category | Tool Count | Tools |
 |----------|-----------|-------|
-| **Model Management** | 6 | list-models, find-model, model-info, model-score, scr-info, scr-score |
+| **Model Management** | 6 | list-models, find-model, model-info, model-score, scr-describe, scr-score |
 | **Library Management** | 2 | list-libraries, find-library |
-| **Table Operations** | 5 | list-tables, find-table, table-info, read-table, sas-query |
+| **Table Operations** | 5 | list-tables, find-table, table-describe, read-table, sas-query |
 | **Job Management** | 6 | list-jobs, find-job, job, list-jobdefs, find-jobdef, job-def |
-| **Program Execution** | 2 | run-program, run-macro |
+| **Program Execution** | 2 | score-program, score-macro |
 | **Context & Config** | 1 | set-context |
 | **Utilities** | 1 | deva-score |
 | **Total** | **24** | |
@@ -558,7 +558,7 @@ deva-score a=1 b=2   // returns 126
 
 ## Common Patterns
 
-### Discovery → Inspection → Action
+### Discovery â†’ Inspection â†’ Action
 
 1. **List** tools to discover available resources
 2. **Find** tools to locate specific items
@@ -598,3 +598,6 @@ Tools accepting scenarios support multiple formats:
 
 *Document generated for @sassoftware/mcp-serverjs*  
 *Last updated: December 2024*
+
+
+

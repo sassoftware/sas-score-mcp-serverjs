@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,31 +8,31 @@ import _submitCode from '../toolHelpers/_submitCode.js';
 
 function runProgram(_appContext) {
   let description = `
-run-sas-program — execute SAS code or programs on SAS Viya server.
+score-program â€” execute SAS code or programs on SAS Viya server.
 
 USE when: run program, execute SAS code, run .sas file
-DO NOT USE for: macros (use run-macro), jobs (use run-job), jobdefs (use run-jobdef), SQL queries (use sas-query), read data (use read-table)
+DO NOT USE for: macros (use score-macro), jobs (use score-job), jobdefs (use score-jobdef), SQL queries (use sas-query), read data (use read-table)
 
 PARAMETERS
-- src: string — SAS code or .sas filename (required)
-- folder: string (default: '') — server folder path for .sas files
-- scenario: string | object — parameter values. Accepts: "x=1, y=2" or {x:1, y:2}
-- output: string (default: '') — table name to return (case-sensitive)
-- limit: number (default: 100) — max rows from output
+- src: string â€” SAS code or .sas filename (required)
+- folder: string (default: '') â€” server folder path for .sas files
+- scenario: string | object â€” parameter values. Accepts: "x=1, y=2" or {x:1, y:2}
+- output: string (default: '') â€” table name to return (case-sensitive)
+- limit: number (default: 100) â€” max rows from output
 
 ROUTING RULES
-- "run program 'data a; x=1; run;'" → { src: "data a; x=1; run;", folder: "", output: "", limit: 100 }
-- "run sas program sample folder=/Public/models" → { src: "sample", folder: "/Public/models", output: "", limit: 100 }
-- "run program with name=John, age=45" → { src: "<code>", scenario: {name:"John", age:45}, output: "", limit: 100 }
+- "run program 'data a; x=1; run;'" â†’ { src: "data a; x=1; run;", folder: "", output: "", limit: 100 }
+- "run sas program sample folder=/Public/models" â†’ { src: "sample", folder: "/Public/models", output: "", limit: 100 }
+- "run program with name=John, age=45" â†’ { src: "<code>", scenario: {name:"John", age:45}, output: "", limit: 100 }
 
 EXAMPLES
-- "run program 'data a; x=1; run;'" → { src: "data a; x=1; run;", folder: "", output: "", limit: 100 }
-- "run sas file sample in /Public" → { src: "sample", folder: "/Public", output: "", limit: 100 }
+- "run program 'data a; x=1; run;'" â†’ { src: "data a; x=1; run;", folder: "", output: "", limit: 100 }
+- "run sas file sample in /Public" â†’ { src: "sample", folder: "/Public", output: "", limit: 100 }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run macro X" (use run-macro)
-- "run job X" (use run-job)
-- "run jobdef X" (use run-jobdef)
+- "run macro X" (use score-macro)
+- "run job X" (use score-job)
+- "run jobdef X" (use score-jobdef)
 - "SQL query" (use sas-query)
 - "read table" (use read-table)
 
@@ -41,7 +41,7 @@ Returns log, ods, tables array, data (if output specified). Error if execution f
   `;
 
   let spec = {
-    name: 'run-program',
+    name: 'score-program',
     description: description,
     inputSchema: z.object({
       src: z.string(),
@@ -90,4 +90,5 @@ Returns log, ods, tables array, data (if output specified). Error if execution f
 }
 
 export default runProgram;
+
 

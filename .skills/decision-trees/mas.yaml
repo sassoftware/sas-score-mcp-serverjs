@@ -1,12 +1,10 @@
 ---
 resource: "mas"
-description: "Decision tree for MAS models: list, find, score"
+description: "Decision tree for MAS models: list, find, describe,score"
 intents:
   list:
-    parse:
-      scope: "$scope" # optional scope/namespace
     exec:
-      tool: "list-mas"
+      tool: "sas-score-list-mas"
       args:
         start: 1
         limit: 10
@@ -15,16 +13,28 @@ intents:
     parse:
       model: "$model"
     exec:
-      tool: "find-mas"
+      tool: "sas-score-find-mas"
       args:
         name: "$model"
     format: "find response"
+  describe:
+    parse:
+      model: "$model"
+    verify:
+      tool: "sas-score-find-mas"
+      args:
+        name: "$model"
+    exec:
+      tool: "sas-score-mas-describe"
+      args:
+        model: "$model"
+    format: "MAS model metadata and schema"
   score:
     parse:
       model: "$model"
       scenario: "$scenario"
     verify:
-      tool: "find-mas"
+      tool: "sas-score-find-mas"
       args:
         name: "$model"
     exec:

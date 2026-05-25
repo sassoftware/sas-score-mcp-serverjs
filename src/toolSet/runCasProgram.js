@@ -11,7 +11,7 @@ function runCasProgram(_appContext) {
 run-cas-program — execute a CAS program on SAS Viya server.
 
 USE when: run cas program, execute cas, submit cas, cas action
-DO NOT USE for: macros (use run-macro), sas code (use run-sas-program), jobs (use run-job), jobdefs (use run-jobdef)
+DO NOT USE for: macros (use score-macro), sas code (use score-program), jobs (use score-job), jobdefs (use score-jobdef)
 
 PARAMETERS
 - src: string (required) — CAS program to execute verbatim
@@ -29,12 +29,12 @@ EXAMPLES
 - cas program sample folder=/Public/models → { src: sample, folder: /Public/models }
 
 NEGATIVE EXAMPLES (do not route here)
-- run sas macro (use run-macro)
-- submit sas code (use run-sas-program)
-- run job X (use run-job)
+- score sas macro (use score-macro)
+- submit sas code (use score-program)
+- score job X (use score-job)
 
 NOTES
-Sends src verbatim without validation. For SAS macros use run-macro. For arbitrary SAS code use run-sas-program.
+Sends src verbatim without validation. For SAS macros use score-macro. For arbitrary SAS code use score-program.
 
 RESPONSE
 Log output and CAS results. If output table specified, returned as markdown table.

@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -9,26 +9,26 @@ import _jobSubmit from '../toolHelpers/_jobSubmit.js';
 function runJob(_appContext) {
  
   let description = `
-run-job — execute a deployed SAS Viya job.
+score-job â€” execute a deployed SAS Viya job.
 
 USE when: run job, execute job, run with parameters
-DO NOT USE for: arbitrary SAS code (use run-sas-program), macros (use run-macro), list/find jobs
+DO NOT USE for: arbitrary SAS code (use score-program), macros (use score-macro), list/find jobs
 
 PARAMETERS
-- name: string — job name (required)
-- scenario: string | object — input parameters. Accepts: "x=1, y=2" or {x:1, y:2}
+- name: string â€” job name (required)
+- scenario: string | object â€” input parameters. Accepts: "x=1, y=2" or {x:1, y:2}
 
 ROUTING RULES
-- "run job xyz" → { name: "xyz" }
-- "run job xyz with param1=10, param2=val2" → { name: "xyz", scenario: {param1:10, param2:"val2"} }
+- "run job xyz" â†’ { name: "xyz" }
+- "run job xyz with param1=10, param2=val2" â†’ { name: "xyz", scenario: {param1:10, param2:"val2"} }
 
 EXAMPLES
-- "run job xyz" → { name: "xyz" }
-- "run job monthly_etl with month=10, year=2025" → { name: "monthly_etl", scenario: {month:10, year:2025} }
+- "run job xyz" â†’ { name: "xyz" }
+- "run job monthly_etl with month=10, year=2025" â†’ { name: "monthly_etl", scenario: {month:10, year:2025} }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use run-sas-program)
-- "run macro X" (use run-macro)
+- "run SAS code" (use score-program)
+- "run macro X" (use score-macro)
 - "list jobs" (use list-jobs)
 - "find job X" (use find-job)
 
@@ -37,7 +37,7 @@ Returns log output, listings, tables from job. Error if job not found.
 `;
 
   let spec = {
-    name: 'run-job',
+    name: 'score-job',
     description: description,
     inputSchema: z.object({
       name: z.string(),
@@ -78,4 +78,5 @@ Returns log output, listings, tables from job. Error if job not found.
 }
 
 export default runJob;
+
 

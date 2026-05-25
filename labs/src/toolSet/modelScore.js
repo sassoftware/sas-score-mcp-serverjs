@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -10,29 +10,29 @@ const log = debug('tools');
 
 function modelScore(_appContext) {
   let description = `
-model-score — score data using a deployed model on MAS.
+model-score â€” score data using a deployed model on MAS.
 
 USE when: score with model, predict using model, batch scoring, model predictions
 DO NOT USE for: find model, model metadata, list models, run programs/jobs, query tables
 
 PARAMETERS
-- model: string — model name (required, exact match)
-- scenario: string | object | array — input data (required). Accepts: "x=1, y=2", {x:1, y:2}, or array of objects
-- uflag: boolean (default: false) — prefix model fields with underscore when true
+- model: string â€” model name (required, exact match)
+- scenario: string | object | array â€” input data (required). Accepts: "x=1, y=2", {x:1, y:2}, or array of objects
+- uflag: boolean (default: false) â€” prefix model fields with underscore when true
 
 ROUTING RULES
-- "score with model X using a=1, b=2" → { model: "X", scenario: {a:1, b:2}, uflag: false }
-- "predict using model Y with age=45, income=60000" → { model: "Y", scenario: {age:45, income:60000}, uflag: false }
+- "score with model X using a=1, b=2" â†’ { model: "X", scenario: {a:1, b:2}, uflag: false }
+- "predict using model Y with age=45, income=60000" â†’ { model: "Y", scenario: {age:45, income:60000}, uflag: false }
 
 EXAMPLES
-- "score with model churn using age=45, income=60000" → { model: "churn", scenario: {age:45, income:60000}, uflag: false }
-- "predict creditScore for credit=700, debt=20000" → { model: "creditScore", scenario: {credit:700, debt:20000}, uflag: false }
+- "score with model churn using age=45, income=60000" â†’ { model: "churn", scenario: {age:45, income:60000}, uflag: false }
+- "predict creditScore for credit=700, debt=20000" â†’ { model: "creditScore", scenario: {credit:700, debt:20000}, uflag: false }
 
 NEGATIVE EXAMPLES (do not route here)
 - "find model X" (use find-model)
 - "what inputs does model need" (use model-info)
 - "list models" (use list-models)
-- "run job X" (use run-job)
+- "run job X" (use score-job)
 
 ERRORS
 Returns predictions, probabilities, scores merged with input data. Returns error if model not found or scoring fails.
@@ -86,4 +86,5 @@ Returns predictions, probabilities, scores merged with input data. Returns error
 }
 
 export default modelScore;
+
 

@@ -12,7 +12,7 @@ function jobScore(_appContext) {
 job-score — score with a deployed SAS Viya job.
 
 USE when: score with job, run job, execute job
-DO NOT USE for: arbitrary SAS code (use run-sas-program), macros (use run-macro), list/find jobs
+DO NOT USE for: arbitrary SAS code (use score-program), macros (use score-macro), list/find jobs
 
 PARAMETERS
 - name: string — job name (required)
@@ -32,8 +32,8 @@ EXAMPLES
 - "run job monthly_etl with month=10, year=2025" → { name: "monthly_etl", scenario: {month:10, year:2025} }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use run-sas-program)
-- "run macro X" (use run-macro)
+- "run SAS code" (use score-program)
+- "score macro X" (use score-macro)
 - "list jobs" (use list-jobs)
 - "find job X" (use find-job)
 
@@ -42,7 +42,7 @@ Returns log output, listings, tables from job. Error if job not found.
 `;
 
   let spec = {
-    name: 'run-job',
+    name: 'score-job',
     description: description,
     inputSchema: z.object({
       name: z.string(),

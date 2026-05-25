@@ -1,4 +1,4 @@
-# Score Skill Documentation
+﻿# Score Skill Documentation
 
 ## Overview
 The `score` skill is a generic scoring interface that automatically routes scoring requests to the appropriate tool based on the model type specified in the request.
@@ -10,11 +10,11 @@ score <name>.<type> [scenario =<key=value pairs>]
 ```
 
 ## Supported Types
-- **job** — Route to `run-job` for job-based scoring
-- **jobdef** — Route to `run-jobdef` for job definition-based scoring
-- **mas** — Route to `model-score` (Model Aggregation Service)
-- **scr** — Route to `scr-score` (Score Code Runtime container)
-- **sas** — Route to `run-sas-program` (arbitrary SAS/SQL scoring)
+- **job** â€” Route to `score-job` for job-based scoring
+- **jobdef** â€” Route to `score-jobdef` for job definition-based scoring
+- **mas** â€” Route to `model-score` (Model Aggregation Service)
+- **scr** â€” Route to `scr-score` (Score Code Runtime container)
+- **sas** â€” Route to `score-program` (arbitrary SAS/SQL scoring)
 
 ## Usage Examples
 
@@ -30,14 +30,14 @@ Routes to: `model-score` with model name and scenario parameters
 score with model monthly_scorer.job scenario =month=10,year=2025
 score mymodel.job with month=10, year=2025
 ```
-Routes to: `run-job` with job name and parameters
+Routes to: `score-job` with job name and parameters
 
 ### Job Definition Scoring
 ```
 score fraud_detector.jobdef using amount=500,merchant=online
 score predictions.jobdef where scenario =x=1,y=2
 ```
-Routes to: `run-jobdef` with jobdef name and parameters
+Routes to: `score-jobdef` with jobdef name and parameters
 
 ### SCR (Score Code Runtime) Scoring
 ```
@@ -51,7 +51,7 @@ Routes to: `scr-score` with SCR URL and scenario
 score predictions.sas where scenario =x=1,y=2
 score my_scoring_code.sas using month=10,year=2025
 ```
-Routes to: `run-sas-program` with scenario parameters
+Routes to: `score-program` with scenario parameters
 
 ## Parameter Details
 
@@ -89,11 +89,11 @@ age=45,income=60000,credit=700
 The skill automatically infers the type from the model name:
 
 ```
-mymodel.mas    → type = "mas"
-scorer.job     → type = "job"
-detector.jobdef → type = "jobdef"
-risk.scr       → type = "scr"
-predict.sas    → type = "sas"
+mymodel.mas    â†’ type = "mas"
+scorer.job     â†’ type = "job"
+detector.jobdef â†’ type = "jobdef"
+risk.scr       â†’ type = "scr"
+predict.sas    â†’ type = "sas"
 ```
 
 If the type is not specified in the model name or as a parameter, the skill will ask for clarification:
@@ -134,9 +134,10 @@ All responses include metadata indicating which tool was invoked.
 
 The skill is defined in `src/toolSet/scoreSkill.js` and:
 - Parses model name to extract type
-- Normalizes type names (e.g., `jobs` → `job`)
+- Normalizes type names (e.g., `jobs` â†’ `job`)
 - Routes to appropriate tool handler
 - Attaches scoring metadata to response
 - Handles errors from backend tools
 
 The skill is automatically registered in `makeTools.js` and available alongside other MCP tools.
+

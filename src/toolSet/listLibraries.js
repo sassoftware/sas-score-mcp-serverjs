@@ -40,7 +40,7 @@ EXAMPLES
 NEGATIVE EXAMPLES (do not route here)
 -- "list tables in SASHELP"      → ${_appContext.brand}-list-tables
 -- "list models / jobs / jobdefs"→ respective tools
--- "run a program to create a lib" → ${_appContext.brand}-run-sas-program
+-- "score a program to create a lib" → ${_appContext.brand}-score-program
 
 PAGINATION
 If returned item count === limit, hint: next start = start + limit.

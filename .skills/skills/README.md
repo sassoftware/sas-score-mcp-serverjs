@@ -74,7 +74,7 @@ Always verify resources exist before executing (except SCR which has no pre-chec
 | Read table | sas-score-read-table |
 | Query table | sas-score-sas-query |
 | Score (MAS) | sas-score-mas-score |
-| Score (Job/JobDef) | sas-score-run-jobdef |
+| Score (Job/JobDef) | sas-score-score-jobdef |
 | Score (SCR) | sas-score-scr-score |
 
 ---

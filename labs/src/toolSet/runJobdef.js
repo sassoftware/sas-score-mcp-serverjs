@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -10,26 +10,26 @@ function runJobdef(_appContext) {
   // JSON object for LLM/tooling
  
   let description = `
-run-jobdef — execute a SAS Viya job definition.
+score-jobdef â€” execute a SAS Viya job definition.
 
 USE when: run jobdef, execute jobdef, run with parameters
-DO NOT USE for: arbitrary SAS code (use run-sas-program), macros (use run-macro), list/find jobdefs
+DO NOT USE for: arbitrary SAS code (use score-program), macros (use score-macro), list/find jobdefs
 
 PARAMETERS
-- name: string — jobdef name (required)
-- scenario: string | object — input parameters. Accepts: "x=1, y=2" or {x:1, y:2}
+- name: string â€” jobdef name (required)
+- scenario: string | object â€” input parameters. Accepts: "x=1, y=2" or {x:1, y:2}
 
 ROUTING RULES
-- "run jobdef xyz" → { name: "xyz" }
-- "run jobdef xyz with param1=10, param2=val2" → { name: "xyz", scenario: {param1:10, param2:"val2"} }
+- "run jobdef xyz" â†’ { name: "xyz" }
+- "run jobdef xyz with param1=10, param2=val2" â†’ { name: "xyz", scenario: {param1:10, param2:"val2"} }
 
 EXAMPLES
-- "run jobdef xyz" → { name: "xyz" }
-- "run jobdef monthly_report with month=10, year=2025" → { name: "monthly_report", scenario: {month:10, year:2025} }
+- "run jobdef xyz" â†’ { name: "xyz" }
+- "run jobdef monthly_report with month=10, year=2025" â†’ { name: "monthly_report", scenario: {month:10, year:2025} }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use run-sas-program)
-- "run macro X" (use run-macro)
+- "run SAS code" (use score-program)
+- "run macro X" (use score-macro)
 - "list jobdefs" (use list-jobdefs)
 - "find jobdef X" (use find-jobdef)
 
@@ -38,7 +38,7 @@ Returns log output, listings, tables from jobdef. Error if jobdef not found.
   `;
  
   let spec = {
-    name: 'run-jobdef',
+    name: 'score-jobdef',
     description: description,
     inputSchema: z.object({
       name: z.string(),
@@ -79,4 +79,5 @@ Returns log output, listings, tables from jobdef. Error if jobdef not found.
 }
 
 export default runJobdef;
+
 

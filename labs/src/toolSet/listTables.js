@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -12,31 +12,31 @@ function listTables(_appContext) {
   const log = debug('tools');
 
     let description = `
-list-tables — enumerate tables within a library.
+list-tables â€” enumerate tables within a library.
 
 USE when: list tables in <lib>, show tables in <lib>, next page
-DO NOT USE for: find table, list libraries, get table structure (use table-info), read data (use read-table)
+DO NOT USE for: find table, list libraries, get table structure (use table-describe), read data (use read-table)
 
 PARAMETERS
-- lib: string — library to inspect (required)
-- server: string (default: 'cas') — 'cas' or 'sas'
-- limit: number (default: 10) — page size
-- start: number (default: 1) — 1-based offset
-- where: string — optional filter expression
+- lib: string â€” library to inspect (required)
+- server: string (default: 'cas') â€” 'cas' or 'sas'
+- limit: number (default: 10) â€” page size
+- start: number (default: 1) â€” 1-based offset
+- where: string â€” optional filter expression
 
 ROUTING RULES
-- "list tables in Samples" → { lib: "Samples", start: 1, limit: 10 }
-- "list 25 tables in sashelp" → { lib: "sashelp", limit: 25, start: 1 }
-- "list cas tables in Public" → { lib: "Public", server: "cas", start: 1, limit: 10 }
+- "list tables in Samples" â†’ { lib: "Samples", start: 1, limit: 10 }
+- "list 25 tables in sashelp" â†’ { lib: "sashelp", limit: 25, start: 1 }
+- "list cas tables in Public" â†’ { lib: "Public", server: "cas", start: 1, limit: 10 }
 
 EXAMPLES
-- "list tables in Samples" → { lib: "Samples", start: 1, limit: 10 }
-- "show 25 tables in sashelp" → { lib: "sashelp", limit: 25, start: 1 }
+- "list tables in Samples" â†’ { lib: "Samples", start: 1, limit: 10 }
+- "show 25 tables in sashelp" â†’ { lib: "sashelp", limit: 25, start: 1 }
 
 NEGATIVE EXAMPLES (do not route here)
 - "list libs" (use list-libraries)
 - "find lib Public" (use find-library)
-- "describe table cars" (use table-info)
+- "describe table cars" (use table-describe)
 - "read table cars" (use read-table)
 
 ERRORS
@@ -63,4 +63,5 @@ Returns empty array if no tables found.
 }
 
 export default listTables;
+
 

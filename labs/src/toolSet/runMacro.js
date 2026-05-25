@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -9,35 +9,35 @@ import _submitCode from '../toolHelpers/_submitCode.js';
 
 function runMacro(_appContext) {
   let description = `
-run-macro — submit and execute a SAS macro on SAS Viya server.
+score-macro â€” submit and execute a SAS macro on SAS Viya server.
 
 USE when: run macro, execute macro with parameters
-DO NOT USE for: arbitrary SAS code (use run-sas-program), jobs, jobdefs
+DO NOT USE for: arbitrary SAS code (use score-program), jobs, jobdefs
 
 PARAMETERS
-- macro: string — macro name without "%" (required)
-- scenario: string — parameters or setup code (optional). Accepts: "x=1, y=abc" or "%let x=1; %let y=abc;"
+- macro: string â€” macro name without "%" (required)
+- scenario: string â€” parameters or setup code (optional). Accepts: "x=1, y=abc" or "%let x=1; %let y=abc;"
 
 ROUTING RULES
-- "run macro abc" → { macro: "abc", scenario: "" }
-- "run macro abc with x=1, y=2" → { macro: "abc", scenario: "x=1, y=2" }
-- "run macro xyz with %let a=1; %let b=2;" → { macro: "xyz", scenario: "%let a=1; %let b=2;" }
+- "run macro abc" â†’ { macro: "abc", scenario: "" }
+- "run macro abc with x=1, y=2" â†’ { macro: "abc", scenario: "x=1, y=2" }
+- "run macro xyz with %let a=1; %let b=2;" â†’ { macro: "xyz", scenario: "%let a=1; %let b=2;" }
 
 EXAMPLES
-- "run macro abc" → { macro: "abc", scenario: "" }
-- "run macro summarize with x=1, y=2" → { macro: "summarize", scenario: "x=1, y=2" }
+- "run macro abc" â†’ { macro: "abc", scenario: "" }
+- "run macro summarize with x=1, y=2" â†’ { macro: "summarize", scenario: "x=1, y=2" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use run-sas-program)
-- "run job X" (use run-job)
-- "run jobdef X" (use run-jobdef)
+- "run SAS code" (use score-program)
+- "run job X" (use score-job)
+- "run jobdef X" (use score-jobdef)
 
 ERRORS
 Returns log, ods, tables created by macro. Auto-converts "x=1, y=2" to "%let x=1; %let y=2;" format.
   `;
 
   let spec = {
-    name: 'run-macro',
+    name: 'score-macro',
     description: description,
     
     inputSchema: z.object({
@@ -79,4 +79,5 @@ Returns log, ods, tables created by macro. Auto-converts "x=1, y=2" to "%let x=1
 }
 
 export default runMacro;
+
 

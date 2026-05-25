@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,33 +8,33 @@ import _submitCode from '../toolHelpers/_submitCode.js';
 
 function runCasProgram(_appContext) {
   let description = `
-run-cas-program — execute a CAS program on SAS Viya server.
+run-cas-program â€” execute a CAS program on SAS Viya server.
 
 USE when: run cas program, execute cas, submit cas, cas action
-DO NOT USE for: macros (use run-macro), sas code (use run-sas-program), jobs (use run-job), jobdefs (use run-jobdef)
+DO NOT USE for: macros (use score-macro), sas code (use score-program), jobs (use score-job), jobdefs (use score-jobdef)
 
 PARAMETERS
-- src: string (required) — CAS program to execute verbatim
-- scenario: string or object (optional) — input parameters
-- folder: string — server folder path for .sas files
-- output: string — table name to return in response
-- limit: number (default: 100) — max rows to return
+- src: string (required) â€” CAS program to execute verbatim
+- scenario: string or object (optional) â€” input parameters
+- folder: string â€” server folder path for .sas files
+- output: string â€” table name to return in response
+- limit: number (default: 100) â€” max rows to return
 
 ROUTING RULES
-- run cas program action echo → { src: action echo }
-- execute cas action simple.summary → { src: action simple.summary }
+- run cas program action echo â†’ { src: action echo }
+- execute cas action simple.summary â†’ { src: action simple.summary }
 
 EXAMPLES
-- run cas program action echo → { src: action echo }
-- cas program sample folder=/Public/models → { src: sample, folder: /Public/models }
+- run cas program action echo â†’ { src: action echo }
+- cas program sample folder=/Public/models â†’ { src: sample, folder: /Public/models }
 
 NEGATIVE EXAMPLES (do not route here)
-- run sas macro (use run-macro)
-- submit sas code (use run-sas-program)
-- run job X (use run-job)
+- run sas macro (use score-macro)
+- submit sas code (use score-program)
+- run job X (use score-job)
 
 NOTES
-Sends src verbatim without validation. For SAS macros use run-macro. For arbitrary SAS code use run-sas-program.
+Sends src verbatim without validation. For SAS macros use score-macro. For arbitrary SAS code use score-program.
 
 RESPONSE
 Log output and CAS results. If output table specified, returned as markdown table.
@@ -95,4 +95,5 @@ Log output and CAS results. If output table specified, returned as markdown tabl
 }
 
 export default runCasProgram;
+
 

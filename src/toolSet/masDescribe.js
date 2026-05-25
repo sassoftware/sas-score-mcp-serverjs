@@ -8,9 +8,9 @@ import debug from 'debug';
 import _masDescribe from '../toolHelpers/_masDescribe.js';
 const log = debug('tools');
 
-function masInfo(_appContext) {
+function masDescribe(_appContext) {
   let description = `
-mas-info — return detailed information about a specific MAS model, including its inputs, outputs, and metadata.
+mas-describe — return detailed information about a specific MAS model, including its inputs, outputs, and metadata.
 
 USE when: what inputs does model need, describe model, show variables for model, model inputs/outputs
 DO NOT USE for: find model, list models, score model, table/job operations
@@ -39,7 +39,7 @@ Returns model metadata: inputs (name, type, role), outputs (name, type, possible
   `;
 
   let spec = {
-    name: 'mas-info',
+    name: 'mas-describe',
     description: description,
     inputSchema: z.object({
       model: z.string()
@@ -57,5 +57,5 @@ Returns model metadata: inputs (name, type, role), outputs (name, type, possible
   return spec;
 }
 
-export default masInfo;
+export default masDescribe;
 

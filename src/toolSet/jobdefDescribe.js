@@ -4,13 +4,13 @@
  */
 import { z } from 'zod';
 import _listJobdefs from '../toolHelpers/_listJobdefs.js';
-function jobdefInfo(_appContext) {
-  
+function jobdefDescribe(_appContext) {
+
   let description = `
-jobdef    -info — return information about a specific SAS Viya jobdef.
+jobdef-describe — return information about a specific SAS Viya jobdef.
 
 USE when: find jobdef, does jobdef exist, is there a jobdef named, lookup jobdef, verify jobdef exists
-DO NOT USE for: list jobdefs (use ${_appContext.brand}-list-jobdefs), run jobdef (use ${_appContext.brand}-run-jobdef), find lib/table/model (use respective tools)
+DO NOT USE for: list jobdefs (use ${_appContext.brand}-list-jobdefs), score jobdef (use ${_appContext.brand}-score-jobdef), find lib/table/model (use respective tools)
 
 PARAMETERS
 - name: string (required) — name of jobdef whose details are being requested. Should be exact match to jobdef name.
@@ -28,15 +28,15 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "list jobdefs" (use ${_appContext.brand}-list-jobdefs)
-- "run jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
-- "execute jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
+- "score jobdef cars_job_v4" (use ${_appContext.brand}-score-jobdef)
+- "execute jobdef cars_job_v4" (use ${_appContext.brand}-score-jobdef)
 
 ERRORS
 Returns job metadata 
   `;
 
   let spec = {
-    name: 'jobdef-info',
+    name: 'jobdef-describe',
     description: description,
     inputSchema: z.object({
       name: z.string()
@@ -58,5 +58,5 @@ Returns job metadata
   
   return spec;
 }
-export default jobdefInfo;
+export default jobdefDescribe;
 

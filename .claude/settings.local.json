@@ -1,11 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.claude\\\\worktrees\\\\eager-mccarthy-6c9811\" -Recurse -Name -Include \"*.md\")",
-      "Bash(Sort-Object)",
-      "WebSearch",
-      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.claude\\\\worktrees\\\\eager-mccarthy-6c9811\\\\.skills\\\\.claude-plugin\")",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.claude\\\\worktrees\\\\eager-mccarthy-6c9811\\\\.skills\" -Recurse | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.claude\\\\worktrees\\\\eager-mccarthy-6c9811\\\\.skills\\\\\",\"\"\\) })"
+      "Bash(git mv *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.skills\\\\decision-trees\\\\\" -Filter \"*.yaml\" | Select-Object Name)"
     ]
   }
 }

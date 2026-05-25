@@ -1,16 +1,42 @@
 ---
 resource: "scr"
-description: "Decision tree for SCR (external) models. Skip pre-verification; require valid endpoint."
+description: "Decision tree for SCR models: list, find, describe, score"
 intents:
+  list:
+    exec:
+      tool: "sas-score-list-scr"
+      args:
+        start: 1
+        limit: 10
+    format: "list of SCR models"
+  find:
+    parse:
+      name: "$name"
+    exec:
+      tool: "sas-score-find-scr"
+      args:
+        name: "$name"
+    format: "find response"
+  describe:
+    parse:
+      name: "$name"
+    exec:
+      tool: "sas-score-scr-describe"
+      args:
+        name: "$name"
+    format: "SCR name schema and metadata"
   score:
     parse:
-      url: "$url"
+      name: "$name"
       scenario: "$scenario"
     verify:
-      skip: true
+      tool: "sas-score-find-scr"
+      args:
+        name: "$name"
     exec:
       tool: "sas-score-scr-score"
       args:
-        url: "$url"
+        name: "$name"
         scenario: "$scenario"
     format: "merge prediction with input"
+

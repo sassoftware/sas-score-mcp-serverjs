@@ -1,31 +1,31 @@
-# GitHub Copilot — SAS Viya (concise agent guide)
+﻿# GitHub Copilot â€” SAS Viya (concise agent guide)
 
-This file is a short, agent-facing reference. It delegates routing and detailed decision logic to the canonical SKILLs in the `skills/` folder (especially `skills/request-routing/SKILL.md`). Keep this file minimal — use the SKILLs for examples and edge cases.
+This file is a short, agent-facing reference. It delegates routing and detailed decision logic to the canonical SKILLs in the `skills/` folder (especially `skills/request-routing/SKILL.md`). Keep this file minimal â€” use the SKILLs for examples and edge cases.
 
 **Core principle (single sentence):** Verify resources, execute with the mapped tool, and format results.
 
 ## Canonical workflow
-- Verify: confirm resources exist using `find-*` tools (except SCR and list operations).
+- Verify: confirm resources exist using `find-*` tools 
 - Execute: call the execution tool mapped by the router (read/query/score/describe/list).
 - Format: merge outputs, present results, and append a short Strategy Summary.
 
-Note: the five-step phrasing (Identify → Verify → Select → Execute → Format) maps to the same implementation; prefer the three-step mental model when implementing.
+Note: the five-step phrasing (Identify â†’ Verify â†’ Select â†’ Execute â†’ Format) maps to the same implementation; prefer the three-step mental model when implementing.
 
 ## Agent defaults
 - Default model type: MAS (unless user specifies `.job`, `.jobdef`, or `.scr`).
 - Append a **Strategy Summary** to every response.
 - Always determine table server (CAS vs SAS) during verification; ask if ambiguous.
-- Do not invent resource names, servers, or model types — verify or ask.
+- Do not invent resource names, servers, or model types â€” verify or ask.
 - Pagination: always pass `start=1` and `limit=10` when calling any tool that accepts these parameters, unless the user specifies different values.
 
 ## Canonical tool mappings (short)
 - Find: `sas-score-find-library`, `sas-score-find-table`, `sas-score-find-mas`, `sas-score-find-job`, `sas-score-find-jobdef`
 - Read / Query: `sas-score-read-table`, `sas-score-sas-query`
-- Score / Run: `sas-score-mas-score`, `sas-score-run-job`, `sas-score-run-jobdef`, `sas-score-scr-score`
+- Score / Run: `sas-score-mas-score`, `sas-score-score-job`, `sas-score-score-jobdef`, `sas-score-scr-score`
 - List: `sas-score-list-libraries`, `sas-score-list-tables`, `sas-score-list-mas`, `sas-score-list-jobs`, `sas-score-list-jobdefs`
-- Detail: `sas-score-mas-info`, `sas-score-job-info`, `sas-score-scr-info`, `sas-score-table-info`
+- Detail: `sas-score-mas-describe`, `sas-score-job-describe`, `sas-score-scr-describe`, `sas-score-table-describe`
 
-If a project-specific execution tool exists (for example a `run-sas-program` helper), document it in the `skills/` folder and keep this file minimal.
+If a project-specific execution tool exists (for example a `score-program` helper), document it in the `skills/` folder and keep this file minimal.
 
 ## Strategy Summary (append to replies)
 ---
@@ -51,3 +51,5 @@ If a project-specific execution tool exists (for example a `run-sas-program` hel
 - Describe/detail resources: `skills/detail-strategy/SKILL.md`
 
 Keep this file short. Use the SKILLs for decision trees, examples, and edge-case rules.
+
+

@@ -1,10 +1,10 @@
 ---
 resource: "jobdef"
-description: "Decision tree for JobDefs: list, find, run"
+description: "Decision tree for JobDefs: list, find, describe, score"
 intents:
   list:
     exec:
-      tool: "list-jobdefs"
+      tool: "sas-score-list-jobdef"
       args:
         start: 1
         limit: 10
@@ -13,20 +13,32 @@ intents:
     parse:
       name: "$name"
     exec:
-      tool: "find-jobdef"
+      tool: "sas-score-find-jobdef"
       args:
         name: "$name"
     format: "find response"
-  run:
+  describe:
+    parse:
+      name: "$name"
+    verify:
+      tool: "sas-score-find-jobdef"
+      args:
+        name: "$name"
+    exec:
+      tool: "sas-score-jobdef-describe"
+      args:
+        name: "$name"
+    format: "jobdef metadata and schema"
+  score:
     parse:
       name: "$name"
       scenario: "$scenario"
     verify:
-      tool: "find-jobdef"
+      tool: "sas-score-find-jobdef"
       args:
         name: "$name"
     exec:
-      tool: "sas-score-run-jobdef"
+      tool: "sas-score-score-jobdef"
       args:
         name: "$name"
         scenario: "$scenario"

@@ -1,7 +1,8 @@
----
+﻿---
 name: detail-strategy
 description: >
-  Unified detail/information/describe retrieval strategy. Handles MAS models, Job models, JobDef models, SCR models, and tables. Verify resources exist using find-resources skill before retrieving details (except SCR models, which can be queried directly).
+  Use this strategy when the user requests information about a resource. This is a  
+  Unified detail/information/describe retrieval strategy. Handles MAS models, Job models, JobDef models, SCR models, and tables. Verify resources exist using find-resources skill before retrieving details 
 ---
 
 # Detail Strategy
@@ -51,7 +52,7 @@ If resource is ambiguous, ask user for clarification.
 
 ### Phase 2: Verify Resource Exists (Skip for SCR Models)
 
-**IMPORTANT**: Strip the suffix if user included it, use base name for lookup (e.g. "churnRisk.mas" → "churnRisk") to avoid lookup failures.
+**IMPORTANT**: Strip the suffix if user included it, use base name for lookup (e.g. "churnRisk.mas" â†’ "churnRisk") to avoid lookup failures.
 
 For each resource type, use the appropriate verification tool:
 
@@ -77,12 +78,12 @@ If verification fails, inform the user and ask for additional details or correct
 "mas model X metadata", "mas model X information", "describe model X" (default to MAS),
 "what inputs does mas X need", "describe mas X"
 
-**Tool**: `sas-score-mas-info`
+**Tool**: `sas-score-mas-describe`
 
 **Parameters**:
 ```
 
-sas-score-mas-info({
+sas-score-mas-describe({
   model: "<model name>"
 })
 ```
@@ -98,7 +99,7 @@ sas-score-mas-info({
 User: "What inputs does mas model churnRisk need?"
 
 1. Find: sas-score-find-mas({ name: "churnRisk" })
-2. Get info: sas-score-mas-info({ model: "churnRisk" })
+2. Get info: sas-score-mas-describe({ model: "churnRisk" })
 3. Return: { inputs: [...], outputs: [...], description: "..." }
 ```
 
@@ -109,12 +110,12 @@ User: "What inputs does mas model churnRisk need?"
 **Trigger phrases**: "what does SCR model X need", "describe SCR model X", "scr model X inputs",
 "scr model X schema", "what inputs does scr model X need", "describe scr X"
 
-**Tool**: `sas-score-scr-info`
+**Tool**: `sas-score-scr-describe`
 
 **Parameters**:
 ```
-sas-score-scr-info({
-  url: "<scr endpoint>"
+sas-score-scr-describe({
+  name: "<scr model name>"
 })
 ```
 
@@ -125,13 +126,13 @@ sas-score-scr-info({
 
 **Example**:
 ```
-User: "Show inputs for SCR model at https://scr-host/models/loan"
+User: "Show inputs for SCR model loan"
 
-1. Get info: sas-score-scr-info({ url: "https://scr-host/models/loan" })
+1. Get info: sas-score-scr-describe({ name: "loan" })
 2. Return: { inputs: [...], outputs: [...] }
 ```
 
-**Note**: SCR models typically do not require pre-verification (can call scr-info directly)
+**Note**: SCR models do not require pre-verification (call scr-describe directly with the model name)
 
 ---
 
@@ -139,11 +140,11 @@ User: "Show inputs for SCR model at https://scr-host/models/loan"
 
 **Trigger phrases**: "what columns in table X", "describe table X", "show schema for table X", "table X structure", "table X metadata"
 
-**Tool**: `sas-score-table-info`
+**Tool**: `sas-score-table-describe`
 
 **Parameters**:
 ```
-sas-score-table-info({
+sas-score-table-describe({
   lib: "<library>",
   table: "<table name>",
   server: "<cas|sas>"
@@ -159,8 +160,8 @@ sas-score-table-info({
 User: "What columns are in the customers table in Public?"
 
 1. Find: sas-score-find-table({ lib: "Public", name: "customers", server: "cas" })
-2. Get info: sas-score-table-info({ lib: "Public", table: "customers", server: "cas" })
-3. Return: { columns: [...], tableInfo: {...} }
+2. Get info: sas-score-table-describe({ lib: "Public", table: "customers", server: "cas" })
+3. Return: { columns: [...], tableDescribe: {...} }
 ```
 
 ---
@@ -170,11 +171,11 @@ User: "What columns are in the customers table in Public?"
 "show variables for job model X", "job model X metadata", "job model X information",
 "what inputs does job X need", "describe job X"
 
-**Tool**: `sas-score-job-info`
+**Tool**: `sas-score-job-describe`
 
 **Parameters**:
 ```
-sas-score-job-info({
+sas-score-job-describe({
   model: "<model name>"
 })
 ```
@@ -187,22 +188,22 @@ sas-score-job-info({
 User: "What inputs does job model churnRisk need?"
 
 1. Find: sas-score-find-job({ name: "churnRisk" })
-2. Get info: sas-score-job-info({ model: "churnRisk" })
+2. Get info: sas-score-job-describe({ model: "churnRisk" })
 3. Return: { inputs: [...] }
 ```
 
 ### Option E: JobDef Model Details
 
-> **Note**: There is no separate `sas-score-jobdef-info` tool. JobDef detail retrieval reuses `sas-score-job-info` — do not attempt to call a `sas-score-jobdef-info` tool.
+> **Note**: There is no separate `sas-score-jobdef-describe` tool. JobDef detail retrieval reuses `sas-score-job-describe` â€” do not attempt to call a `sas-score-jobdef-describe` tool.
 
 **Trigger phrases**: "what inputs does jobdef model X need", "describe jobdef model X",
 "jobdef model X metadata", "what inputs does jobdef X need", "describe jobdef X"
 
-**Tool**: `sas-score-job-info` (shared with Job models)
+**Tool**: `sas-score-job-describe` (shared with Job models)
 
 **Parameters**:
 ```
-sas-score-job-info({
+sas-score-job-describe({
   model: "<jobdef name>"
 })
 ```
@@ -212,7 +213,7 @@ sas-score-job-info({
 User: "What inputs does jobdef model myScorer need?"
 
 1. Find: sas-score-find-jobdef({ name: "myScorer" })
-2. Get info: sas-score-job-info({ model: "myScorer" })
+2. Get info: sas-score-job-describe({ model: "myScorer" })
 3. Return: { inputs: [...] }
 ```
 
@@ -220,24 +221,24 @@ User: "What inputs does jobdef model myScorer need?"
 
 ```
 User requests information/details
-  ├─ About a MAS model?
-  │   → Verify: sas-score-find-mas
-  │   → Call: sas-score-mas-info
-  │
-  ├─ About a SCR model?
-  │   → Call: sas-score-scr-info (skip verification; validate URL first)
-  │
-  ├─ About a Job model?
-  │   → Verify: sas-score-find-job
-  │   → Call: sas-score-job-info
-  │
-  ├─ About a JobDef model?
-  │   → Verify: sas-score-find-jobdef
-  │   → Call: sas-score-job-info
-  │
-  └─ About a table?
-      → Verify: sas-score-find-table (determine CAS or SAS server)
-      → Call: sas-score-table-info
+  â”œâ”€ About a MAS model?
+  â”‚   â†’ Verify: sas-score-find-mas
+  â”‚   â†’ Call: sas-score-mas-describe
+  â”‚
+  â”œâ”€ About a SCR model?
+  â”‚   â†’ Call: sas-score-scr-describe (skip verification; validate URL first)
+  â”‚
+  â”œâ”€ About a Job model?
+  â”‚   â†’ Verify: sas-score-find-job
+  â”‚   â†’ Call: sas-score-job-describe
+  â”‚
+  â”œâ”€ About a JobDef model?
+  â”‚   â†’ Verify: sas-score-find-jobdef
+  â”‚   â†’ Call: sas-score-job-describe
+  â”‚
+  â””â”€ About a table?
+      â†’ Verify: sas-score-find-table (determine CAS or SAS server)
+      â†’ Call: sas-score-table-describe
 ```
 
 ---
@@ -275,10 +276,10 @@ Always append a **Strategy Summary** to responses (canonical template from `requ
 
 If a request fails:
 
-1. **Resource not found** → Ask user to verify name/spelling
-2. **Server mismatch** → Re-verify server location with find-resources
-3. **Invalid URL (SCR)** → Ask for correct SCR endpoint URL
-4. **Tool error** → Return error message verbatim and ask for clarification
+1. **Resource not found** â†’ Ask user to verify name/spelling
+2. **Server mismatch** â†’ Re-verify server location with find-resources
+3. **Invalid name (SCR)** → Ask for correct SCR model name
+4. **Tool error** â†’ Return error message verbatim and ask for clarification
 
 ---
 
@@ -290,8 +291,8 @@ If a request fails:
 
 **Workflow**:
 1. Classify: MAS model detail request
-2. Verify: Find model creditScore → Found ✓
-3. Execute: `sas-score-mas-info({ model: "creditScore" })`
+2. Verify: Find model creditScore â†’ Found âœ“
+3. Execute: `sas-score-mas-describe({ model: "creditScore" })`
 4. Return: Model inputs, outputs, and description
 
 ### Example 2: SCR Model Schema
@@ -300,7 +301,7 @@ If a request fails:
 
 **Workflow**:
 1. Classify: SCR model detail request
-2. Execute: `sas-score-scr-info({ url: "https://scr-host/models/loan" })`
+2. Execute: `sas-score-scr-describe({ name: "loan" })`
 3. Return: Input schema and output schema
 
 ### Example 3: Table Columns
@@ -309,6 +310,8 @@ If a request fails:
 
 **Workflow**:
 1. Classify: Table detail request
-2. Verify: Find table customers in Public → CAS ✓
-3. Execute: `sas-score-table-info({ lib: "Public", table: "customers", server: "cas" })`
+2. Verify: Find table customers in Public â†’ CAS âœ“
+3. Execute: `sas-score-table-describe({ lib: "Public", table: "customers", server: "cas" })`
 4. Return: Column names, types, and table metadata
+
+
