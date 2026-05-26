@@ -42,8 +42,8 @@ Returns empty array if no models found.
     name: 'list-models',
     description: description,
     inputSchema: z.object({
-      limit: z.number().optional(),
-      start: z.number().optional()
+      limit: z.number().int().min(1).optional(),
+      start: z.number().int().min(1).optional()
     }),
     handler: async (params) => { 
       let r  = await _listModels(params);

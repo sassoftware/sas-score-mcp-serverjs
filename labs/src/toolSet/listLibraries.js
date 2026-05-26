@@ -61,10 +61,10 @@ Return structured error with a message field. Never hallucinate library names.
     name: 'list-libraries',
     description: description,
     inputSchema: z.object({
-      server: z.string().optional(),
-      limit: z.number().optional(),
-      start: z.number().optional(),
-      where: z.string().optional()
+      server: z.enum(['cas', 'sas', 'all']).optional(),
+      limit: z.number().int().min(1).optional(),
+      start: z.number().int().min(1).optional(),
+      where: z.string().min(1).optional()
     }),
     // 'server' has a default so we don't mark it required
     handler: async (params) => {

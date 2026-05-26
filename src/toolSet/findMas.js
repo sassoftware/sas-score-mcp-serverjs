@@ -54,6 +54,7 @@ Returns { mass: [] } if not found; { mass: [name, ...] } if found. Never halluci
           params.name = params.name.slice(0, -4);
         }
       }
+      params.tool = 'find';
       let r = await _findmas(params);
       return r;
     }

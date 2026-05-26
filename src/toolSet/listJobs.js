@@ -46,9 +46,9 @@ Surface backend error directly; never fabricate job names.
     name: 'list-jobs',
     description: description,
     inputSchema: z.object({
-      limit: z.number().optional(),
-      start: z.number().optional(),
-      where: z.string().optional()
+      limit: z.number().int().min(1).optional(),
+      start: z.number().int().min(1).optional(),
+      where: z.string().min(1).optional()
     }),
   // No 'server' required; backend context is implicit in helper
     handler: async (params) => {

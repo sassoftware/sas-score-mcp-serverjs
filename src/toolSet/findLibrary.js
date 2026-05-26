@@ -57,7 +57,7 @@ Returns { libraries: [] } if not found; { libraries: [name, ...] } if found. Nev
       if (params.name && /[,\s]+/.test(params.name.trim())) {
         params.name = params.name.split(/[,\s]+/).filter(Boolean)[0];
       }
-
+      params.tool = 'find';
       let r = await _listLibrary(params);
       return r;
     }

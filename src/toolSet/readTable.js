@@ -61,12 +61,12 @@ Returns rows array, total count, filtered_count, columns metadata. Empty array i
       name: 'read-table',
       description: describe,
       inputSchema: z.object({
-        table: z.string(),
-        lib: z.string().optional(),
-        start: z.number().optional(),
-        limit: z.number().optional(),
-        server: z.string().optional(),
-        where: z.string().optional()
+        table: z.string().min(1),
+        lib: z.string().min(1).optional(),
+        start: z.number().int().min(1).optional(),
+        limit: z.number().int().min(1).max(1000).optional(),
+        server: z.enum(['cas', 'sas']).optional(),
+        where: z.string().min(1).optional()
       }),
     handler: async (params) => {
         let r = await _readTable(params,'query');

@@ -55,6 +55,7 @@ Returns { jobs: [] } if not found; { jobs: [name, ...] } if found. Never halluci
           params.name = params.name.slice(0, -4);
         }
       }
+      params.tool = 'find';
       let r = await _findJob(params);
       return r;
     }

@@ -60,6 +60,7 @@ Returns { jobdefs: [] } if not found; { jobdefs: [name, ...] } if found. Never h
           params.name = params.name.slice(0, -7);
         }
       }
+      params.tool = 'find';
       let r = await _findJobdef(params);
       return r;
     }

@@ -51,6 +51,7 @@ Returns { scr: [] } if not found; { scr: [url, ...] } if found. Never hallucinat
       if (params.url.endsWith('.scr')) {
         params.url = params.url.slice(0, -4);
       }
+      params.tool = 'find';
       let r = await _findScr(params);
       return r;
     }

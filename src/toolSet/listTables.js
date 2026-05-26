@@ -51,11 +51,11 @@ Returns empty array if no tables found.
     description: description,
 
     inputSchema: z.object({
-      lib: z.string(),
-      server: z.string().optional(),
-      limit: z.number().optional(),
-      start: z.number().optional(),
-      where: z.string().optional()
+      lib: z.string().min(1),
+      server: z.enum(['cas', 'sas']).optional(),
+      limit: z.number().int().min(1).optional(),
+      start: z.number().int().min(1).optional(),
+      where: z.string().min(1).optional()
     }),
     handler: async (params) => { 
       let r = await _listTables(params);

@@ -50,13 +50,14 @@ Returns { tables: [] } if not found; { tables: [name, ...] } if found. Never hal
     name: 'find-table',
     description: description,
     inputSchema: z.object({
-      lib: z.string(),
-      name: z.string(),
+      lib: z.string().min(1),
+      name: z.string().min(1),
       server: z.enum(['cas', 'sas'])
     }),
     
     handler: async (params) => {
       // Check if the params.scenario is a string and parse it
+      params.tool = 'find';
       let r = await _findTable(params);
       return r;
     }
