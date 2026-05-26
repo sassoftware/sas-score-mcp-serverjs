@@ -138,12 +138,28 @@ sas-score-scr-score({
 
 **Trigger phrases**: "score records from", "run model on table", "predict for customers in", "score rows from"
 
+**Parsing Row Count from Score Request**
+
+Extract `limit` (and `start`) from the score request before calling the read step:
+
+| User says | start | limit |
+|---|---|---|
+| "score the first N rows from lib.table" | 1 | N |
+| "score N rows from lib.table" | 1 | N |
+| "score first N records from lib.table" | 1 | N |
+| "score rows from lib.table" (no count) | 1 | 10 (default, or ask user) |
+
+> "first" always means **start at row 1, return N rows**. It is never a row offset.
+
+**Dotted table format**: `"lib.table"` in a score request → `lib: "lib"`, `table: "table"`.
+
 **Flow**:
 1. Find model (find-resources)
 2. Find table (find-resources) → get server
-3. Read rows from table (read-strategy)
-4. Score each row (or batch score) — cap at 100 rows by default; ask user to confirm before proceeding with larger batches
-5. Merge predictions with original rows
+3. Parse row count from the score request (see table above)
+4. Read rows from table (read-strategy) — pass the parsed `start` and `limit`
+5. Score each row (or batch score) — cap at 100 rows by default; ask user to confirm before proceeding with larger batches
+6. Merge predictions with original rows
 
 **Decision**: Read strategy first
 - If user requests aggregation: Use `sas-score-sas-query`

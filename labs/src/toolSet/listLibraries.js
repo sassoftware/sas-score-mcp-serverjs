@@ -8,8 +8,8 @@ function listLibraries(_appContext) {
   let description = `
 list-libraries — enumerate CAS or SAS libraries.
 
-USE when user asks to: list/show/enumerate libraries, caslibs, sas libs, or available libraries.
-DO NOT USE for: listing tables in a library (→ list-tables), column/table metadata, job execution, models, scoring.
+USE ONLY when: user explicitly asks to list, browse, or enumerate libraries — "list libraries", "show all libs", "browse libraries", "what libraries are available", "next page". Never use to verify if a specific library exists.
+DO NOT USE for: verify or check if a specific library exists (use find-library instead), listing tables in a library (→ list-tables), column/table metadata, job execution, models, scoring.
 
 PARAMETERS
 - server: 'cas' | 'sas' | 'all' (default: 'all')
@@ -41,6 +41,9 @@ NEGATIVE EXAMPLES (do not route here)
 - "list tables in SASHELP"      → list-tables
 - "list models / jobs / jobdefs"→ respective tools
 - "run a program to create a lib" → run-sas-program
+- "does library Public exist" → find-library
+- "is library SASHELP available" → find-library
+- "find library mylib" → find-library
 
 PAGINATION
 If returned item count === limit, hint: next start = start + limit.

@@ -11,8 +11,15 @@ description: >
 
 Use this strategy to list available resources (libraries, tables, models, jobs, jobdefs).
 
+> **GATE — invoke list-* tools ONLY when the user explicitly requests to browse or enumerate resources.**
+>
+> **Trigger phrases that activate list-* tools**: "list X", "show all X", "show me all X", "show a list of X", "enumerate X", "browse X", "what X are available", "next page".
+>
+> **Never use list-* tools to**: find a named resource, verify a resource exists, check whether something exists, or as a prerequisite before scoring/reading/running. For all of those, use find-* tools instead.
+
 Listing rules
-- Use `list-*` tools for discovery and browsing only; do not use `list-*` to verify a specific resource's existence.
+- Use `list-*` tools for discovery and browsing only — only when the user says "list", "show list", "browse", "enumerate", or similar explicit browsing phrases.
+- Never use `list-*` to verify a specific resource's existence; always use `find-*` for that.
 - If the user specifies a server, list from that server; otherwise list from all servers when appropriate.
 - When a library is ambiguous for table listing, attempt both CAS and SAS and label results by server, or ask the user to clarify.
 - Pagination: always pass `start=1` and `limit=10` explicitly unless the user specifies different values. Never omit these parameters.
@@ -271,7 +278,10 @@ What resource type?
 
 | Aspect | Find | List |
 |---|---|---|
-| Purpose | Verify/confirm existence | Browse/discover available resources |
+| Purpose | Verify/confirm a specific resource exists | Browse/discover available resources |
+| Trigger | "find X", "does X exist", "is X available", "locate X", any pre-execution check | "list X", "show all X", "browse X", "enumerate X" |
 | Returns | Single resource or not found | Multiple resources with pagination |
-| Use case | Before execution | Browsing/discovery |
+| Use case | Before execution (scoring, reading, running) | Explicit user request to browse |
 | Tool suffix | `find-*` | `list-*` |
+
+**Rule**: if the user did not say "list", "show list", "browse", or "enumerate", do not call a list-* tool.

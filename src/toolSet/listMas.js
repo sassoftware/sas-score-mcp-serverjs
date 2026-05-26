@@ -10,8 +10,8 @@ function listMas(_appContext) {
   let description = `
 list-mas — enumerate models published to MAS.
 
-USE when: list models, show models, list mas, show mas next page
-DO NOT USE for: find model, find mas, model metadata, score model, list jobs/tables/libraries
+USE ONLY when: user explicitly asks to browse or enumerate models — "list models", "show all models", "list mas", "next page". Never use to verify if a specific model exists.
+DO NOT USE for: verify or check if a specific model exists (use ${_appContext.brand}-find-mas or ${_appContext.brand}-find-model instead), find model, find mas, model metadata, score model, list jobs/tables/libraries
 
 PARAMETERS
 - limit: number (default: 10) — page size
@@ -32,7 +32,9 @@ EXAMPLES
 - "list 25 mas" → { start:1, limit:25 }
 
 NEGATIVE EXAMPLES (do not route here)
-- "find model X" (use ${_appContext.brand}-find-model)
+- "find model X" (use ${_appContext.brand}-find-mas)
+- "does model churn_predictor exist" (use ${_appContext.brand}-find-mas)
+- "is model X published to MAS" (use ${_appContext.brand}-find-mas)
 - "describe model X" (use ${_appContext.brand}-model-info)
 - "score model X" (use ${_appContext.brand}-model-score)
 - "list jobs" (use ${_appContext.brand}-list-jobs)

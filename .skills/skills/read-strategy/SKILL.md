@@ -10,7 +10,7 @@ Use this strategy when the user requests to read, fetch, or query data from a ta
 
 Rules summary
 - Verification rules: verify the table exists using `find-*` and determine the server (CAS vs SAS); ask the user if ambiguous. Do not assume a default server unless explicitly instructed.
-- Execution rules: choose `sas-score-read-table` for raw row reads and `sas-score-sas-query` for aggregations/joins/groupings; if intent is ambiguous, ask the user.
+- Execution rules: use `sas-score-read-table` for **all** row reads, including filtered reads with WHERE clauses; use `sas-score-sas-query` **only** when the request requires SQL aggregation functions (COUNT, SUM, AVG, MIN, MAX), GROUP BY, JOIN across tables, or computed columns. A WHERE clause alone is not enough to use sas-query — use read-table with the `where` parameter instead.
 - Pagination: always pass `start=1` and `limit=10` explicitly for `sas-score-read-table` unless the user specifies different values.
 - Error handling: surface clear guidance when table or column names are missing or misspelled.
 
@@ -26,22 +26,41 @@ Before reading:
 
 ### Type 1: Raw Row Read
 
-**Trigger phrases**: "read rows from", "show first N records", "fetch records where", "get data from table"
+**Trigger phrases**: "read rows from", "show first N records", "fetch records where", "get data from table", "score the first N rows", "browse data in", "read table", "get rows where", "show records where", "filter by", "query table where"
 
 **Tool**: `sas-score-read-table`
 
 **When to use**:
-- User wants raw records, not aggregations
-- User wants to filter by WHERE clause
+- User wants raw records, with or without a filter
+- User wants to filter rows with a WHERE clause (this is a read-table with `where=`, not sas-query)
 - User wants to browse data
+- Default for any "read" or "fetch" request that does not involve aggregation or a JOIN
+
+**Parsing Pagination from User Input**
+
+Translate user phrasing to `start` and `limit` before calling the tool:
+
+| User says | start | limit |
+|---|---|---|
+| "first N rows/records" | 1 | N |
+| "top N rows" | 1 | N |
+| "N rows" / "N records" (no qualifier) | 1 | N |
+| "read N rows from lib.table" | 1 | N |
+| "rows N to M" | N | M−N+1 |
+| "starting from row N" | N | 10 (default) |
+| (count not specified) | 1 | 10 (default) |
+
+> "first" always means **start at row 1, return N rows**. It is never a row offset.
+
+**Dotted table format**: `"lib.table"` → `lib: "lib"`, `table: "table"` (split on first dot).
 
 **Parameters**:
 ```
-lib: "<library>"           # from find-resource verification
-table: "<table>"           # from find-resource verification
+lib: "<library>"           # from find-resource verification, or split from lib.table
+table: "<table>"           # from find-resource verification, or split from lib.table
 server: "cas" or "sas"     # from find-resource verification
-start: <row number>        # default 1
-limit: <max rows>          # default 10, max 1000
+start: <row number>        # default 1 — see parsing table above
+limit: <max rows>          # default 10, max 1000 — see parsing table above
 where: "<SQL WHERE clause>"  # optional filter
 format: true               # default: use formatted values
 ```
@@ -60,17 +79,23 @@ sas-score-read-table({
 
 ---
 
-### Type 2: Analytical Query
+### Type 2: SQL Aggregation Query
 
-**Trigger phrases**: "how many", "count by", "average", "total", "sum", "group by", "aggregate", "distinct", "join"
+**Trigger phrases**: "how many", "count by", "count of", "average of", "total of", "sum of", "group by", "aggregate by", "join with", "join across"
 
 **Tool**: `sas-score-sas-query`
 
-**When to use**:
-- User wants aggregations (SUM, AVG, COUNT, etc.)
-- User wants GROUP BY or distinct counts
-- User wants JOIN across tables
-- User wants statistical summaries
+**When to use — ONLY when the request requires one or more of**:
+- SQL aggregation functions: COUNT, SUM, AVG, MIN, MAX
+- GROUP BY or HAVING clauses
+- JOIN across two or more tables
+- Computed/derived columns (e.g. `price * qty`)
+- Statistical summaries (totals, averages, distributions)
+
+**Do NOT use for**:
+- Simple filtered reads — "show customers where status='active'" → use `sas-score-read-table` with `where="status='active'"`
+- Any request that just wants rows back, even with conditions
+- Requests where "query" means "fetch" rather than "aggregate"
 
 **Parameters**:
 ```
@@ -96,11 +121,13 @@ sas-score-sas-query({
 ```
 User requests data from table
   ↓
-Is it an aggregation? (count, sum, avg, group by, distinct, etc.)
+Does the request require a SQL aggregation function (COUNT/SUM/AVG/MIN/MAX),
+GROUP BY, JOIN across tables, or computed columns?
   ├─ YES → Use sas-score-sas-query
-  └─ NO → Use sas-score-read-table
+  └─ NO  → Use sas-score-read-table (pass WHERE clause in `where` parameter if filtering)
 
-If the user's intent is ambiguous or mixes aggregation and raw reads, ask the user to clarify whether they want raw records or aggregated results before proceeding.
+Key: a WHERE clause alone → read-table. Aggregation/join → sas-query.
+If still ambiguous, ask the user before proceeding.
 ```
 
 ---
@@ -109,6 +136,7 @@ If the user's intent is ambiguous or mixes aggregation and raw reads, ask the us
 
 - **CAS tables**: `Caslib.table` or `Public.customers` (mixed case table)
 - **SAS tables**: `LIBREF.table` or `SASHELP.cars` (uppercase libref, case-insensitive table)
+- **Dotted input**: `"x.y"` → `lib: "x"`, `table: "y"` — always split on the first dot to extract lib and table
 
 ---
 

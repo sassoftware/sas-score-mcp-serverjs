@@ -14,8 +14,8 @@ function listTables(_appContext) {
     let description = `
 list-tables — enumerate tables within a library.
 
-USE when: list tables in <lib>, show tables in <lib>, next page
-DO NOT USE for: find table, list libraries, get table structure (use ${_appContext.brand}-table-info), read data (use ${_appContext.brand}-read-table)
+USE ONLY when: user explicitly asks to browse or enumerate tables — "list tables in X", "show tables in X", "show all tables in X", "browse tables in X", "what tables are in X", "next page"
+DO NOT USE for: verify or check if a specific table exists (use ${_appContext.brand}-find-table instead), find table, list libraries, get table structure (use ${_appContext.brand}-table-info), read data (use ${_appContext.brand}-read-table)
 
 PARAMETERS
 - lib: string — library to inspect (required)
@@ -38,6 +38,9 @@ NEGATIVE EXAMPLES (do not route here)
 -- "find lib Public" (use ${_appContext.brand}-find-library)
 -- "describe table cars" (use ${_appContext.brand}-table-info)
 -- "read table cars" (use ${_appContext.brand}-read-table)
+-- "does table cars exist in Samples" (use ${_appContext.brand}-find-table)
+-- "is table iris in Public" (use ${_appContext.brand}-find-table)
+-- "verify table orders in mylib" (use ${_appContext.brand}-find-table)
 
 ERRORS
 Returns empty array if no tables found.

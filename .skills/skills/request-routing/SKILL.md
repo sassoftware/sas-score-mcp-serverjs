@@ -8,6 +8,30 @@ description: >
 
 Purpose: single source-of-truth for routing SAS Viya actions (read, query, score, describe, list).
 
+## Dotted Resource Reference Parsing — `a.b` Notation
+
+When any resource reference appears in the form `a.b`, parse `b` to determine the resource type:
+
+| `b` value | Resource type | Parsed as |
+|---|---|---|
+| `mas` | MAS model | name = `a` |
+| `job` | Job model | name = `a` |
+| `jobdef` | JobDef model | name = `a` |
+| `scr` | SCR model | name = `a` |
+| `sas` | SAS program | program name = `a` |
+| `casl` | CASL program | program name = `a` |
+| **anything else** | **Table** | lib = `a`, table = `b` |
+
+**Rule**: if `b` is not one of `{mas, job, jobdef, scr, sas, casl}`, treat `a.b` as a table reference where `a` is the library name and `b` is the table name.
+
+**Examples**:
+- `Public.customers` → table, lib=`Public`, table=`customers`
+- `SASHELP.cars` → table, lib=`SASHELP`, table=`cars`
+- `churnRisk.mas` → MAS model, name=`churnRisk`
+- `simplejob.job` → Job model, name=`simplejob`
+- `myScorer.jobdef` → JobDef model, name=`myScorer`
+- `loanModel.scr` → SCR model, name=`loanModel`
+
 Quick workflow
 - Verify — confirm resources exist (use find-*).
 - Execute — run the mapped execution tool (read, query, score, describe, list).
@@ -19,7 +43,8 @@ Classification
 | Category | Triggers | Primary Action | Primary Tool(s) |
 |---|---|---|---|
 | Find resource | "find", "does X exist", "locate", "verify" | Verify resource | `sas-score-find-library`, `sas-score-find-table`, `sas-score-find-mas`, `sas-score-find-job`, `sas-score-find-jobdef` |
-| Read / Query | "read", "show rows", "how many", "count", "average", "query" | Read / aggregate | `sas-score-read-table`, `sas-score-sas-query` |
+| Read (row fetch) | "read", "show rows", "fetch", "get data", "filter by", "where", "show records" | Fetch rows | `sas-score-read-table` (always, even with WHERE filter) |
+| SQL Query | "how many", "count by", "average of", "sum of", "group by", "aggregate", "join" | Aggregate / join | `sas-score-sas-query` (only for aggregation/join/computed columns) |
 | Score | "score", "predict", "run model" | Score inputs | `sas-score-mas-score`, `sas-score-run-job`, `sas-score-run-jobdef`, `sas-score-scr-score` |
 | List / Discover | "list", "show all", "browse" | List resources | `sas-score-list-*` tools (e.g., `sas-score-list-mas`, `sas-score-list-jobs`) |
 | Describe | "describe", "what inputs", "metadata" | Return metadata | `sas-score-*-info` (mas/job/jobdef/scr), `sas-score-table-info` |
@@ -33,8 +58,8 @@ Execution rules
   - Inline scenario: verify model → call scoring tool.
   - Table rows: verify model + table → read rows → map columns to model inputs → score → merge predictions with rows.
 - Read/query flows:
-  - Use `sas-score-sas-query` for aggregations and groupings.
-  - Use `sas-score-read-table` for row reads.
+  - Use `sas-score-read-table` for **all** row reads, including those with a WHERE filter. A filter condition is not a reason to use sas-query.
+  - Use `sas-score-sas-query` **only** when the request requires SQL aggregation (COUNT, SUM, AVG, MIN, MAX), GROUP BY, JOIN across tables, or computed columns.
   - When mapping between table columns and model inputs is ambiguous, ask the user for explicit mapping.
 
 Defaults & exceptions
@@ -44,8 +69,8 @@ Defaults & exceptions
 - Pagination: always pass `start=1` and `limit=10` when calling any tool that accepts these parameters, unless the user specifies different values. Never omit them and rely on tool-level defaults.
 
 Execute mapping (concise)
-- Read rows: `sas-score-read-table` (lib, table, server)
-- Aggregation/query: `sas-score-sas-query` (lib.table, query)
+- Read rows (including WHERE filter): `sas-score-read-table` (lib, table, server, where)
+- SQL aggregation/join only: `sas-score-sas-query` (lib.table, query, sql)
 - MAS scoring: `sas-score-mas-score` (mas, scenario)
 - Job scoring: `sas-score-run-job` (job, scenario)
 - JobDef scoring: `sas-score-run-jobdef` (jobdef, scenario)

@@ -17,21 +17,24 @@ DO NOT USE for: list tables (use ${_appContext.brand}-list-tables), table schema
 PARAMETERS
 - lib: string (required) — library name (e.g., 'Public', 'sashelp')
 - name: string (required) — table name to locate
-- server: 'cas' | 'sas' . If not specified set it to 'cas' — target environment
+- server: 'cas' | 'sas' (REQUIRED — must always be explicitly provided; never omit or leave null)
 
 ROUTING RULES
-- "find table <name> in <lib>" → { lib: "<lib>", name: "<name>", server: "cas" }
-- "find table <name> in <lib> in sas" → { lib: "<lib>", name: "<name>", server: "sas" }
-- "does table <name> exist in <lib>" → { lib: "<lib>", name: "<name>", server: "cas" }
+- server MUST be 'cas' or 'sas' — determine it from library context BEFORE calling this tool
+- Known CAS libraries: Casuser, Formats, ModelPerformanceData, Models, Public, Samples, SystemData → server: "cas"
+- Known SAS libraries: MAPS, MAPSGFK, MAPSSAS, SASDQREF, SASHELP, SASUSER, WORK → server: "sas"
+- Unknown library: try cas first, then sas if not found — always pass an explicit server value each call
+- "find table <name> in <lib>" → determine server from lib, then call with explicit server
+- "find table <name> in <lib> on sas" → { lib: "<LIB>", name: "<name>", server: "sas" }
 - "find table" with missing lib → ask "Which library contains the table?"
 - "find table" with missing name → ask "Which table name would you like to find?"
 - "list tables in <lib>" → use ${_appContext.brand}-list-tables instead
 
 EXAMPLES
-- "find table iris in Public" → { lib: "Public", name: "iris", server: "cas" }
-- "find table cars in sashelp in sas" → { lib: "sashelp", name: "cars", server: "sas" }
-- "does customers exist in mylib" → { lib: "mylib", name: "customers", server: "cas" }
-- "verify table orders in Samples" → { lib: "Samples", name: "orders", server: "cas" }
+- "find table iris in Public" → { lib: "Public", name: "iris", server: "cas" }   (Public is a known CAS lib)
+- "find table cars in sashelp" → { lib: "SASHELP", name: "cars", server: "sas" }  (SASHELP is a known SAS lib)
+- "does customers exist in mylib" → try { lib: "mylib", name: "customers", server: "cas" }, then server: "sas" if not found
+- "verify table orders in Samples" → { lib: "Samples", name: "orders", server: "cas" }  (Samples is a known CAS lib)
 
 NEGATIVE EXAMPLES (do not route here)
 - "list tables in Public" (use ${_appContext.brand}-list-tables)
@@ -49,7 +52,7 @@ Returns { tables: [] } if not found; { tables: [name, ...] } if found. Never hal
     inputSchema: z.object({
       lib: z.string(),
       name: z.string(),
-      server: z.string() 
+      server: z.enum(['cas', 'sas'])
     }),
     
     handler: async (params) => {

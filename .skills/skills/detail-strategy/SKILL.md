@@ -29,23 +29,19 @@ Defaults & exceptions
 
 ### Phase 1: Classify the Resource Type
 
-Determine resource type from context/naming conventions:
+Determine resource type from context/naming conventions.
+
+**Dotted `a.b` notation rule**: parse `b` to determine type. If `b` is not in `{mas, job, jobdef, scr, sas, casl}`, treat `a.b` as a table where lib=`a`, table=`b`.
 
 | Pattern                  | Resource Type |
 |--------------------------|---------------|
-| `mas X` or `X.mas`       | MAS model  X   |
-| `mas model X`            | MAS model  X   |
-| `scr X` or `X.scr`       | SCR model X    |
-| `scr model X`            | SCR model  X   |
-| `job model X`            | Job model  X   |
-| `jobdef X` or `X.jobdef` | JobDef model  X |
-| `jobdef model X`         | JobDef model  X |
-| `table X in library Y`   | Table  X in library Y |
-| `model X.mas`            | MAS model  X   |
-| `model X.job`            | Job model  X   |
-| `model X.jobdef`         | JobDef model  X |
-| `model X.scr`            | SCR model  X   |
-| `model X` (ambiguous)    | Default to MAS model (explicit convention) |
+| `X.mas` or `mas X` or `mas model X` | MAS model, name=X |
+| `X.job` or `job X` or `job model X` | Job model, name=X |
+| `X.jobdef` or `jobdef X` or `jobdef model X` | JobDef model, name=X |
+| `X.scr` or `scr X` or `scr model X` | SCR model, name=X |
+| `a.b` where b ∉ {mas,job,jobdef,scr,sas,casl} | **Table**: lib=a, name=b |
+| `table X in library Y`   | Table X in library Y |
+| `model X` (no suffix)    | Default to MAS model (explicit convention) |
 
 If resource is ambiguous, ask user for clarification.
 

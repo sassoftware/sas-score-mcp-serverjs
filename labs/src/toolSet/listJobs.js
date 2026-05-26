@@ -9,8 +9,8 @@ function listJobs(_appContext) {
   let description = `
 list-jobs — enumerate SAS Viya job assets.
 
-USE when: list jobs, show jobs, browse jobs, list available jobs, next page
-DO NOT USE for: find single job (use find-job), execute job (use run-job), run job def (use run-jobdef), sas code (use run-sas-program)
+USE ONLY when: user explicitly asks to browse or enumerate jobs — "list jobs", "show all jobs", "browse jobs", "next page". Never use to verify if a specific job exists.
+DO NOT USE for: verify or check if a specific job exists (use find-job instead), find single job (use find-job), execute job (use run-job), run job def (use run-jobdef), sas code (use run-sas-program)
 
 PARAMETERS
 - limit: number (default: 10) — number of jobs per page
@@ -29,6 +29,8 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - find job abc (use find-job)
+- does job simplejob exist (use find-job)
+- is job X available (use find-job)
 - run job abc (use run-job)
 - list models (use list-models)
 - list tables in lib xyz (use list-tables)

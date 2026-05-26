@@ -9,8 +9,8 @@ function listJobdefs(_appContext) {
   let description = `
 list-jobdefs — enumerate SAS Viya job definitions (jobdefs) assets.
 
-USE when: list jobdefs, show jobdefs, browse jobdefs, list available jobdefs, next page
-DO NOT USE for: find single jobdef (use ${_appContext.brand}-find-jobdef), execute jobdef (use ${_appContext.brand}-run-jobdef), find job (use ${_appContext.brand}-find-job), sas code (use ${_appContext.brand}-run-sas-program)
+USE ONLY when: user explicitly asks to browse or enumerate jobdefs — "list jobdefs", "show all jobdefs", "browse jobdefs", "next page". Never use to verify if a specific jobdef exists.
+DO NOT USE for: verify or check if a specific jobdef exists (use ${_appContext.brand}-find-jobdef instead), find single jobdef (use ${_appContext.brand}-find-jobdef), execute jobdef (use ${_appContext.brand}-run-jobdef), find job (use ${_appContext.brand}-find-job), sas code (use ${_appContext.brand}-run-sas-program)
 
 PARAMETERS
 - limit: number (default: 10) — number of jobdefs per page
@@ -29,6 +29,8 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - find jobdef abc (use ${_appContext.brand}-find-jobdef)
+- does jobdef X exist (use ${_appContext.brand}-find-jobdef)
+- is jobdef X available (use ${_appContext.brand}-find-jobdef)
 - list jobs (use ${_appContext.brand}-list-jobs)
 - run jobdef abc (use ${_appContext.brand}-run-jobdef)
 - list models (use ${_appContext.brand}-list-models)

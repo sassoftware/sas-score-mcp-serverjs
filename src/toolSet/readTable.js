@@ -18,19 +18,34 @@ PARAMETERS
 - table: string — table name (required)
 - lib: string — caslib or libref (required)
 - server: string (default: 'cas') — 'cas' or 'sas'
-- start: number (default: 1) — 1-based row index
-- limit: number (default: 10) — max rows (1-1000)
+- start: number (default: 1) — 1-based row index of first row to return
+- limit: number (default: 10) — max rows to return (1-1000)
 - where: string — SQL WHERE clause filter
 - format: boolean (default: true) — formatted or raw values
 
+PARSING ROWS FROM USER INPUT
+"first N rows/records"        → start: 1, limit: N   ("first" = count from beginning, never an offset)
+"top N rows"                  → start: 1, limit: N
+"N rows" / "N records"        → start: 1, limit: N
+"read N rows from lib.table"  → lib: "lib", table: "table", start: 1, limit: N
+"rows N to M"                 → start: N, limit: M-N+1
+"starting from row N"         → start: N, limit: 10 (default)
+(no count specified)          → start: 1, limit: 10 (default)
+
+DOTTED FORMAT: "lib.table" → lib: "lib", table: "table" (split on first dot)
+
 ROUTING RULES
 - "read table cars in Samples" → { table: "cars", lib: "Samples", start: 1, limit: 10 }
-- "show 25 rows from customers" → { table: "customers", lib: "<lib>", limit: 25, start: 1 }
+- "show 25 rows from customers" → { table: "customers", lib: "<lib>", start: 1, limit: 25 }
+- "read the first 2 rows from Public.customers" → { lib: "Public", table: "customers", start: 1, limit: 2 }
+- "read 2 rows from Public.customers" → { lib: "Public", table: "customers", start: 1, limit: 2 }
 - "read from mylib.orders where status='shipped'" → { table: "orders", lib: "mylib", where: "status='shipped'", start: 1, limit: 10 }
 
 EXAMPLES
 - "read table cars in Samples" → { table: "cars", lib: "Samples", start: 1, limit: 10 }
-- "show 25 rows from customers" → { table: "customers", lib: "mylib", limit: 25, start: 1 }
+- "show 25 rows from Public.customers" → { lib: "Public", table: "customers", start: 1, limit: 25 }
+- "first 5 rows from SASHELP.cars" → { lib: "SASHELP", table: "cars", start: 1, limit: 5 }
+- "read 2 rows from Casuser.test" → { lib: "Casuser", table: "test", start: 1, limit: 2 }
 
 NEGATIVE EXAMPLES (do not route here)
 - "list tables in Samples" (use list-tables)

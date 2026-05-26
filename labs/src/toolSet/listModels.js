@@ -10,8 +10,8 @@ function listModels(_appContext) {
   let description = `
 list-models — enumerate models published to MAS.
 
-USE when: list models, show models, browse models, next page
-DO NOT USE for: find model, model metadata, score model, list jobs/tables/libraries
+USE ONLY when: user explicitly asks to browse or enumerate models — "list models", "show all models", "next page". Never use to verify if a specific model exists.
+DO NOT USE for: verify or check if a specific model exists (use find-model instead), find model, model metadata, score model, list jobs/tables/libraries
 
 PARAMETERS
 - limit: number (default: 10) — page size
@@ -28,6 +28,8 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "find model X" (use find-model)
+- "does model churn_predictor exist" (use find-model)
+- "is model X published to MAS" (use find-model)
 - "describe model X" (use model-info)
 - "score model X" (use model-score)
 - "list jobs" (use list-jobs)

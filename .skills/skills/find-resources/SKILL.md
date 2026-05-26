@@ -9,6 +9,22 @@ description: >
 
 Use this strategy to verify that a resource exists before executing any action.
 
+## Dotted `a.b` Resource Reference Parsing
+
+Before determining which find-* tool to use, parse any `a.b` notation:
+
+| `b` value | Resource type | Action |
+|---|---|---|
+| `mas` | MAS model | use `sas-score-find-mas`, name=`a` |
+| `job` | Job model | use `sas-score-find-job`, name=`a` |
+| `jobdef` | JobDef model | use `sas-score-find-jobdef`, name=`a` |
+| `scr` | SCR model | no find tool — ask user for URL |
+| `sas` | SAS program | not a table or model; handle as code resource |
+| `casl` | CASL program | not a table or model; handle as code resource |
+| **anything else** | **Table** | use `sas-score-find-table`, lib=`a`, table=`b` |
+
+**Rule**: if `b` is not in `{mas, job, jobdef, scr, sas, casl}`, treat `a.b` as a table — lib=`a`, table=`b` — and apply the Find Table logic below.
+
 Verification rules
 - Use `find-*` tools to confirm resource existence; do not use `list-*` tools for verification.
 - For tables, determine server (CAS vs SAS) from the library; if unknown, try CAS first then SAS (uppercase lib for SAS).
@@ -45,15 +61,15 @@ Do **not** use list tools for verifying or finding specific resources. List tool
 
 **Tool**: `sas-score-find-table`
 
+> **GATE — determine server BEFORE calling `sas-score-find-table`.**
+> The `server` parameter is REQUIRED and must be `"cas"` or `"sas"`.
+> Never call the tool with server omitted, null, or empty.
+> Complete the server-determination logic below first, then call the tool with an explicit server value.
+
 **Required inputs**: 
 - Library name
 - Table name
-- Server (determined from library context or user specification)
-
-**Rule** 
-1. Do not call the tool with a null or empty server. Always determine the server first using the library name or by asking the user, then call the tool with a specific server. 
-2. Do not assume a default server unless explicitly instructed by the user. Always verify the server based on the library or ask the user if ambiguous.
-3. Use the logic below to determine if the table exists and which server it is on before proceeding with any read or query operations.
+- Server (determined from library context or user specification — see logic below)
 
 **Logic**:
 1. If you already know that the table exists in a specific server, return that result directly and skip the remaining steps.
