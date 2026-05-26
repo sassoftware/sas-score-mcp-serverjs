@@ -50,23 +50,28 @@ Do **not** use list tools for verifying or finding specific resources. List tool
 - Table name
 - Server (determined from library context or user specification)
 
+**Rule** 
+1. Do not call the tool with a null or empty server. Always determine the server first using the library name or by asking the user, then call the tool with a specific server. 
+2. Do not assume a default server unless explicitly instructed by the user. Always verify the server based on the library or ask the user if ambiguous.
+3. Use the logic below to determine if the table exists and which server it is on before proceeding with any read or query operations.
 
 **Logic**:
-1. If you already know that the table exists in a specific server, return that result directly.
-2. Otherwise, follow these steps:
-  - Step 1: If library is a known CAS library (Casuser, Public, Samples, etc.), use CAS as server.
-  - Step 2: If library is a known SAS library (SASHELP, WORK, SASUSER, etc.), use SAS as server.
-  - Step 3: If the server has been identified in an earlier step for this library, use that as the server.
-3. If server is known at this point:
-  - If server is SAS, uppercase the library name and try: `sas-score-find-table({ lib: "<LIB>", name: "<table>", server: "sas" })`
-  - Otherwise, use the provided server: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "<server>" })`
-4. If server is not known:
-  - Step 1: Try CAS first: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "cas" })`
-  - Step 2: If not found in CAS, try SAS with the library name uppercased: `sas-score-find-table({ lib: "<LIBRARY>", name: "<table>", server: "sas" })`
-5. If the table was found, report success and server.
-6. If not found, report failure.
+1. If you already know that the table exists in a specific server, return that result directly and skip the remaining steps.
+2. Follow these steps to determine the server and verify the table:
+  - Step 1: If library is a known CAS library (Casuser, Formats, ModelPerformanceData, Models, Public, Samples, SystemData), use cas as server. Lookup is case-insensitive.
+  - Step 2: If library is a known SAS library (MAPS, MAPSGFK, MAPSSAS, SASDQREF, SASHELP, SASUSER, WORK), use sas as server. Uppercase the library name for SAS lookup.
+  - Step 3: If the server has been identified in the previous two steps for this library, use that as the server and follow these steps
+    - If server is sas, uppercase the library name and try: `sas-score-find-table({ lib: "<LIB>", name: "<table>", server: "sas" })` and return results
+    - Otherwise, use the provided server: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "<server>" })` and return results
+3. If server is still not known:
+  - Step 1: Try cas first: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "cas" })`
+  - Step 2: If Step 1 did not find the table, try to find the table in sas server:
+    - Uppercase  with the library name
+    - try `sas-score-find-table({ lib: "<LIBRARY>", name: "<table>", server: "sas" })`
+  - return results 
 
-**Output**: Table server location (CAS or SAS)
+
+**Output**: "Found table <table> in library <library> on <server>" or "Table <table> not found in library <library> on either cas or sas"
 
 ---
 
