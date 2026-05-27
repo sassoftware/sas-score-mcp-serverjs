@@ -13,6 +13,7 @@ USE when: list jobdefs, show jobdefs, browse jobdefs, list available jobdefs, ne
 DO NOT USE for: find single jobdef (use find-jobdef), execute jobdef (use score-jobdef), find job (use find-job), sas code (use score-program)
 
 PARAMETERS
+- intent: must be 'list' — only pass if user explicitly asked to list/enumerate jobdefs. Do NOT use for find, verify, or execute.
 - limit: number (default: 10) â€” number of jobdefs per page
 - start: number (default: 1) â€” 1-based page offset
 - where: string (default: '') â€” optional filter expression
@@ -44,6 +45,7 @@ Surface backend error directly; never fabricate jobdef names.
     name: 'list-jobdefs',
     description: description,
     inputSchema: z.object({
+      intent: z.literal('list'),
       limit: z.number().optional(),
       start: z.number().optional(),
       where: z.string().optional()
@@ -51,7 +53,8 @@ Surface backend error directly; never fabricate jobdef names.
   // No 'server' required; backend context is implicit in helper
     handler: async (params) => {
       // _listJobdefs handles all validation and defaults
-      const result = await _listJobdefs(params);
+      const { intent, ...rest } = params;
+      const result = await _listJobdefs(rest);
       return result;
     }
   }

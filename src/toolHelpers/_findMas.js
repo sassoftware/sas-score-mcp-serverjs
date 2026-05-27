@@ -5,6 +5,7 @@
 
 import _listMas from './_listMas.js';  
 async function _findMas(params) {
+    params.tool = 'find';
     let r = await _listMas(params);
     console.log ("findMas result:" , r);
     return r;

@@ -12,6 +12,7 @@ function scrDescribe(_appContext) {
 scr-describe -  return the input/output schema and metadata for an SCR (Score Code Runtime) model.
 
 Inputs
+- intent: must be 'describe' — only pass if user explicitly asked to describe/inspect an SCR model. Do NOT use for find or verify existence.
 - name (string): The SCR model identifier.
 What it returns
 - A JSON object describing the model's interface, typically including:
@@ -32,10 +33,11 @@ Examples
     name: 'scr-describe',
     description: description,
     inputSchema: z.object({
+      intent: z.literal('describe'),
       name: z.string()
     }),
     handler: async (params) => {
-      let {name, _appContext} = params;
+      const { intent, name, _appContext } = params;
       if (name === null) {
         return { status: { statusCode: 2, msg: `SCR model ${name} not found` }, results: {} };
       }

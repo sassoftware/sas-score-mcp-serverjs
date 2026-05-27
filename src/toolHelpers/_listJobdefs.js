@@ -40,8 +40,8 @@ async function _listJobdefs(params) {
     });
 
     let response = {jobDefinitions: Object.keys(names)};
-    if (name != null) {
-      response = { name: name, parameters: names[name].parameters };
+    if (name != null && params.tool === 'find') {
+      response = { jobDefinition:[name] };
     }
 
     return {

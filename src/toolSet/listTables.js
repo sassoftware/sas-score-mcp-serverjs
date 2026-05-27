@@ -18,6 +18,7 @@ USE when: list tables in <lib>, show tables in <lib>, next page
 DO NOT USE for: find table, list libraries, get table structure (use ${_appContext.brand}-table-describe), read data (use ${_appContext.brand}-read-table)
 
 PARAMETERS
+- intent: must be 'list' — only pass if user explicitly asked to list/enumerate tables. Do NOT use for read, find, or verify.
 - lib: string â€” library to inspect (required)
 - server: string (default: 'cas') â€” 'cas' or 'sas'
 - limit: number (default: 10) â€” page size
@@ -48,14 +49,16 @@ Returns empty array if no tables found.
     description: description,
 
     inputSchema: z.object({
+      intent: z.literal('list'),
       lib: z.string(),
       server: z.string().optional(),
       limit: z.number().optional(),
       start: z.number().optional(),
       where: z.string().optional()
     }),
-    handler: async (params) => { 
-      let r = await _listTables(params);
+    handler: async (params) => {
+      const { intent, ...rest } = params;
+      let r = await _listTables(rest);
       return r;
     }
   }

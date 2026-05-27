@@ -19,9 +19,14 @@ async function _findScr(params) {
     let response = await axios(config);
     console.error('[Note] Response status:', response.status);
     if (response.status !== 200) {
+      
       return {isError: true, content: [{ type: 'text', text: `SCR model ${name} not found` }]};
     } else if (response.status === 200) {
-      return { content: [{ type: 'text', text: `Model ${name} is available` }]};
+      let r = { scr: [name] };
+      return { content: [{ type: 'text', text: JSON.stringify(r) }],
+        structuredOutput: r
+
+      };
     }
   }
   catch (error) {

@@ -9,10 +9,11 @@ function jobDescribe(_appContext) {
   let description = `
 job-describe — return information about a specific SAS Viya job.
 
-USE when: find job, does job exist, is there a job named, lookup job, verify job exists
-DO NOT USE for: list jobs (use ${_appContext.brand}-list-jobs), score job (use ${_appContext.brand}-score-job), score jobdef (use ${_appContext.brand}-score-jobdef), find lib/table/model (use respective tools)
+USE when: describe job, show job details, what does job X do, job metadata, inputs/outputs for job
+DO NOT USE for: find job or verify it exists (use ${_appContext.brand}-find-job), list jobs (use ${_appContext.brand}-list-jobs), score job (use ${_appContext.brand}-score-job)
 
 PARAMETERS
+- intent: must be 'describe' — only pass if user explicitly asked to describe/inspect a job. Do NOT use for find or verify existence.
 - name: string (required) — name of job whose details are being requested. Should be exact match to job name.
 
 ROUTING RULES
@@ -37,16 +38,15 @@ Returns job metadata
     name: 'job-describe',
     description: description,
     inputSchema: z.object({
+      intent: z.literal('describe'),
       name: z.string()
     }),
     handler: async (params) => {
-      if (params.name != null) {
-        if (params.name.endsWith('.job'))   {
-          params.name = params.name.slice(0, -4);
-        }
+      const { intent, ...rest } = params;
+      if (rest.name != null && rest.name.endsWith('.job')) {
+        rest.name = rest.name.slice(0, -4);
       }
-      // _listJobs can handle job lookup by name and will return an appropriate error message if not found, so we can rely on that for error handling here.
-      let r = await _listJobs(params);
+      let r = await _listJobs(rest);
       return r;
     }
   }

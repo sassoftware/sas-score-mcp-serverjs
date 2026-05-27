@@ -16,6 +16,7 @@ USE when: what inputs does model need, describe model, show variables for model,
 DO NOT USE for: find model, list models, score model, table/job operations
 
 PARAMETERS
+- intent: must be 'describe' — only pass if user explicitly asked to describe/inspect a model. Do NOT use for find or verify existence.
 - model: string — model name (required, exact match)
 
 ROUTING RULES
@@ -41,10 +42,12 @@ Returns model metadata: inputs (name, type, role), outputs (name, type, possible
     name: 'model-info',
     description: description,
     inputSchema: z.object({
+      intent: z.literal('describe'),
       model: z.string()
     }),
     handler: async (params) => {
-      let r = await _masDescribe(params);
+      const { intent, ...rest } = params;
+      let r = await _masDescribe(rest);
       return r;
     }
   }

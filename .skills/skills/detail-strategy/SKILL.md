@@ -50,25 +50,16 @@ Determine resource type from context/naming conventions:
 
 If resource is ambiguous, ask user for clarification.
 
-### Phase 2: Verify Resource Exists (Skip for SCR Models)
+### Phase 2: Verify Resource Exists 
 
 **IMPORTANT**: Strip the suffix if user included it, use base name for lookup (e.g. "churnRisk.mas" â†’ "churnRisk") to avoid lookup failures.
 
-For each resource type, use the appropriate verification tool:
-
-| Resource Type | Tool              |
-|---------------|-------------------|
-| MAS model     | sas-score-find-mas |
-| Job model     | sas-score-find-job   |
-| JobDef model  | sas-score-find-jobdef |
-| Table         | sas-score-find-table  |
-| SCR model     | *(no verification needed)* |
+Use find-resources skill to verify the resource exists
 
 If verification fails, inform the user and ask for additional details or corrections.
 
 ---
 
-## Detail Retrieval Process
 
 ### Phase 3: Get Details
 
@@ -84,7 +75,7 @@ If verification fails, inform the user and ask for additional details or correct
 ```
 
 sas-score-mas-describe({
-  model: "<model name>"
+  name: "<model name>"
 })
 ```
 
@@ -99,7 +90,7 @@ sas-score-mas-describe({
 User: "What inputs does mas model churnRisk need?"
 
 1. Find: sas-score-find-mas({ name: "churnRisk" })
-2. Get info: sas-score-mas-describe({ model: "churnRisk" })
+2. Get info: sas-score-mas-describe({ name: "churnRisk" })
 3. Return: { inputs: [...], outputs: [...], description: "..." }
 ```
 
@@ -176,7 +167,7 @@ User: "What columns are in the customers table in Public?"
 **Parameters**:
 ```
 sas-score-job-describe({
-  model: "<model name>"
+  name: "<model name>"
 })
 ```
 
@@ -187,24 +178,23 @@ sas-score-job-describe({
 ```
 User: "What inputs does job model churnRisk need?"
 
-1. Find: sas-score-find-job({ name: "churnRisk" })
-2. Get info: sas-score-job-describe({ model: "churnRisk" })
+1. Find: use find-resources skill to job exists
+2. Get Details: sas-score-job-describe({ name: "churnRisk" })
 3. Return: { inputs: [...] }
 ```
 
 ### Option E: JobDef Model Details
-
-> **Note**: There is no separate `sas-score-jobdef-describe` tool. JobDef detail retrieval reuses `sas-score-job-describe` â€” do not attempt to call a `sas-score-jobdef-describe` tool.
+.
 
 **Trigger phrases**: "what inputs does jobdef model X need", "describe jobdef model X",
 "jobdef model X metadata", "what inputs does jobdef X need", "describe jobdef X"
 
-**Tool**: `sas-score-job-describe` (shared with Job models)
+**Tool**: `sas-score-jobdef-describe` 
 
 **Parameters**:
 ```
-sas-score-job-describe({
-  model: "<jobdef name>"
+sas-score-jobdef-describe({
+  name: "<jobdef name>"
 })
 ```
 
@@ -213,7 +203,7 @@ sas-score-job-describe({
 User: "What inputs does jobdef model myScorer need?"
 
 1. Find: sas-score-find-jobdef({ name: "myScorer" })
-2. Get info: sas-score-job-describe({ model: "myScorer" })
+2. Get info: sas-score-jobdef-describe({ name: "myScorer" })
 3. Return: { inputs: [...] }
 ```
 
@@ -310,8 +300,8 @@ If a request fails:
 
 **Workflow**:
 1. Classify: Table detail request
-2. Verify: Find table customers in Public â†’ CAS âœ“
-3. Execute: `sas-score-table-describe({ lib: "Public", table: "customers", server: "cas" })`
+2. Verify:  verify table exists with find-resources skill
+3. Execute: `sas-score-table-describe({ lib: "Public", table: "customers", server: "$server" })` where $server is determined from verification step
 4. Return: Column names, types, and table metadata
 
 

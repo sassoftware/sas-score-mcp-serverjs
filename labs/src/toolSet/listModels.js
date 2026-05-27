@@ -14,6 +14,7 @@ USE when: list models, show models, browse models, next page
 DO NOT USE for: find model, model metadata, score model, list jobs/tables/libraries
 
 PARAMETERS
+- intent: must be 'list' — only pass if user explicitly asked to list/enumerate models. Do NOT use for read, find, or verify.
 - limit: number (default: 10) — page size
 - start: number (default: 1) — 1-based offset
 
@@ -40,11 +41,13 @@ Returns empty array if no models found.
     name: 'list-models',
     description: description,
     inputSchema: z.object({
+      intent: z.literal('list'),
       limit: z.number().optional(),
       start: z.number().optional()
     }),
-    handler: async (params) => { 
-      let r  = await _listModels(params);
+    handler: async (params) => {
+      const { intent, ...rest } = params;
+      let r = await _listModels(rest);
       return r;
     }
   }

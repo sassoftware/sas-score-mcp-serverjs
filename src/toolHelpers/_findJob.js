@@ -5,6 +5,7 @@
 
 import _listJobs from './_listJobs.js';  
 async function _findJob(params) {
+    params.tool = 'find';
     let r = await _listJobs(params);
     console.log ("findJob result:" , r);
     return r;

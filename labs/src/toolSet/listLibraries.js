@@ -12,6 +12,7 @@ USE when user asks to: list/show/enumerate libraries, caslibs, sas libs, or avai
 DO NOT USE for: listing tables in a library (â†’ list-tables), column/table metadata, job execution, models, scoring.
 
 PARAMETERS
+- intent: must be 'list' — only pass if user explicitly asked to list/enumerate libraries. Do NOT use for read, find, or verify.
 - server: 'cas' | 'sas' | 'all' (default: 'all')
 - limit: integer > 0 (default: 10)
 - start: 1-based offset (default: 1)
@@ -58,6 +59,7 @@ Return structured error with a message field. Never hallucinate library names.
     name: 'list-libraries',
     description: description,
     inputSchema: z.object({
+      intent: z.literal('list'),
       server: z.string().optional(),
       limit: z.number().optional(),
       start: z.number().optional(),
@@ -65,10 +67,9 @@ Return structured error with a message field. Never hallucinate library names.
     }),
     // 'server' has a default so we don't mark it required
     handler: async (params) => {
-      // normalize server just in case caller sends 'CAS'/'SAS'
-      params.server = (params.server || 'all').toLowerCase();
-      
-      let r = await _listLibrary(params);
+      const { intent, ...rest } = params;
+      rest.server = (rest.server || 'all').toLowerCase();
+      let r = await _listLibrary(rest);
       return r;
     }
   };

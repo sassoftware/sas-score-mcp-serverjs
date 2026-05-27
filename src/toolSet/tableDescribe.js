@@ -5,8 +5,7 @@
 import { z } from 'zod';
 import debug from 'debug';
 
-import _tableInfo  from '../toolHelpers/_tableInfo.js';
-import { type } from 'node:os';
+import _tableInfo  from '../toolHelpers/_tableDescribe.js';
 function tableDescribe(_appContext) {
 
      let describe = `
@@ -16,6 +15,7 @@ USE when: what columns, describe structure, show schema, table statistics, colum
 DO NOT USE for: read data (use read-table), list tables (use list-tables), find table (use find-table), queries (use sas-query)
 
 PARAMETERS
+- intent: must be 'describe' — only pass if user explicitly asked to describe/inspect table structure. Do NOT use for read data, find table, or verify existence.
 - table: string â€” table name (required)
 - lib: string â€” caslib or libref (required)
 - server: string (default: 'cas') â€” 'cas' or 'sas'
@@ -43,13 +43,15 @@ Returns { columns: [...], sampleData: [...] }. Error if table not found or serve
       name: 'table-describe',
       description: describe,
       inputSchema: z.object({
+        intent: z.literal('describe'),
         table: z.string(),
         lib: z.string().optional(),
         server: z.string().optional()
       }),
     handler: async (params) => {
-        params.describe = true;
-        let r = await _tableInfo(params);
+        const { intent, ...rest } = params;
+        rest.tool = 'describe';
+        let r = await _tableInfo(rest);
         return r;
       }
     }

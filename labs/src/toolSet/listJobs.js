@@ -13,6 +13,7 @@ USE when: list jobs, show jobs, browse jobs, list available jobs, next page
 DO NOT USE for: find single job (use find-job), execute job (use score-job), run job def (use score-jobdef), sas code (use score-program)
 
 PARAMETERS
+- intent: must be 'list' — only pass if user explicitly asked to list/enumerate jobs. Do NOT use for find, verify, or execute.
 - limit: number (default: 10) â€” number of jobs per page
 - start: number (default: 1) â€” 1-based page offset
 - where: string (default: '') â€” optional filter expression
@@ -44,6 +45,7 @@ Surface backend error directly; never fabricate job names.
     name: 'list-jobs',
     description: description,
     inputSchema: z.object({
+      intent: z.literal('list'),
       limit: z.number().optional(),
       start: z.number().optional(),
       where: z.string().optional()
@@ -51,7 +53,8 @@ Surface backend error directly; never fabricate job names.
   // No 'server' required; backend context is implicit in helper
     handler: async (params) => {
       // _listJob handles all validation and defaults
-      const result = await _listJobs(params);
+      const { intent, ...rest } = params;
+      const result = await _listJobs(rest);
       return result;
     }
   }
