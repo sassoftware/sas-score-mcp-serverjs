@@ -7,17 +7,21 @@ description: >
 
 # Score Strategy
 
-## Rules
-
-- Always verify the model exists with `find-*` before scoring (except SCR — no find tool).
-- For table scoring: verify both table and model; read rows first; then score each row.
-- Default model type: MAS when unspecified.
-- Cap batch scoring at 100 rows by default; ask user before proceeding with larger batches.
-
 ## Model Type from `a.b` Notation
 
-See request-routing skill for the canonical `a.b` parsing rule.  
+See request-routing skill for the canonical `a.b` parsing rule.
 Short form: if `b ∈ {mas, job, jobdef, scr}` → model type; anything else → table reference.
+
+## Rules
+
+ Step 1: If table is specified as the source of the data, use read-strategy to read the data
+ Step 2: Always verify the model exists with find-resources skill before attempting to score
+ Step 3: 
+  - If Step 1 and Step 2 are successful, score the data read from the table with the appropriate scoring tool based on model type.
+    - Cap batch scoring at 10 rows by default; ask user before proceeding with larger batches.
+  - if either Step 1 or Step 2 fails, return an error message indicating the issue (e.g. "Model X not found", "Table Y not found") and ask for corrected identifiers.
+
+Verify model → score with provided input values.
 
 ## Inline Scenario Scoring
 
@@ -41,13 +45,10 @@ Verify model → score with provided input values.
 | (count not specified) | 1 | 10 |
 
 **Flow**:
-1. Find model (find-resources)
-2. Find table → determine server (find-resources)
-3. Read rows: `sas-score-read-table({ lib, table, server, start, limit })`
-4. Score each row with the appropriate scoring tool
-5. Return rows with predictions appended
-
-If table columns don't match model input variable names, ask the user for the column-to-variable mapping before scoring.
+1. Find model →  use find-resources skill
+2. Read table → use read-strategy skill
+3. Score each row with the appropriate scoring tool
+4. Return rows with predictions appended
 
 ## Error Handling
 
@@ -55,6 +56,5 @@ If table columns don't match model input variable names, ask the user for the co
 |---|---|
 | Model not found | Confirm name with user |
 | Table not found | Confirm table name and library |
-| Column mismatch | Ask user for column-to-input mapping |
 | Empty table | Ask user to adjust filter or confirm criteria |
 | Scoring failure | Return tool error verbatim |

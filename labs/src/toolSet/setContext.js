@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -7,30 +7,30 @@ import {z} from 'zod';
 
 function setContext(_appContext) {
     let description = `
-set-context — set the CAS and SAS server contexts for subsequent tool calls.
+set-context â€” set the CAS and SAS server contexts for subsequent tool calls.
 
 USE when: switch to CAS server, change compute context, check current context, set both
-DO NOT USE for: get variables (use get-env), read data (use read-table), run programs (use run-sas-program)
+DO NOT USE for: get variables (use get-env), read data (use read-table), run programs (use score-program)
 
 PARAMETERS
-- cas: string — CAS server name (optional), e.g. 'cas-shared-default', 'finance-cas-server'
-- sas: string — SAS compute context (optional), e.g. 'SAS Studio Compute Context', 'batch-compute'
+- cas: string â€” CAS server name (optional), e.g. 'cas-shared-default', 'finance-cas-server'
+- sas: string â€” SAS compute context (optional), e.g. 'SAS Studio Compute Context', 'batch-compute'
 
 ROUTING RULES
-- "use finance-cas-server" → { cas: "finance-cas-server" }
-- "switch to SAS Studio Compute Context" → { sas: "SAS Studio Compute Context" }
-- "use finance-cas for CAS and batch-compute for SAS" → { cas: "finance-cas", sas: "batch-compute" }
-- "what context am I using" → { } (no params, returns current)
+- "use finance-cas-server" â†’ { cas: "finance-cas-server" }
+- "switch to SAS Studio Compute Context" â†’ { sas: "SAS Studio Compute Context" }
+- "use finance-cas for CAS and batch-compute for SAS" â†’ { cas: "finance-cas", sas: "batch-compute" }
+- "what context am I using" â†’ { } (no params, returns current)
 
 EXAMPLES
-- "use finance-cas-server" → { cas: "finance-cas-server" }
-- "switch to batch-compute" → { sas: "batch-compute" }
-- "what's my current context" → { }
+- "use finance-cas-server" â†’ { cas: "finance-cas-server" }
+- "switch to batch-compute" â†’ { sas: "batch-compute" }
+- "what's my current context" â†’ { }
 
 NEGATIVE EXAMPLES (do not route here)
 - "read table cars" (use read-table)
 - "what's the value of X" (use get-env)
-- "run program" (use run-sas-program)
+- "run program" (use score-program)
 
 ERRORS
 Returns current or updated context values {cas, sas}. Error if server not found or invalid name.
@@ -62,4 +62,5 @@ Returns current or updated context values {cas, sas}. Error if server not found 
     return spec;
 }
 export default setContext;
+
 

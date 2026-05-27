@@ -55,3 +55,11 @@ Does the request need aggregation (COUNT/SUM/AVG/GROUP BY) or a JOIN?
 - CAS: `Public.customers`, `Caslib.table`
 - SAS: `SASHELP.cars`, `LIBREF.table` (uppercase libref)
 - Dotted input `"x.y"` → lib=`x`, table=`y`
+
+## Error Handling
+
+| Error | Action |
+|---|---|
+| Table not found | Verify with find-resources first |
+| Empty result | Ask user to adjust WHERE clause |
+| Column not found | Ask user to verify column name (case-sensitive) |

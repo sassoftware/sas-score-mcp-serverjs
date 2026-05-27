@@ -9,10 +9,11 @@ function listJobdefs(_appContext) {
   let description = `
 list-jobdefs — enumerate SAS Viya job definitions (jobdefs) assets.
 
-USE ONLY when: user explicitly asks to browse or enumerate jobdefs — "list jobdefs", "show all jobdefs", "browse jobdefs", "next page". Never use to verify if a specific jobdef exists.
-DO NOT USE for: verify or check if a specific jobdef exists (use ${_appContext.brand}-find-jobdef instead), find single jobdef (use ${_appContext.brand}-find-jobdef), execute jobdef (use ${_appContext.brand}-run-jobdef), find job (use ${_appContext.brand}-find-job), sas code (use ${_appContext.brand}-run-sas-program)
+USE when: list jobdefs, show jobdefs, browse jobdefs, list available jobdefs, next page
+DO NOT USE for: find single jobdef (use ${_appContext.brand}-find-jobdef), score jobdef (use ${_appContext.brand}-score-jobdef), find job (use ${_appContext.brand}-find-job), sas code (use ${_appContext.brand}-score-program)
 
 PARAMETERS
+- intent: must be 'list' — only pass if user explicitly asked to list/enumerate jobdefs. Do NOT use for find, verify, or execute.
 - limit: number (default: 10) — number of jobdefs per page
 - start: number (default: 1) — 1-based page offset
 - where: string (default: '') — optional filter expression
@@ -32,7 +33,7 @@ NEGATIVE EXAMPLES (do not route here)
 - does jobdef X exist (use ${_appContext.brand}-find-jobdef)
 - is jobdef X available (use ${_appContext.brand}-find-jobdef)
 - list jobs (use ${_appContext.brand}-list-jobs)
-- run jobdef abc (use ${_appContext.brand}-run-jobdef)
+- score jobdef abc (use ${_appContext.brand}-score-jobdef)
 - list models (use ${_appContext.brand}-list-models)
 
 PAGINATION
@@ -46,14 +47,16 @@ Surface backend error directly; never fabricate jobdef names.
     name: 'list-jobdefs',
     description: description,
     inputSchema: z.object({
-      limit: z.number().int().min(1).optional(),
-      start: z.number().int().min(1).optional(),
-      where: z.string().min(1).optional()
+      intent: z.literal('list'),
+      limit: z.number().optional(),
+      start: z.number().optional(),
+      where: z.string().optional()
     }),
   // No 'server' required; backend context is implicit in helper
     handler: async (params) => {
       // _listJobdefs handles all validation and defaults
-      const result = await _listJobdefs(params);
+      const { intent, ...rest } = params;
+      const result = await _listJobdefs(rest);
       return result;
     }
   }

@@ -1,4 +1,4 @@
-# Tool Description Standardization - Update Summary
+﻿# Tool Description Standardization - Update Summary
 
 ## Overview
 All tool descriptions have been standardized to follow a consistent template format. This ensures:
@@ -14,72 +14,72 @@ See `TOOL_DESCRIPTION_TEMPLATE.md` for the complete template specification and v
 
 ## Tools Updated
 
-### ✅ Tools Fully Conforming to Template
+### âœ… Tools Fully Conforming to Template
 
 #### Major Updates (5 tools)
 
 1. **findModel.js** - Cleaned up and standardized
-   - ✂️ Removed redundant JSON metadata object
-   - ✂️ Removed confusing/error lines (41-47) that listed find lib/table/job incorrectly
-   - ✅ Now has all required template sections
-   - ✅ Clear LLM invocation guidance
+   - âœ‚ï¸ Removed redundant JSON metadata object
+   - âœ‚ï¸ Removed confusing/error lines (41-47) that listed find lib/table/job incorrectly
+   - âœ… Now has all required template sections
+   - âœ… Clear LLM invocation guidance
 
 2. **deval.js** - Expanded from 2 lines to comprehensive format
-   - ➕ Added "LLM Invocation Guidance" section with 4 use cases
-   - ➕ Added "Do NOT use this tool for" section (4 items)
-   - ➕ Added clear "Purpose" statement
-   - ➕ Added "Parameters" documentation
-   - ➕ Added "Response Contract" describing return format
-   - ➕ Added "Disambiguation & Clarification" section
-   - ➕ Added 3 real-world "Examples" with parameter mappings
-   - ➕ Added "Negative Examples" section
-   - ➕ Added "Related Tools" section
+   - âž• Added "LLM Invocation Guidance" section with 4 use cases
+   - âž• Added "Do NOT use this tool for" section (4 items)
+   - âž• Added clear "Purpose" statement
+   - âž• Added "Parameters" documentation
+   - âž• Added "Response Contract" describing return format
+   - âž• Added "Disambiguation & Clarification" section
+   - âž• Added 3 real-world "Examples" with parameter mappings
+   - âž• Added "Negative Examples" section
+   - âž• Added "Related Tools" section
 
 3. **setContext.js** - Expanded with comprehensive guidance
-   - ➕ Added "LLM Invocation Guidance" section with 4 use cases
-   - ➕ Added "Do NOT use" section
-   - ➕ Added detailed "Purpose" explaining session context switching
-   - ➕ Enhanced "Parameters" with real server examples
-   - ➕ Added "Response Contract" with detailed structure
-   - ➕ Added "Disambiguation & Clarification" for edge cases
-   - ➕ Added 4 real-world "Examples" with parameter mappings
-   - ➕ Added "Negative Examples" section
-   - ➕ Added "Related Tools" section
+   - âž• Added "LLM Invocation Guidance" section with 4 use cases
+   - âž• Added "Do NOT use" section
+   - âž• Added detailed "Purpose" explaining session context switching
+   - âž• Enhanced "Parameters" with real server examples
+   - âž• Added "Response Contract" with detailed structure
+   - âž• Added "Disambiguation & Clarification" for edge cases
+   - âž• Added 4 real-world "Examples" with parameter mappings
+   - âž• Added "Negative Examples" section
+   - âž• Added "Related Tools" section
 
 4. **devaScore.js** - Reformatted with template structure
-   - 🔄 Restructured from instruction-heavy to template format
-   - ➕ Added "LLM Invocation Guidance" section
-   - ➕ Added "Do NOT use" section
-   - ➕ Added clear parameter documentation
-   - ➕ Added "Response Contract" section
-   - ➕ Added "Examples" and "Negative Examples" sections
-   - ➕ Added "Notes" section explaining left-to-right fold
+   - ðŸ”„ Restructured from instruction-heavy to template format
+   - âž• Added "LLM Invocation Guidance" section
+   - âž• Added "Do NOT use" section
+   - âž• Added clear parameter documentation
+   - âž• Added "Response Contract" section
+   - âž• Added "Examples" and "Negative Examples" sections
+   - âž• Added "Notes" section explaining left-to-right fold
 
 5. **modelInfo.js** - Expanded with comprehensive structure
-   - ➕ Added "LLM Invocation Guidance" with 4 use cases
-   - ➕ Added "Do NOT use" section
-   - ➕ Enhanced "Purpose" statement
-   - ➕ Added detailed "Response Contract" describing metadata fields
-   - ➕ Added "Disambiguation & Clarification" section
-   - ➕ Added 4 real-world "Examples" with parameter mappings
-   - ➕ Added "Negative Examples" section
-   - ➕ Added "Related Tools" showing workflow chain
+   - âž• Added "LLM Invocation Guidance" with 4 use cases
+   - âž• Added "Do NOT use" section
+   - âž• Enhanced "Purpose" statement
+   - âž• Added detailed "Response Contract" describing metadata fields
+   - âž• Added "Disambiguation & Clarification" section
+   - âž• Added 4 real-world "Examples" with parameter mappings
+   - âž• Added "Negative Examples" section
+   - âž• Added "Related Tools" showing workflow chain
 
 #### Moderate Updates (1 tool)
 
 6. **readTable.js** - Enhanced to fully conform to template
-   - 🔄 Restructured sections for template consistency
-   - ➕ Enhanced "LLM Invocation Guidance" with 5 specific use cases
-   - ➕ Improved "Do NOT use" section with explanation
-   - ➕ Clarified "Parameters" format and added constraints
-   - 🔄 Renamed "Output" to "Response Contract" per template
-   - ➕ Added "Pagination & Filtering" section with examples
-   - ➕ Enhanced "Examples" with 5 detailed parameter mappings
-   - ➕ Added comprehensive "Related Tools" section
+   - ðŸ”„ Restructured sections for template consistency
+   - âž• Enhanced "LLM Invocation Guidance" with 5 specific use cases
+   - âž• Improved "Do NOT use" section with explanation
+   - âž• Clarified "Parameters" format and added constraints
+   - ðŸ”„ Renamed "Output" to "Response Contract" per template
+   - âž• Added "Pagination & Filtering" section with examples
+   - âž• Enhanced "Examples" with 5 detailed parameter mappings
+   - âž• Added comprehensive "Related Tools" section
 
 #### Already Conforming (1 tool)
 
-7. **listModels.js** - ✅ Already fully compliant
+7. **listModels.js** - âœ… Already fully compliant
    - Already had comprehensive template format
    - No changes needed
 
@@ -110,11 +110,11 @@ Clear list of what NOT to do and which tools to use instead. Prevents misuse.
 - How to clarify ambiguous requests
 - Exact clarification questions to ask
 
-### 7. Examples (→ mapped params)
+### 7. Examples (â†’ mapped params)
 - Real-world user phrases
 - Parameter mappings shown
 - Includes various parameter combinations
-- Format: `"user input" → { param: value }`
+- Format: `"user input" â†’ { param: value }`
 
 ### 8. Negative Examples (should NOT call toolName)
 - Common mistakes showing what NOT to do
@@ -161,11 +161,11 @@ Clear list of what NOT to do and which tools to use instead. Prevents misuse.
 ## Files Modified
 
 1. `src/toolSet/findModel.js` - Cleaned up redundancy
-2. `src/toolSet/deval.js` - Expanded description (2 → 47 lines)
-3. `src/toolSet/setContext.js` - Expanded description (9 → 60 lines)
-4. `src/toolSet/devaScore.js` - Reformatted (12 → 54 lines)
-5. `src/toolSet/modelInfo.js` - Expanded description (12 → 69 lines)
-6. `src/toolSet/readTable.js` - Enhanced description (56 → 80 lines)
+2. `src/toolSet/deval.js` - Expanded description (2 â†’ 47 lines)
+3. `src/toolSet/setContext.js` - Expanded description (9 â†’ 60 lines)
+4. `src/toolSet/devaScore.js` - Reformatted (12 â†’ 54 lines)
+5. `src/toolSet/modelInfo.js` - Expanded description (12 â†’ 69 lines)
+6. `src/toolSet/readTable.js` - Enhanced description (56 â†’ 80 lines)
 
 ## Files Created
 
@@ -183,11 +183,11 @@ Consider updating remaining tools in the toolSet directory to match this templat
 - `findTable.js`
 - `job.js`
 - `jobdef.js`
-- `tableInfo.js`
+- `tableDescribe.js`
 - `program.js`
 - `sasQuery.js`
 - `modelScore.js`
-- `scrInfo.js`
+- `scrDescribe.js`
 - `scrScore.js`
 - And any others...
 
@@ -201,8 +201,10 @@ To verify a tool conforms to the template, check:
 - [ ] Has "Parameters" section with type, default, and description for each param
 - [ ] Has "Response Contract" describing the return format
 - [ ] Has "Disambiguation & Clarification" section for edge cases
-- [ ] Has "Examples (→ mapped params)" section with 3+ real-world examples
+- [ ] Has "Examples (â†’ mapped params)" section with 3+ real-world examples
 - [ ] Has "Negative Examples (should NOT call...)" section with what NOT to do
 - [ ] Has "Related Tools" section showing workflow context
 - [ ] Uses proper markdown formatting (## headers, - bullets, `code`)
 - [ ] Consistent formatting and tone throughout
+
+

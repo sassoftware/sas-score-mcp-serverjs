@@ -1,10 +1,13 @@
----
+﻿---
 name: request-routing
 description: >
-  Canonical, compact request-routing strategy for SAS Viya requests.
+  Route SAS Viya requests for finding resources, reading tables, running queries,
+  scoring MAS/job/jobdef/SCR models, listing resources, and describing metadata.
+  Use when the task involves choosing the correct SAS Viya tool or deciding whether
+  to verify, read, query, score, list, or describe a resource.
 ---
 
-# Request Routing — Canonical SKILL
+# Request Routing â€” Canonical SKILL
 
 Purpose: single source-of-truth for routing SAS Viya actions (read, query, score, describe, list).
 
@@ -33,9 +36,9 @@ When any resource reference appears in the form `a.b`, parse `b` to determine th
 - `loanModel.scr` → SCR model, name=`loanModel`
 
 Quick workflow
-- Verify — confirm resources exist (use find-*).
-- Execute — run the mapped execution tool (read, query, score, describe, list).
-- Format — return results and append a short Strategy Summary.
+- Verify â€” confirm resources exist (use find-*).
+- Execute â€” run the mapped execution tool (read, query, score, describe, list).
+- Format â€” return results and append a short Strategy Summary.
 
 **Important Reminder**: If the category is "Find resource" do not use the list-* rules below, use the specific find-* tool for that resource type. The list-* tools are for discovery when the user does not have a specific resource in mind.
 
@@ -43,11 +46,10 @@ Classification
 | Category | Triggers | Primary Action | Primary Tool(s) |
 |---|---|---|---|
 | Find resource | "find", "does X exist", "locate", "verify" | Verify resource | `sas-score-find-library`, `sas-score-find-table`, `sas-score-find-mas`, `sas-score-find-job`, `sas-score-find-jobdef` |
-| Read (row fetch) | "read", "show rows", "fetch", "get data", "filter by", "where", "show records" | Fetch rows | `sas-score-read-table` (always, even with WHERE filter) |
-| SQL Query | "how many", "count by", "average of", "sum of", "group by", "aggregate", "join" | Aggregate / join | `sas-score-sas-query` (only for aggregation/join/computed columns) |
-| Score | "score", "predict", "run model" | Score inputs | `sas-score-mas-score`, `sas-score-run-job`, `sas-score-run-jobdef`, `sas-score-scr-score` |
+| Read / Query | "read", "show rows", "how many", "count", "average", "query" | Read / aggregate | `sas-score-read-table`, `sas-score-sas-query` |
+| Score | "score", "predict", "run model" | Score inputs | `sas-score-mas-score`, `sas-score-score-job`, `sas-score-score-jobdef`, `sas-score-scr-score` |
 | List / Discover | "list", "show all", "browse" | List resources | `sas-score-list-*` tools (e.g., `sas-score-list-mas`, `sas-score-list-jobs`) |
-| Describe | "describe", "what inputs", "metadata" | Return metadata | `sas-score-*-info` (mas/job/jobdef/scr), `sas-score-table-info` |
+| Describe | "describe", "what inputs", "metadata" | Return metadata | `sas-score-*-describe` (mas/job/jobdef/scr/table) |
 
 Verification rules
 - Always verify resources using the appropriate `find-*` tool before executing actions
@@ -55,8 +57,8 @@ Verification rules
 Execution rules
 - Execute only after verification; choose the execution tool per the Execute mapping section.
 - Scoring flows:
-  - Inline scenario: verify model → call scoring tool.
-  - Table rows: verify model + table → read rows → map columns to model inputs → score → merge predictions with rows.
+  - Inline scenario: verify model â†’ call scoring tool.
+  - Table rows: verify model + table â†’ read rows â†’ map columns to model inputs â†’ score â†’ merge predictions with rows.
 - Read/query flows:
   - Use `sas-score-read-table` for **all** row reads, including those with a WHERE filter. A filter condition is not a reason to use sas-query.
   - Use `sas-score-sas-query` **only** when the request requires SQL aggregation (COUNT, SUM, AVG, MIN, MAX), GROUP BY, JOIN across tables, or computed columns.
@@ -72,10 +74,10 @@ Execute mapping (concise)
 - Read rows (including WHERE filter): `sas-score-read-table` (lib, table, server, where)
 - SQL aggregation/join only: `sas-score-sas-query` (lib.table, query, sql)
 - MAS scoring: `sas-score-mas-score` (mas, scenario)
-- Job scoring: `sas-score-run-job` (job, scenario)
-- JobDef scoring: `sas-score-run-jobdef` (jobdef, scenario)
-- SCR scoring: `sas-score-scr-score` (url, scenario)
-- Describe: `sas-score-*-info`, `sas-score-table-info`
+- Job scoring: `sas-score-score-job` (job, scenario)
+- JobDef scoring: `sas-score-score-jobdef` (jobdef, scenario)
+- SCR scoring: `sas-score-scr-score` (name, scenario)
+- Describe: `sas-score-*-describe` (mas/job/jobdef/scr/table)
 
 Combined Read + Score (short)
 1. Verify: find table (server) and find the model (mas,job,jobdef,scr). If table/model not found, ask user to clarify resource and server.  
@@ -95,14 +97,15 @@ Strategy Summary (append to responses)
 ---
 
 Error handling (short)
-- Resource not found → ask for exact resource name and server (for tables).
-- Column/input mismatch → request mapping from user.
-- Empty result → ask to relax filters or confirm criteria.
-- Execution error → return tool error verbatim.
+- Resource not found â†’ ask for exact resource name and server (for tables).
+- Column/input mismatch â†’ request mapping from user.
+- Empty result â†’ ask to relax filters or confirm criteria.
+- Execution error â†’ return tool error verbatim.
 
 Examples (minimal)
-- Read: "read customers in Public" → find Public (CAS) → read-table → return rows.
-- Score inline: "score a=1,b=2 with job simplejob" → find job → run-job → return merged result.
-- Score table: "score Public.customers with model risk" → find table (CAS) & model (MAS) → read rows → score → return merged.
+- Read: "read customers in Public" â†’ find Public (CAS) â†’ read-table â†’ return rows.
+- Score inline: "score a=1,b=2 with job simplejob" â†’ find job â†’ score-job â†’ return merged result.
+- Score table: "score Public.customers with model risk" â†’ find table (CAS) & model (MAS) â†’ read rows â†’ score â†’ return merged.
 
 Notes: Keep this SKILL as the canonical, compact router; agent wrappers should be short and reference this document for details and examples.
+

@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -25,7 +25,7 @@ What it returns
 - When \`scenario\` is omitted: metadata describing the model's input variables (names, types, required/optional).
 
 Usage notes
-- Run \`scr-info\` first to inspect the expected input variables and types.
+- Run \`scr-describe\` first to inspect the expected input variables and types.
 - Prefer structured objects for numeric/date values to avoid type ambiguity; the simple string parser keeps values as strings.
 - Ensure network connectivity and any required credentials for the target SCR service.
 

@@ -1,0 +1,30 @@
+---
+resource: "program"
+description: "Decision tree for SAS program and macro execution: score-program, score-macro"
+intents:
+  score:
+    parse:
+      src: "$src"         # SAS code string or .sas filename
+      folder: "$folder"   # server folder path when src is a filename
+      scenario: "$scenario"
+      output: "$output"   # table name to capture as output
+      limit: "$limit"
+    exec:
+      tool: "sas-score-score-program"
+      args:
+        src: "$src"
+        folder: "$folder"
+        scenario: "$scenario"
+        output: "$output"
+        limit: "$limit"
+    format: "log, ods output, and optional output table rows"
+  score_macro:
+    parse:
+      macro: "$macro"       # macro name without leading %
+      scenario: "$scenario" # key=value pairs or %let statements
+    exec:
+      tool: "sas-score-score-macro"
+      args:
+        macro: "$macro"
+        scenario: "$scenario"
+    format: "log, ods output, and tables created by macro"

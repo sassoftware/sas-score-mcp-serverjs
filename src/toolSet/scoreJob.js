@@ -6,31 +6,31 @@
 import { z } from 'zod';
 import _jobSubmit from '../toolHelpers/_jobSubmit.js';
 
-function runJob(_appContext) {
- 
+function scoreJob(_appContext) {
+
   let description = `
-run-job — score with a deployed SAS Viya job.
+score-job — score with a deployed SAS Viya job.
 
 USE when: score with job, run job, execute job
-DO NOT USE for: arbitrary SAS code (use run-sas-program), macros (use run-macro), list/find jobs
+DO NOT USE for: arbitrary SAS code (use score-program), macros (use score-macro), list/find jobs
 
 PARAMETERS
 - name: string — job name (required)
 - scenario: object — input parameters as JSON (optional, defaults to {}). Example: {month:10, year:2025}
 
 ROUTING RULES
-- "run job xyz" → { name: "xyz" }
-- "run job xyz with param1=10, param2=val2" → { name: "xyz", scenario: {param1:10, param2:"val2"} }
+- "score job xyz" → { name: "xyz" }
+- "score job xyz with param1=10, param2=val2" → { name: "xyz", scenario: {param1:10, param2:"val2"} }
 
 EXAMPLES
-- "run job xyz" → { name: "xyz" }
-- "run xyz.job with month=10, year=2025" → { name: "xyz", scenario: {month:10, year:2025} }
+- "score job xyz" → { name: "xyz" }
+- "score xyz.job with month=10, year=2025" → { name: "xyz", scenario: {month:10, year:2025} }
 - "score with job abc using month=10, year=2025" → { name: "abc", scenario: {month:10, year:2025} }
-- "run job monthly_etl with month=10, year=2025" → { name: "monthly_etl", scenario: {month:10, year:2025} }
+- "score job monthly_etl with month=10, year=2025" → { name: "monthly_etl", scenario: {month:10, year:2025} }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use run-sas-program)
-- "run macro X" (use run-macro)
+- "run SAS code" (use score-program)
+- "score macro X" (use score-macro)
 - "list jobs" (use list-jobs)
 - "find job X" (use find-job)
 
@@ -39,7 +39,7 @@ Returns log output, listings, tables from job. Error if job not found.
 `;
 
   let spec = {
-    name: 'run-job',
+    name: 'score-job',
     description: description,
     inputSchema: z.object({
       name: z.string(),
@@ -75,5 +75,5 @@ Returns log output, listings, tables from job. Error if job not found.
   return spec;
 }
 
-export default runJob;
+export default scoreJob;
 

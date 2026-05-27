@@ -46,9 +46,9 @@ async function _listJobs(params) {
     let response  = {jobs: Object.keys(names)};
     console.error('response', JSON.stringify(response, null, 2));
 
-    if (name != null) {
-      response = { name: name, parameters: names[name].parameters };
-    };
+    if (name != null && params.tool === 'find') {
+      response = { job:[name] };
+    }
     return {
       content: [{ type: 'text', text: JSON.stringify(response) }],
       structuredContent: response,

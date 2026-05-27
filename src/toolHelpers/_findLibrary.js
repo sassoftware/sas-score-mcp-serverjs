@@ -5,6 +5,7 @@
 
 import _listLibrary from './_listLibrary.js';  
 async function _findLibrary(params) {
+    params.tool = 'find';
     return  await _listLibrary(params);
 }
 export default _findLibrary;

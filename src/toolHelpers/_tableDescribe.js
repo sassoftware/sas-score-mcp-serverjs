@@ -5,7 +5,7 @@
 import restafedit from '@sassoftware/restafedit';
 import deleteSession from './deleteSession.js';
 
-async function _tableInfo(params) {
+async function _tableDescribe(params) {
   let { table, lib, server, _appContext } = params;
   
 
@@ -69,4 +69,4 @@ async function _tableInfo(params) {
     return { isError: true, content: [{ type: 'text', text: JSON.stringify(err) }] };
   }
 }
-export default _tableInfo;
+export default _tableDescribe;

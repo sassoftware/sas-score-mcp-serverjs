@@ -7,37 +7,37 @@ import { z } from 'zod';
 import _submitCode from '../toolHelpers/_submitCode.js';
 
 
-function runMacro(_appContext) {
+function scoreMacro(_appContext) {
   let description = `
-run-macro — submit and execute a SAS macro on SAS Viya server.
+score-macro — submit and execute a SAS macro on SAS Viya server.
 
-USE when: run macro, execute macro with parameters
-DO NOT USE for: arbitrary SAS code (use run-sas-program), jobs, jobdefs
+USE when: score macro, execute macro with parameters
+DO NOT USE for: arbitrary SAS code (use score-program), jobs, jobdefs
 
 PARAMETERS
 - macro: string — macro name without "%" (required)
 - scenario: string — parameters or setup code (optional). Accepts: "x=1, y=abc" or "%let x=1; %let y=abc;"
 
 ROUTING RULES
-- "run macro abc" → { macro: "abc", scenario: "" }
-- "run macro abc with x=1, y=2" → { macro: "abc", scenario: "x=1, y=2" }
-- "run macro xyz with %let a=1; %let b=2;" → { macro: "xyz", scenario: "%let a=1; %let b=2;" }
+- "score macro abc" → { macro: "abc", scenario: "" }
+- "score macro abc with x=1, y=2" → { macro: "abc", scenario: "x=1, y=2" }
+- "score macro xyz with %let a=1; %let b=2;" → { macro: "xyz", scenario: "%let a=1; %let b=2;" }
 
 EXAMPLES
-- "run macro abc" → { macro: "abc", scenario: "" }
-- "run macro summarize with x=1, y=2" → { macro: "summarize", scenario: "x=1, y=2" }
+- "score macro abc" → { macro: "abc", scenario: "" }
+- "score macro summarize with x=1, y=2" → { macro: "summarize", scenario: "x=1, y=2" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use run-sas-program)
-- "run job X" (use run-job)
-- "run jobdef X" (use run-jobdef)
+- "score SAS code" (use score-program)
+- "score job X" (use score-job)
+- "score jobdef X" (use score-jobdef)
 
 ERRORS
 Returns log, ods, tables created by macro. Auto-converts "x=1, y=2" to "%let x=1; %let y=2;" format.
   `;
 
   let spec = {
-    name: 'run-macro',
+    name: 'score-macro',
     description: description,
     
     inputSchema: z.object({
@@ -78,5 +78,5 @@ Returns log, ods, tables created by macro. Auto-converts "x=1, y=2" to "%let x=1
   return spec;
 }
 
-export default runMacro;
+export default scoreMacro;
 

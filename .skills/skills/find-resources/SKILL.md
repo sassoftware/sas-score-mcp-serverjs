@@ -5,10 +5,12 @@ description: >
   Determines server for tables (CAS vs SAS). Never use list tools for verifying or finding specific resources; list tools are for discovery and exploration only.
 ---
 
+**GATE** Do not use list-* tools for verification — those are for explicit user list requests only. Always use the specific find-* tool to verify existence of a resource before attempting to use it.
+
 # Unified Resource Finding Strategy
 
 Use this strategy to verify that a resource exists before executing any action.
-Never use `list-*` tools for verification — those are for explicit user browse or list requests only.
+Never use `list-*` tools for verification — those are for explicit user browse requests only.
 
 ## Dotted `a.b` Resource Reference Parsing
 
@@ -25,7 +27,17 @@ Parse any `a.b` notation before choosing a find tool:
 
 ## Find Table
 
-**Tool**: `sas-score-find-table({ lib, name, server })`  
+**Tool**: `sas-score-find-table({ lib, name, server })`
+
+**Logic**:
+1. If server specified, look there first -> `sas-score-find-table({ lib, name, server })`
+  - If not found, return error immediately (do not attempt other server)'
+  - if found, return success
+2. If server not specified:
+   a. Try CAS first -> `sas-score-find-table({ lib, name, server: "cas" })`
+   b. If not found in CAS, try SAS with uppercased lib -> `sas-score-find-table({ lib: lib.toUpperCase(), name, server: "sas" })`  
+   c. If not found in either, return not found error
+
 `server` is required and must be `"cas"` or `"sas"` (enforced by schema).
 
 **Server determination**:
@@ -38,7 +50,7 @@ Parse any `a.b` notation before choosing a find tool:
 
 ## Find Library
 
-**Tool**: `sas-score-find-library({ name, server })`  
+**Tool**: `sas-score-find-library({ name, server })`
 If server unknown: try `"cas"` first, then `"sas"` with uppercased name.
 
 ## Find Model

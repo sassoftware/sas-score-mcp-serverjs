@@ -1,12 +1,12 @@
 ---
 resource: "table"
-description: "Decision tree for table operations. Use sas-score-sas-query for aggregation/query requests; otherwise use sas-score-read-table for raw rows."
+description: "Decision tree for table operations: list, find, describe, read"
 intents:
   list:
     parse:
       lib: "$lib"
     exec:
-      tool: "list-tables"
+      tool: "sas-score-list-tables"
       args:
         lib: "$lib"
         start: 1
@@ -17,11 +17,28 @@ intents:
       lib: "$lib"
       name: "$name"
     exec:
-      tool: "find-table"
+      tool: "sas-score-find-table"
       args:
         lib: "$lib"
         name: "$name"
     format: "find response"
+  describe:
+    parse:
+      lib: "$lib"
+      table: "$table"
+      server: "$server"
+    verify:
+      tool: "sas-score-find-table"
+      args:
+        lib: "$lib"
+        name: "$table"
+    exec:
+      tool: "sas-score-table-describe"
+      args:
+        lib: "$lib"
+        table: "$table"
+        server: "$server"
+    format: "table schema and column metadata"
   read:
     parse:
       lib: "$lib"
@@ -30,7 +47,7 @@ intents:
       aggregation_requested: "$aggregation_requested" # boolean inferred from request
       aggregation_query: "$aggregation_query"
     verify:
-      tool: "find-table"
+      tool: "sas-score-find-table"
       args:
         lib: "$lib"
         name: "$table"
@@ -49,9 +66,3 @@ intents:
             table: "$table"
             where: "$where"
     format: "rows or aggregated result"
-  read_and_score:
-    description: "Compose read then score (read decision chooses sas-query vs read-table)."
-    compose:
-      - step: "table.read"
-      - step: "mas.score"
-    format: "rows with appended predictions"

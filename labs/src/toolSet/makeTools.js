@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -9,10 +9,10 @@ import modelScore from './modelScore.js';
 import modelInfo from './modelInfo.js';
 import findLibrary from './findLibrary.js';
 import readTable from './readTable.js';
-import tableInfo from './tableInfo.js';
+import tableDescribe from './tableDescribe.js';
 import listLibraries from './listLibraries.js';
 
-import scrInfo from './scrInfo.js';
+import scrDescribe from './scrDescribe.js';
 import scrScore from './scrScore.js';
 
 import devaScore from './devaScore.js';
@@ -44,13 +44,13 @@ function makeTools(_appContext) {
     modelInfo(_appContext),
     modelScore(_appContext),
 
-    scrInfo(_appContext),
+    scrDescribe(_appContext),
     scrScore(_appContext),
 
     findLibrary(_appContext),
     listLibraries(_appContext),
     findTable(_appContext),
-    tableInfo(_appContext),
+    tableDescribe(_appContext),
     listTables(_appContext),
     readTable(_appContext),
     sasQuery(_appContext),

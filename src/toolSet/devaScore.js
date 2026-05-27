@@ -31,7 +31,7 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "Score this customer with credit model" (use ${brand}model-score)
-- "Calculate the mean of these values" (use ${brand}run-sas-program or ${brand}sas-query)
+- "Calculate the mean of these values" (use ${brand}score-program or ${brand}sas-query)
 - "Statistical analysis of numbers" (use ${brand}sas-query)
 
 RESPONSE

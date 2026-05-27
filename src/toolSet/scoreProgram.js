@@ -6,12 +6,12 @@
 import { z } from 'zod';
 import _submitCode from '../toolHelpers/_submitCode.js';
 
-function runProgram(_appContext) {
+function scoreProgram(_appContext) {
   let description = `
-run-sas-program — execute SAS code or programs on SAS Viya server.
+score-program — execute SAS code or programs on SAS Viya server.
 
-USE when: run program, execute SAS code, run .sas file
-DO NOT USE for: macros (use run-macro), jobs (use run-job), jobdefs (use run-jobdef), SQL queries (use sas-query), read data (use read-table)
+USE when: score program, execute SAS code, run .sas file
+DO NOT USE for: macros (use score-macro), jobs (use score-job), jobdefs (use score-jobdef), SQL queries (use sas-query), read data (use read-table)
 
 PARAMETERS
 - src: string — SAS code or .sas filename (required)
@@ -21,18 +21,18 @@ PARAMETERS
 - limit: number (default: 100) — max rows from output
 
 ROUTING RULES
-- "run program 'data a; x=1; run;'" → { src: "data a; x=1; run;", folder: "", output: "", limit: 100 }
-- "run sas program sample folder=/Public/models" → { src: "sample", folder: "/Public/models", output: "", limit: 100 }
-- "run program with name=John, age=45" → { src: "<code>", scenario: {name:"John", age:45}, output: "", limit: 100 }
+- "score program 'data a; x=1; run;'" → { src: "data a; x=1; run;", folder: "", output: "", limit: 100 }
+- "score sas program sample folder=/Public/models" → { src: "sample", folder: "/Public/models", output: "", limit: 100 }
+- "score program with name=John, age=45" → { src: "<code>", scenario: {name:"John", age:45}, output: "", limit: 100 }
 
 EXAMPLES
-- "run program 'data a; x=1; run;'" → { src: "data a; x=1; run;", folder: "", output: "", limit: 100 }
-- "run sas file sample in /Public" → { src: "sample", folder: "/Public", output: "", limit: 100 }
+- "score program 'data a; x=1; run;'" → { src: "data a; x=1; run;", folder: "", output: "", limit: 100 }
+- "score sas file sample in /Public" → { src: "sample", folder: "/Public", output: "", limit: 100 }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run macro X" (use run-macro)
-- "run job X" (use run-job)
-- "run jobdef X" (use run-jobdef)
+- "score macro X" (use score-macro)
+- "score job X" (use score-job)
+- "score jobdef X" (use score-jobdef)
 - "SQL query" (use sas-query)
 - "read table" (use read-table)
 
@@ -41,7 +41,7 @@ Returns log, ods, tables array, data (if output specified). Error if execution f
   `;
 
   let spec = {
-    name: 'run-program',
+    name: 'score-program',
     description: description,
     inputSchema: z.object({
       src: z.string(),
@@ -89,5 +89,5 @@ Returns log, ods, tables array, data (if output specified). Error if execution f
   return spec;
 }
 
-export default runProgram;
+export default scoreProgram;
 

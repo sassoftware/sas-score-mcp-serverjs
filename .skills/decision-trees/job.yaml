@@ -1,10 +1,10 @@
 ---
 resource: "job"
-description: "Decision tree for Jobs: list, find, run"
+description: "Decision tree for Jobs: list, find, describe, score"
 intents:
   list:
     exec:
-      tool: "list-jobs"
+      tool: "sas-score-list-jobs"
       args:
         start: 1
         limit: 10
@@ -13,21 +13,33 @@ intents:
     parse:
       name: "$name"
     exec:
-      tool: "find-job"
+      tool: "sas-score-find-job"
       args:
         name: "$name"
     format: "find response"
-  run:
+  describe:
+    parse:
+      name: "$name"
+    verify:
+      tool: "sas-score-find-job"
+      args:
+        name: "$name"
+    exec:
+      tool: "sas-score-job-describe"
+      args:
+        name: "$name"
+    format: "job metadata and schema"
+  score:
     parse:
       name: "$name"
       scenario: "$scenario"
     verify:
-      tool: "find-job"
+      tool: "sas-score-find-job"
       args:
         name: "$name"
     exec:
-      tool: "sas-score-run-job"
+      tool: "sas-score-score-job"
       args:
         name: "$name"
         scenario: "$scenario"
-    format: "job run output"
+    format: "merge prediction with input"

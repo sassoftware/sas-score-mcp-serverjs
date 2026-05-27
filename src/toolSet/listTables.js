@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -12,31 +12,32 @@ function listTables(_appContext) {
   const log = debug('tools');
 
     let description = `
-list-tables — enumerate tables within a library.
+list-tables â€” enumerate tables within a library.
 
-USE ONLY when: user explicitly asks to browse or enumerate tables — "list tables in X", "show tables in X", "show all tables in X", "browse tables in X", "what tables are in X", "next page"
-DO NOT USE for: verify or check if a specific table exists (use ${_appContext.brand}-find-table instead), find table, list libraries, get table structure (use ${_appContext.brand}-table-info), read data (use ${_appContext.brand}-read-table)
+USE when: list tables in <lib>, show tables in <lib>, next page
+DO NOT USE for: find table, list libraries, get table structure (use ${_appContext.brand}-table-describe), read data (use ${_appContext.brand}-read-table)
 
 PARAMETERS
-- lib: string — library to inspect (required)
-- server: string (default: 'cas') — 'cas' or 'sas'
-- limit: number (default: 10) — page size
-- start: number (default: 1) — 1-based offset
-- where: string — optional filter expression
+- intent: must be 'list' — only pass if user explicitly asked to list/enumerate tables. Do NOT use for read, find, or verify.
+- lib: string â€” library to inspect (required)
+- server: string (default: 'cas') â€” 'cas' or 'sas'
+- limit: number (default: 10) â€” page size
+- start: number (default: 1) â€” 1-based offset
+- where: string â€” optional filter expression
 
 ROUTING RULES
-- "list tables in Samples" → { lib: "Samples", start: 1, limit: 10 }
-- "list 25 tables in sashelp" → { lib: "sashelp", limit: 25, start: 1 }
-- "list cas tables in Public" → { lib: "Public", server: "cas", start: 1, limit: 10 }
+- "list tables in Samples" â†’ { lib: "Samples", start: 1, limit: 10 }
+- "list 25 tables in sashelp" â†’ { lib: "sashelp", limit: 25, start: 1 }
+- "list cas tables in Public" â†’ { lib: "Public", server: "cas", start: 1, limit: 10 }
 
 EXAMPLES
-- "list tables in Samples" → { lib: "Samples", start: 1, limit: 10 }
-- "show 25 tables in sashelp" → { lib: "sashelp", limit: 25, start: 1 }
+- "list tables in Samples" â†’ { lib: "Samples", start: 1, limit: 10 }
+- "show 25 tables in sashelp" â†’ { lib: "sashelp", limit: 25, start: 1 }
 
 NEGATIVE EXAMPLES (do not route here)
 -- "list libs" (use ${_appContext.brand}-list-libraries)
 -- "find lib Public" (use ${_appContext.brand}-find-library)
--- "describe table cars" (use ${_appContext.brand}-table-info)
+-- "describe table cars" (use ${_appContext.brand}-table-describe)
 -- "read table cars" (use ${_appContext.brand}-read-table)
 -- "does table cars exist in Samples" (use ${_appContext.brand}-find-table)
 -- "is table iris in Public" (use ${_appContext.brand}-find-table)
@@ -51,14 +52,16 @@ Returns empty array if no tables found.
     description: description,
 
     inputSchema: z.object({
-      lib: z.string().min(1),
-      server: z.enum(['cas', 'sas']).optional(),
-      limit: z.number().int().min(1).optional(),
-      start: z.number().int().min(1).optional(),
-      where: z.string().min(1).optional()
+      intent: z.literal('list'),
+      lib: z.string(),
+      server: z.string().optional(),
+      limit: z.number().optional(),
+      start: z.number().optional(),
+      where: z.string().optional()
     }),
-    handler: async (params) => { 
-      let r = await _listTables(params);
+    handler: async (params) => {
+      const { intent, ...rest } = params;
+      let r = await _listTables(rest);
       return r;
     }
   }
@@ -66,4 +69,5 @@ Returns empty array if no tables found.
 }
 
 export default listTables;
+
 

@@ -4,15 +4,16 @@
  */
 import { z } from 'zod';
 import _listJobdefs from '../toolHelpers/_listJobdefs.js';
-function jobdefInfo(_appContext) {
-  
-  let description = `
-jobdef    -info — return information about a specific SAS Viya jobdef.
+function jobdefDescribe(_appContext) {
 
-USE when: find jobdef, does jobdef exist, is there a jobdef named, lookup jobdef, verify jobdef exists
-DO NOT USE for: list jobdefs (use ${_appContext.brand}-list-jobdefs), run jobdef (use ${_appContext.brand}-run-jobdef), find lib/table/model (use respective tools)
+  let description = `
+jobdef-describe — return information about a specific SAS Viya jobdef.
+
+USE when: describe jobdef, show jobdef details, what does jobdef X do, jobdef metadata, inputs/outputs for jobdef
+DO NOT USE for: find jobdef or verify it exists (use ${_appContext.brand}-find-jobdef), list jobdefs (use ${_appContext.brand}-list-jobdefs), score jobdef (use ${_appContext.brand}-score-jobdef)
 
 PARAMETERS
+- intent: must be 'describe' — only pass if user explicitly asked to describe/inspect a jobdef. Do NOT use for find or verify existence.
 - name: string (required) — name of jobdef whose details are being requested. Should be exact match to jobdef name.
 
 ROUTING RULES
@@ -28,27 +29,26 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "list jobdefs" (use ${_appContext.brand}-list-jobdefs)
-- "run jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
-- "execute jobdef cars_job_v4" (use ${_appContext.brand}-run-jobdef)
+- "score jobdef cars_job_v4" (use ${_appContext.brand}-score-jobdef)
+- "execute jobdef cars_job_v4" (use ${_appContext.brand}-score-jobdef)
 
 ERRORS
 Returns job metadata 
   `;
 
   let spec = {
-    name: 'jobdef-info',
+    name: 'jobdef-describe',
     description: description,
     inputSchema: z.object({
+      intent: z.literal('describe'),
       name: z.string()
     }),
     handler: async (params) => {
-      if (params.name != null) {
-        if (params.name.endsWith('.jobdef'))   {
-          params.name = params.name.slice(0, -7);
-        }
+      const { intent, ...rest } = params;
+      if (rest.name != null && rest.name.endsWith('.jobdef')) {
+        rest.name = rest.name.slice(0, -7);
       }
-      // _listJobs can handle job lookup by name and will return an appropriate error message if not found, so we can rely on that for error handling here.
-      let r = await _listJobdefs(params);
+      let r = await _listJobdefs(rest);
       return r;
     }
   }
@@ -58,5 +58,5 @@ Returns job metadata
   
   return spec;
 }
-export default jobdefInfo;
+export default jobdefDescribe;
 

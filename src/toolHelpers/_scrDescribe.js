@@ -5,11 +5,11 @@
 
 import axios from 'axios';
 
-async function _scrInfo(params) {
-  let {url} = params;
+async function _scrDescribe(params) {
+  let {name} = params;
   let config = {
     method: 'GET',
-    url: url + '/apiMeta/api',
+    name: name + '/apiMeta/api',
     headers: {
       'Accept': 'application/json'
     }
@@ -29,4 +29,4 @@ async function _scrInfo(params) {
     return {isError: true,content: [{ type: 'text', text: JSON.stringify(error) }]};  
   }
 }
-export default _scrInfo;
+export default _scrDescribe;

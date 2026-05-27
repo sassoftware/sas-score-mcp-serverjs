@@ -11,7 +11,7 @@ function searchAssets(_appContext) {
   const log = debug('tools');
 
   let description = `
-## searchAssets: Search the SAS Catalog for assets using a flexible search string.
+search-assets -  Search the SAS Catalog for assets using a flexible search string.
 
 - Supports searching for various asset types (e.g., datasets, dataflows, models).
  - the default asset type is 'datasets'.

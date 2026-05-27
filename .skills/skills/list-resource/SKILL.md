@@ -19,14 +19,14 @@ Never use list-* to verify a specific resource exists — use find-* for that.
 |---|---|---|
 | Libraries | `sas-score-list-libraries` | `server`: `'cas'`\|`'sas'`\|`'all'` (default `'all'`) |
 | Tables in library | `sas-score-list-tables` | `lib` required; determine server from library name |
-| MAS Models | `sas-score-list-mas` | |
+| MAS Models | `sas-score-list-mas` | default when model type unspecified |
 | Jobs | `sas-score-list-jobs` | |
 | JobDefs | `sas-score-list-jobdefs` | |
 | SCR Models | *(no list tool)* | Ask user for a specific SCR URL |
 
 ## Pagination
 
-Always pass `start=1` and `limit=10` unless the user specifies different values.  
+Always pass `start=1` and `limit=10` unless the user specifies different values.
 If returned count equals `limit`: hint that more items are available; next page uses `start = start + limit`.
 
 ## Find vs List

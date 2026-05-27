@@ -7,7 +7,7 @@ import axios from 'axios';
 
 
 async function _scrScore(params) {
-  let { url, scenario} = params;
+  let { name, scenario} = params;
  
 
   let data = scenario.split(',').reduce((acc, pair) => {
@@ -18,7 +18,7 @@ async function _scrScore(params) {
 
   let config = {
     method: 'POST',
-    url: url,
+    name: name,
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'

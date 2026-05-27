@@ -12,6 +12,7 @@ USE ONLY when: user explicitly asks to list, browse, or enumerate libraries — 
 DO NOT USE for: verify or check if a specific library exists (use ${_appContext.brand}-find-library instead), listing tables in a library (→ ${_appContext.brand}-list-tables), column/table metadata, job execution, models, scoring.
 
 PARAMETERS
+- intent: must be 'list' — only pass if user explicitly asked to list/enumerate libraries. Do NOT use for read, find, or verify.
 - server: 'cas' | 'sas' | 'all' (default: 'all')
 - limit: integer > 0 (default: 10)
 - start: 1-based offset (default: 1)
@@ -40,10 +41,7 @@ EXAMPLES
 NEGATIVE EXAMPLES (do not route here)
 -- "list tables in SASHELP"      → ${_appContext.brand}-list-tables
 -- "list models / jobs / jobdefs"→ respective tools
--- "run a program to create a lib" → ${_appContext.brand}-run-sas-program
--- "does library Public exist" → ${_appContext.brand}-find-library
--- "is library SASHELP available" → ${_appContext.brand}-find-library
--- "find library mylib" → ${_appContext.brand}-find-library
+-- "score a program to create a lib" → ${_appContext.brand}-score-program
 
 PAGINATION
 If returned item count === limit, hint: next start = start + limit.
@@ -61,17 +59,17 @@ Return structured error with a message field. Never hallucinate library names.
     name: 'list-libraries',
     description: description,
     inputSchema: z.object({
-      server: z.enum(['cas', 'sas', 'all']).optional(),
-      limit: z.number().int().min(1).optional(),
-      start: z.number().int().min(1).optional(),
-      where: z.string().min(1).optional()
+      intent: z.literal('list'),
+      server: z.string().optional(),
+      limit: z.number().optional(),
+      start: z.number().optional(),
+      where: z.string().optional()
     }),
     // 'server' has a default so we don't mark it required
     handler: async (params) => {
-      // normalize server just in case caller sends 'CAS'/'SAS'
-      params.server = (params.server || 'all').toLowerCase();
-      
-      let r = await _listLibrary(params);
+      const { intent, ...rest } = params;
+      rest.server = (rest.server || 'all').toLowerCase();
+      let r = await _listLibrary(rest);
       return r;
     }
   };

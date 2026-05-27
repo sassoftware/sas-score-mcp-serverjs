@@ -33,7 +33,7 @@ NEGATIVE EXAMPLES (do not route here)
 - "find model X" (use find-model)
 - "what inputs does model need" (use model-info)
 - "list models" (use list-models)
-- "run job X" (use run-job)
+- "score job X" (use score-job)
 
 ERRORS
 Returns predictions, probabilities, scores merged with input data. Returns error if model not found or scoring fails.
