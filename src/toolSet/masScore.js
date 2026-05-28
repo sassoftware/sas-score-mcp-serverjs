@@ -9,7 +9,12 @@ import _masScoring from '../toolHelpers/_masScoring.js';
 const log = debug('tools');
 
 function masScore(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+mas-score — score data using a deployed MAS model.
+PARAMS: model (string, required), scenario (object, optional key=value pairs)
+RETURNS: predictions merged with input values
+` : `
 mas-score — score data using a deployed model on MAS.
 
 USE when: score with model, predict using model, batch scoring, model predictions
@@ -33,7 +38,7 @@ NEGATIVE EXAMPLES (do not route here)
 - "find model X" (use find-model)
 - "what inputs does model need" (use model-info)
 - "list models" (use list-models)
-- "score job X" (use score-job)
+- "score job X" (use job-score)
 
 ERRORS
 Returns predictions, probabilities, scores merged with input data. Returns error if model not found or scoring fails.

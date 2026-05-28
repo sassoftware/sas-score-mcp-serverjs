@@ -30,7 +30,7 @@ This folder contains simplified, consolidated strategies for working with SAS Vi
    - Decision tree for choosing the right tool
 
 5. **score-strategy** — Scoring workflow
-   - MAS, Job, JobDef, SCR scoring
+   - All model types: MAS, SCR, Job, JobDef, Program, CAS Program
    - Inline scenarios vs table rows
    - Result formatting and merging
 
@@ -56,7 +56,7 @@ Verify → Execute → Format
 
 - Clear classification of request type
 - Explicit server determination for tables (CAS vs SAS)
-- Explicit model type determination (MAS vs Job vs JobDef vs SCR)
+- Explicit model type determination (MAS / SCR / Job / JobDef / Program / CAS Program)
 
 ### 3. Verification Before Execution
 
@@ -74,8 +74,11 @@ Always verify resources exist before executing (except SCR which has no pre-chec
 | Read table | sas-score-read-table |
 | Query table | sas-score-sas-query |
 | Score (MAS) | sas-score-mas-score |
-| Score (Job/JobDef) | sas-score-score-jobdef |
 | Score (SCR) | sas-score-scr-score |
+| Score (Job model) | sas-score-job-score |
+| Score (JobDef model) | sas-score-jobdef-score |
+| Score (Program model) | sas-score-program-score |
+| Score (CAS Program model) | sas-score-cas-program-score |
 
 ---
 

@@ -139,6 +139,7 @@ Options:
   MCP server options:
     -t, --mcptype <type>           MCP server type: http or stdio (default: http)
     -m, --mcphost <host>           MCP server host - can be remote URL - (default: http://localhost:8080)
+    --agent                 Enable agent mode (default: false) with a pre-configured set of skills based on the client specified
   
   Authentication options:
     -c, --clientid <id>            Client ID for oauth authentication(pkce preferred. default: vscodemcp)
@@ -275,6 +276,7 @@ const appEnvBase = {
   version: version,
   mcpType: mcpType,
   mcpClient: process.env.MCPCLIENT || 'github',
+  agent: (process.env.AGENT === 'TRUE') ? true : false,
   mcpHost: (process.env.MCPHOST == null) ? 'http://localhost:8080' : process.env.MCPHOST,
   brand: (process.env.BRAND == null) ? BRAND : process.env.BRAND,
   HTTPS: https,

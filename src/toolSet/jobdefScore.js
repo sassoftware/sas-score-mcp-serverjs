@@ -8,12 +8,16 @@ import _jobSubmit from '../toolHelpers/_jobSubmit.js';
 
 function jobdefScore(_appContext) {
   // JSON object for LLM/tooling
- 
-  let description = `
-score-jobdef — score with a deployed SAS Viya job definition.
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+jobdef-score — score by executing a SAS Viya JobDef model.
+PARAMS: name (string, required), scenario (object, optional)
+RETURNS: jobdef log, ODS output, and any result tables
+` : `
+jobdef-score — score with a deployed SAS Viya job definition model.
 
-USE when: score with jobdef, run jobdef, execute jobdef
-DO NOT USE for: arbitrary SAS code (use score-program), macros (use score-macro), list/find jobdefs
+USE when: score with jobdef, run jobdef, execute jobdef model
+DO NOT USE for: arbitrary SAS code (use program-score), macros (use macro-score), list/find jobdefs
 
 PARAMETERS
 - name: string — jobdef name (required)
@@ -28,8 +32,8 @@ EXAMPLES
 - "score jobdef monthly_report with month=10, year=2025" → { name: "monthly_report", scenario: {month:10, year:2025} }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use score-program)
-- "score macro X" (use score-macro)
+- "run SAS code" (use program-score)
+- "score macro X" (use macro-score)
 - "list jobdefs" (use list-jobdefs)
 - "find jobdef X" (use find-jobdef)
 
@@ -38,7 +42,7 @@ Returns log output, listings, tables from jobdef. Error if jobdef not found.
   `;
  
   let spec = {
-    name: 'score-jobdef',
+    name: 'jobdef-score',
     description: description,
     inputSchema: z.object({
       name: z.string(),

@@ -18,7 +18,7 @@ function findJobdef(_appContext) {
 find-jobdef â€” locate a specific SAS Viya job definition.
 
 USE when: find jobdef, does jobdef exist, is there a jobdef named, lookup jobdef, verify jobdef exists
-DO NOT USE for: list jobdefs (use list-jobdefs), run jobdef (use score-jobdef), find job/lib/table/model (use respective tools)
+DO NOT USE for: list jobdefs (use list-jobdefs), run jobdef (use jobdef-score), find job/lib/table/model (use respective tools)
 
 PARAMETERS
 - name: string (required) â€” jobdef name to locate; if multiple supplied, use first
@@ -30,7 +30,7 @@ ROUTING RULES
 - "lookup/verify jobdef <name>" â†’ { name: "<name>" }
 - "find jobdef" with no name â†’ ask "Which jobdef name would you like to find?"
 - "find all jobdefs / list jobdefs" â†’ use list-jobdefs instead
-- "run jobdef <name>" â†’ use score-jobdef instead
+- "run jobdef <name>" â†’ use jobdef-score instead
 
 EXAMPLES
 - "find jobdef cars_job_v4" â†’ { name: "cars_job_v4" }
@@ -39,7 +39,7 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "list jobdefs" (use list-jobdefs)
-- "run jobdef cars_job_v4" (use score-jobdef)
+- "run jobdef cars_job_v4" (use jobdef-score)
 - "find job ETL" (use find-job)
 - "find table cars" (use find-table)
 

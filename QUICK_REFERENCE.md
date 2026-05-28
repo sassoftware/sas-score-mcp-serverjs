@@ -266,9 +266,9 @@ Examples (→ mapped params)
 ✅ **Good: Context**
 ```
 Related Tools
-- listModels → findModel → modelInfo → modelScore (typical workflow)
-- findModel — to check if a specific model exists
-- modelScore — to score using this model
+- listMas → findMas → masDescribe → masScore (typical workflow)
+- findMas — to check if a specific model exists
+- masScore — to score using this model
 ```
 
 ---

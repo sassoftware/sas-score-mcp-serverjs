@@ -8,9 +8,9 @@ import debug from 'debug';
 import _masDescribe from '../toolHelpers/_masDescribe.js';
 const log = debug('tools');
 
-function modelInfo(_appContext) {
+function masDescribe(_appContext) {
   let description = `
-model-info — retrieve detailed metadata for a deployed model.
+mas-describe — retrieve detailed metadata for a deployed model.
 
 USE when: what inputs does model need, describe model, show variables for model, model inputs/outputs
 DO NOT USE for: find model, list models, score model, table/job operations
@@ -30,16 +30,16 @@ EXAMPLES
 - "Show variables for myModel" → { model: "myModel" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list models" (use list-models)
-- "find model X" (use find-model)
-- "score with model X" (use model-score)
+- "list models" (use list-mas)
+- "find model X" (use find-mas)
+- "score with model X" (use mas-score)
 
 ERRORS
 Returns model metadata: inputs (name, type, role), outputs (name, type, possible_values), model_type, description.
   `;
 
   let spec = {
-    name: 'model-info',
+    name: 'mas-describe',
     description: description,
     inputSchema: z.object({
       intent: z.literal('describe'),
@@ -54,5 +54,4 @@ Returns model metadata: inputs (name, type, role), outputs (name, type, possible
   return spec;
 }
 
-export default modelInfo;
-
+export default masDescribe;

@@ -11,8 +11,10 @@ All tools are registered as sas-score-<toolname>
 - [Model Management & Scoring](#model-management--scoring)
 - [Library Management](#library-management)
 - [Table Operations](#table-operations)
-- [Job Management](#job-management)
-- [Program Execution](#program-execution)
+- [Jobs Model](#jobs-model)
+- [Jobdef Models](#jobdef-models)
+- [Program Models](#program-models)
+- [Macro Models](#macro-models)
 - [Context & Configuration](#context--configuration)
 - [Utility Tools](#utility-tools)
 
@@ -20,7 +22,7 @@ All tools are registered as sas-score-<toolname>
 
 ## Model Management & Scoring
 
-### list-models
+### list-mas
 
 Enumerate models published to MAS (Model Aggregation Service).
 
@@ -42,7 +44,7 @@ list 25 models
 
 ---
 
-### find-model
+### find-mas
 
 Locate a specific model deployed to MAS.
 
@@ -61,7 +63,7 @@ find model myModel
 
 ---
 
-### model-info
+### mas-describe
 
 Retrieve detailed metadata for a deployed model including input/output variables, data types, and constraints.
 
@@ -80,12 +82,12 @@ Retrieve detailed metadata for a deployed model including input/output variables
 
 **Example:**
 ```
-model-info model=churnRisk
+mas-describe model=churnRisk
 ```
 
 ---
 
-### model-score
+### mas-score
 
 Score user-supplied scenario data using a MAS-published model.
 
@@ -105,8 +107,8 @@ Score user-supplied scenario data using a MAS-published model.
 
 **Example:**
 ```
-model-score model=mycoolmodel scenario={x:1,y:2}
-model-score model=cancer1 scenario="age=45, sex=M, tumor=stage2"
+mas-score model=mycoolmodel scenario={x:1,y:2}
+mas-score model=cancer1 scenario="age=45, sex=M, tumor=stage2"
 ```
 
 ---
@@ -320,7 +322,7 @@ sasquery table=mylib.students query="How many students in each year as percentag
 
 ---
 
-## Job Management
+## Jobs Model
 
 ### list-jobs
 
@@ -363,7 +365,7 @@ find job cars_job_v4
 
 ---
 
-### score-job
+### job-score
 
 Execute a job on a SAS Viya server.
 
@@ -377,11 +379,13 @@ Execute a job on a SAS Viya server.
 **Example:**
 ```
 run job xyz param1=10,param2=val2
-score-job myjob scenario a=10,b=20
+job-score myjob scenario a=10,b=20
 job myjob scenario a=10,b=20
 ```
 
 ---
+
+## Jobdef Models
 
 ### list-jobdefs
 
@@ -422,7 +426,7 @@ find jobdef metricsRefresh
 
 ---
 
-### score-jobdef
+### jobdef-score
 
 Execute a job definition on a SAS Viya server.
 
@@ -435,15 +439,15 @@ Execute a job definition on a SAS Viya server.
 
 **Example:**
 ```
-score-jobdef xyz param1=10,param2=val2
+jobdef-score xyz param1=10,param2=val2
 jobdef myjobdef scenario a=10,b=20
 ```
 
 ---
 
-## Program Execution
+## Program Models
 
-### score-program
+### program-score
 
 Execute arbitrary SAS code or stored programs on a SAS Viya server.
 
@@ -469,7 +473,9 @@ program sample folder=/Public/models scenario="name='John', age=45" output=a
 
 ---
 
-### score-macro
+## Macro Models
+
+### macro-score
 
 Submit and execute a SAS macro on a SAS Viya server.
 
@@ -545,11 +551,13 @@ deva-score a=1 b=2   // returns 126
 
 | Category | Tool Count | Tools |
 |----------|-----------|-------|
-| **Model Management** | 6 | list-models, find-model, model-info, model-score, scr-describe, scr-score |
+| **Model Management** | 6 | list-mas, find-mas, mas-describe, mas-score, scr-describe, scr-score |
 | **Library Management** | 2 | list-libraries, find-library |
 | **Table Operations** | 5 | list-tables, find-table, table-describe, read-table, sas-query |
-| **Job Management** | 6 | list-jobs, find-job, job, list-jobdefs, find-jobdef, job-def |
-| **Program Execution** | 2 | score-program, score-macro |
+| **Jobs Model** | 3 | list-jobs, find-job, job-score |
+| **Jobdef Models** | 3 | list-jobdefs, find-jobdef, jobdef-score |
+| **Program Models** | 1 | program-score |
+| **Macro Models** | 1 | macro-score |
 | **Context & Config** | 1 | set-context |
 | **Utilities** | 1 | deva-score |
 | **Total** | **24** | |

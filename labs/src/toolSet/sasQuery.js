@@ -11,7 +11,7 @@ function sasQuery() {
 sas-query â€” convert natural language questions into SQL queries and execute them.
 
 USE when: how many/count/total/average by, aggregated analytics, complex filtering, statistical summaries
-DO NOT USE for: raw reads without filtering (use read-table), table structure (use table-describe), SAS programs (use score-program), jobs/jobdefs
+DO NOT USE for: raw reads without filtering (use read-table), table structure (use table-describe), SAS programs (use program-score), jobs/jobdefs
 
 PARAMETERS
 - table: string â€” table in lib.table format (required), e.g. "Public.cars" or "sashelp.class"
@@ -31,8 +31,8 @@ NEGATIVE EXAMPLES (do not route here)
 - "read table cars" (use read-table)
 - "show 10 rows" (use read-table)
 - "table structure" (use table-describe)
-- "run SAS code" (use score-program)
-- "run job/macro" (use score-job/score-macro)
+- "run SAS code" (use program-score)
+- "run job/macro" (use job-score/macro-score)
 
 ERRORS
 Returns rows array, columns metadata, log. Returns error if SQL invalid or table not found.

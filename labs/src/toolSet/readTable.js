@@ -47,7 +47,7 @@ NEGATIVE EXAMPLES (do not route here)
 - "list tables in Samples" (use list-tables)
 - "what columns are in cars" (use table-describe)
 - "execute SQL query" (use sas-query)
-- "run SAS code" (use score-program)
+- "run SAS code" (use program-score)
 
 ERRORS
 Returns rows array, total count, filtered_count, columns metadata. Empty array if no matches.

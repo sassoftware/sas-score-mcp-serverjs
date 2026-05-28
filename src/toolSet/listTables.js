@@ -9,9 +9,14 @@ import _listTables from '../toolHelpers/_listTables.js';
 
 
 function listTables(_appContext) {
+  const isAgent = _appContext && _appContext.agent;
   const log = debug('tools');
 
-    let description = `
+    let description = isAgent ? `
+list-tables — list tables in a library.
+PARAMS: intent ('list', required), lib (string, required), server ('cas'|'sas', optional), start (number, default 1), limit (number, default 10)
+RETURNS: array of table names and metadata
+` : `
 list-tables â€” enumerate tables within a library.
 
 USE when: list tables in <lib>, show tables in <lib>, next page

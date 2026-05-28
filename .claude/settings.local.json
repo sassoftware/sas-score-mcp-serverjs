@@ -2,7 +2,35 @@
   "permissions": {
     "allow": [
       "Bash(git mv *)",
-      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.skills\\\\decision-trees\\\\\" -Filter \"*.yaml\" | Select-Object Name)"
+      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.skills\\\\decision-trees\\\\\" -Filter \"*.yaml\" | Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\src\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\docs\" -File)",
+      "Bash(Select-Object Name)",
+      "Bash(node -e \"require\\('pptxgenjs'\\); console.log\\('ok'\\)\")",
+      "Bash(npm install *)",
+      "Bash(node generate-pptx.js)",
+      "Bash(cp generate-pptx.js generate-pptx.cjs)",
+      "Bash(node generate-pptx.cjs)",
+      "Bash(python \"C:\\\\Users\\\\kumar\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\a35345ae-86f7-43a0-afe2-85da30bf47c6\\\\b9cfb122-c9bc-41c4-9ffc-5a498b106405\\\\skills\\\\pptx\\\\scripts\\\\office\\\\soffice.py\" --headless --convert-to pdf sas-score-mcp-workflow.pptx)",
+      "Bash(where soffice *)",
+      "Bash(where libreoffice *)",
+      "Bash(where pdftoppm *)",
+      "Bash(python -c \"from markitdown import MarkItDown; m=MarkItDown\\(\\); r=m.convert\\('C:/dev/github/sas-score-mcp-serverjs/sas-score-mcp-workflow.pptx'\\); print\\(r.text_content[:2000]\\)\")",
+      "Bash(pip install *)",
+      "Bash(python -m markitdown \"C:/dev/github/sas-score-mcp-serverjs/sas-score-mcp-workflow.pptx\")",
+      "Bash(del generate-pptx.js generate-pptx.cjs)",
+      "Bash(dir sas-score-mcp-workflow.pptx)",
+      "Bash(python -m markitdown sas-score-mcp-workflow.pptx)",
+      "Bash(python \"C:\\\\Users\\\\kumar\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\a35345ae-86f7-43a0-afe2-85da30bf47c6\\\\b9cfb122-c9bc-41c4-9ffc-5a498b106405\\\\skills\\\\pptx\\\\scripts\\\\thumbnail.py\" sas-score-mcp-workflow.pptx)",
+      "Bash(grep -iE \"\\\\bx{3,}\\\\b|lorem|ipsum|\\\\bTODO|\\\\[insert\")",
+      "Bash(del src\\\\toolSet\\\\scoreJob.js src\\\\toolSet\\\\scoreJobdef.js src\\\\toolSet\\\\scoreProgram.js src\\\\toolSet\\\\runCasProgram.js)",
+      "Bash(node build-pptx.cjs)",
+      "Bash(grep -v \"//.*legacy\\\\|#.*deprecated\")",
+      "Bash(python3 -c \"from PIL import Image, ImageDraw, ImageFont; print\\('Pillow OK'\\)\")",
+      "Bash(python3 -c \"import PIL; print\\(PIL.__version__\\)\")",
+      "Bash(grep -v \"macro-score\\\\`\")",
+      "Bash(python3 render-slides.py)"
     ]
   }
 }

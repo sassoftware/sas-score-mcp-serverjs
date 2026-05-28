@@ -10,7 +10,7 @@ function findLibrary(_appContext) {
 find-library â€” locate a specific CAS or SAS library.
 
 USE when: find library, find lib, does library exist, is library available, lookup library
-DO NOT USE for: list libraries (use list-libraries), find table/job/jobdef/model (use respective tools), table structure (use table-describe), create library (use score-program)
+DO NOT USE for: list libraries (use list-libraries), find table/job/jobdef/model (use respective tools), table structure (use table-describe), create library (use program-score)
 
 PARAMETERS
 - name: string (required) â€” library/caslib name; if multiple supplied, use first

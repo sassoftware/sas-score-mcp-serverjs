@@ -7,7 +7,12 @@ import { z } from 'zod';
 import _listScr from '../toolHelpers/_listScr.js';
 
 function listScr(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+list-scr — list available SCR models.
+PARAMS: start (number, default 1), limit (number, default 10)
+RETURNS: array of SCR model names and metadata
+` : `
 list-scr â€” enumerate models published to scr.
 
 USE when:  list scr, show scr next page

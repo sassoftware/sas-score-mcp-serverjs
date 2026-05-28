@@ -1,603 +1,716 @@
-﻿# SAS MCP Server Tools Reference
+# SAS MCP Server Tools Reference
 
-## Overview
+> Generated from `src/toolSet/` — May 27, 2026.  
+> All tools are registered as `<brand>-<toolname>` (e.g. `sas-score-list-mas`).  
+> 27 tools are loaded via `src/toolSet/makeTools.js`.
 
-The `@sassoftware/sas-score-mcp-serverjs` package provides a comprehensive set of tools for interacting with SAS Viya environments through the Model Context Protocol (MCP). This document catalogs all 24+ available tools organized by functional category.
-
-All tools are registered as sas-score-<toolname>
+---
 
 ## Table of Contents
 
-- [Model Management & Scoring](#model-management--scoring)
-- [Library Management](#library-management)
-- [Table Operations](#table-operations)
-- [Job Management](#job-management)
-- [Program Execution](#program-execution)
-- [Context & Configuration](#context--configuration)
-- [Utility Tools](#utility-tools)
+| Category | Tools |
+|---|---|
+| [MAS Models](#mas-models) | `list-mas`, `find-mas`, `mas-describe`, `mas-score` |
+| [SCR Models](#scr-models) | `list-scr`, `find-scr`, `scr-describe`, `scr-score` |
+| [Libraries](#libraries) | `list-libraries`, `find-library` |
+| [Tables](#tables) | `list-tables`, `find-table`, `table-describe`, `read-table`, `sas-query` |
+| [Jobs Models](#jobs-model) | `list-jobs`, `find-job`, `job-describe`, `job-score` |
+| [Jobdef Models](#jobdef-models) | `list-jobdefs`, `find-jobdef`, `jobdef-describe`, `jobdef-score` |
+| [Program Models](#program-models) | `program-score` |
+| [Macro Models](#macro-models) | `macro-score` |
+| [Context & Config](#context--config) | `set-context` |
+| [Utilities](#utilities) | `deva-score` |
 
 ---
 
-## Model Management & Scoring
+## MAS Models
 
-### list-models
+### `list-mas`
 
-Enumerate models published to MAS (Model Aggregation Service).
+Enumerate models published to MAS (Microanalytic Score).
 
-**Parameters:**
-- `limit` (number, default: 10): Number of models to return
-- `start` (number, default: 1): 1-based offset for pagination
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'list'` | — | Required literal |
+| `limit` | number | 10 | Page size |
+| `start` | number | 1 | 1-based offset |
 
-**Usage:**
-- "list models"
-- "show models"
-- "list 25 models"
-- "next models" (pagination)
+**Use when:** `list models`, `list mas`, `show all models`, `next models`  
+**Do not use for:** verify a specific model exists → `find-mas`; model metadata → `mas-describe`
 
-**Example:**
 ```
-list models
-list 25 models
-```
-
----
-
-### find-model
-
-Locate a specific model deployed to MAS.
-
-**Parameters:**
-- `name` (string, required): Exact model name
-
-**Usage:**
-- "find model churnRisk"
-- "does model creditScore exist"
-- "is model sales_forecast deployed"
-
-**Example:**
-```
-find model myModel
+list models                     → { intent: 'list', start: 1, limit: 10 }
+list 25 models                  → { intent: 'list', start: 1, limit: 25 }
+next models (prev start:1,limit:10) → { intent: 'list', start: 11, limit: 10 }
 ```
 
 ---
 
-### model-info
+### `find-mas`
 
-Retrieve detailed metadata for a deployed model including input/output variables, data types, and constraints.
+Locate a specific MAS model by name.
 
-**Parameters:**
-- `model` (string, required): Model name as published to MAS
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | — | Model name (required). Strips `.mas` suffix automatically |
 
-**Returns:**
-- Input variable metadata (names, types, roles, ranges)
-- Output variable information
-- Model type and description
+**Use when:** `find mas`, `does mas exist`, `is mas deployed`, `verify mas`  
+**Do not use for:** listing → `list-mas`; metadata → `mas-describe`; scoring → `mas-score`
 
-**Usage:**
-- "What inputs does model X need?"
-- "Describe model myModel"
-- "Show the variables for sales_forecast"
-
-**Example:**
 ```
-model-info model=churnRisk
+find mas churnRisk              → { name: 'churnRisk' }
+does mas creditScore exist      → { name: 'creditScore' }
+```
+
+Returns `{ mass: [] }` if not found; `{ mass: [...] }` if found.
+
+---
+
+### `mas-describe`
+
+Return detailed metadata for a deployed MAS model (inputs, outputs, types).
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'describe'` | — | Required literal |
+| `model` | string | — | Exact MAS model name. Strips `.mas` suffix automatically |
+
+**Use when:** `what inputs does model need`, `describe model`, `show variables for model`  
+**Do not use for:** find/list → `find-mas`/`list-mas`; scoring → `mas-score`
+
+```
+describe mas churnRisk          → { intent: 'describe', model: 'churnRisk' }
+what inputs does creditScore need → { intent: 'describe', model: 'creditScore' }
+describe myModel.mas            → { intent: 'describe', model: 'myModel' }
+```
+
+Returns input variable metadata (name, type, role), output variables, model description.
+
+---
+
+### `mas-score`
+
+Score one or more scenarios using a model deployed on MAS.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `model` | string | — | Exact MAS model name (required). Strips `.mas` suffix |
+| `scenario` | object \| string | `{}` | Input data as JSON or `"key=val, ..."` string |
+
+**Use when:** `score with mas model`, `predict using model`, `batch scoring`  
+**Do not use for:** find/list/describe — use respective tools; jobs → `job-score`
+
+```
+score mas model churn using age=45, income=60000
+  → { model: 'churn', scenario: { age: 45, income: 60000 } }
+
+predict mas model creditScore for credit=700, debt=20000
+  → { model: 'creditScore', scenario: { credit: 700, debt: 20000 } }
+```
+
+Returns predictions, probabilities, and scores merged with input data.
+
+---
+
+## SCR Models
+
+### `list-scr`
+
+Enumerate models published to SCR (Score Code Runtime).
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `limit` | number | 10 | Page size |
+| `start` | number | 1 | 1-based offset |
+
+```
+list scr                        → { start: 1, limit: 10 }
+list 25 scr                     → { start: 1, limit: 25 }
 ```
 
 ---
 
-### model-score
+### `find-scr`
 
-Score user-supplied scenario data using a MAS-published model.
+Locate a specific SCR model by name.
 
-**Parameters:**
-- `model` (string, required): Model name
-- `scenario` (string | object | array, required): Data to score
-- `uflag` (boolean, optional): Prefix model fields with underscore
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | — | SCR name (required). Strips `.scr` suffix automatically |
 
-**Scenario formats:**
-- Comma-separated: `"x=1, y=2"`
-- Object: `{x: 1, y: 2}`
-- Array: `[{x: 1, y: 2}, {x: 3, y: 4}]`
-
-**Usage:**
-- "Score this customer with model churnRisk"
-- "Run model creditScore with age=45, income=60000"
-
-**Example:**
 ```
-model-score model=mycoolmodel scenario={x:1,y:2}
-model-score model=cancer1 scenario="age=45, sex=M, tumor=stage2"
+find scr myscr                  → { name: 'myscr' }
+does scr churn_score exist      → { name: 'churn_score' }
 ```
+
+Returns `{ scr: [] }` if not found.
 
 ---
 
-### scr-describe
+### `scr-describe`
 
-Return input/output schema and metadata for an SCR (Score Code Runtime) model.
+Return input/output schema and metadata for an SCR model.
 
-**Parameters:**
-- `name` (string, required): SCR model identifier (URL or name)
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'describe'` | — | Required literal |
+| `name` | string | — | SCR model name or URL (required) |
 
-**Returns:**
-- Input variables (names, types, required/optional)
-- Output variables (predictions, probabilities, scores)
+**Use when:** `describe scr`, `what inputs does scr need`, `info for scr model`
 
-**Example:**
 ```
-scr-describe name="https://scr-host/models/loan"
+describe scr loan               → { intent: 'describe', name: 'loan' }
+info for scr model "loan"       → { intent: 'describe', name: 'loan' }
 ```
+
+Returns input variables (names, types, required/optional) and output variables.
 
 ---
 
-### scr-score
+### `scr-score`
 
 Score a scenario using an SCR container model.
 
-**Parameters:**
-- `url` (string, required): SCR model identifier (URL)
-- `scenario` (string | object | array, optional): Input values
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | — | SCR model name or URL (required) |
+| `scenario` | object \| string | `{}` | Input values as JSON object. Omit to get model metadata |
 
-**Usage:**
-- Run scrDescribe first to inspect expected inputs
-- Omit scenario to get model metadata
+**Use when:** `score scr model`, `score with scr`  
+**Notes:** Run `scr-describe` first to inspect expected inputs.
 
-**Example:**
 ```
-scr-score url="loan" scenario="age=45, income=60000"
-scr-score url="https://scr-host/models/loan" scenario={age:45, income:60000}
+score scr loan with age=45, income=60000
+  → { name: 'loan', scenario: { age: 45, income: 60000 } }
 ```
 
 ---
 
-## Library Management
+## Libraries
 
-### list-libraries
+### `list-libraries`
 
 Enumerate CAS or SAS libraries.
 
-**Parameters:**
-- `server` (cas|sas, default: 'cas'): Target environment
-- `limit` (number, default: 10): Page size
-- `start` (number, default: 1): 1-based offset
-- `where` (string, optional): Filter expression
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'list'` | — | Required literal |
+| `server` | `'cas'`\|`'sas'`\|`'all'` | `'all'` | Target environment |
+| `limit` | number | 10 | Page size |
+| `start` | number | 1 | 1-based offset |
+| `where` | string | `''` | Optional filter expression |
 
-**Usage:**
-- "list libs"
-- "list libraries"
-- "show cas libs"
-- "list sas libs"
+**Use when:** `list libraries`, `show all libs`, `browse libraries`  
+**Do not use for:** verify a specific library → `find-library`; tables in a library → `list-tables`
 
-**Example:**
 ```
-list libraries
-list sas libs
-show me 25 cas libraries
+list libraries                  → { intent: 'list', server: 'all', start: 1, limit: 10 }
+list cas libraries              → { intent: 'list', server: 'cas', start: 1, limit: 10 }
+show me 25 sas libs             → { intent: 'list', server: 'sas', limit: 25, start: 1 }
 ```
 
 ---
 
-### find-library
+### `find-library`
 
 Locate a specific CAS or SAS library.
 
-**Parameters:**
-- `name` (string, required): Exact library name
-- `server` (cas|sas, default: 'cas'): Target environment
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | — | Library name (required). Multi-token input → first token used |
+| `server` | `'cas'`\|`'sas'` | `'cas'` | Target environment |
 
-**Usage:**
-- "find library Public"
-- "does library SASHELP exist"
-- "is PUBLIC library available in cas"
+**Use when:** `find lib`, `does library exist`, `is library available`  
+**Do not use for:** listing → `list-libraries`; tables → `list-tables`
 
-**Example:**
 ```
-find lib Public
-find library sasuser in sas
+find lib Public                 → { name: 'Public', server: 'cas' }
+find library sasuser in sas     → { name: 'sasuser', server: 'sas' }
+does library Formats exist      → { name: 'Formats', server: 'cas' }
+```
+
+Returns `{ libraries: [] }` if not found.
+
+---
+
+## Tables
+
+### `list-tables`
+
+Enumerate tables within a library.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'list'` | — | Required literal |
+| `lib` | string | — | Library name (required) |
+| `server` | `'cas'`\|`'sas'` | `'cas'` | Target environment |
+| `limit` | number | 10 | Page size |
+| `start` | number | 1 | 1-based offset |
+| `where` | string | `''` | Optional filter expression |
+
+**Use when:** `list tables in <lib>`, `show tables`, `next page`  
+**Do not use for:** table structure → `table-describe`; read data → `read-table`; find a table → `find-table`
+
+```
+list tables in Samples          → { intent: 'list', lib: 'Samples', start: 1, limit: 10 }
+show 25 tables in sashelp       → { intent: 'list', lib: 'sashelp', limit: 25, start: 1 }
+list cas tables in Public       → { intent: 'list', lib: 'Public', server: 'cas', start: 1, limit: 10 }
 ```
 
 ---
 
-## Table Operations
+### `find-table`
 
-### list-tables
+Locate a specific table in a library.
 
-Enumerate tables within a specific CAS or SAS library.
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `lib` | string | — | Library name (required) |
+| `name` | string | — | Table name (required) |
+| `server` | `'cas'`\|`'sas'` | `'cas'` | Target environment |
 
-**Parameters:**
-- `lib` (string, required): Library to inspect
-- `server` (cas|sas, default: 'cas'): Target environment
-- `limit` (number, default: 10): Page size
-- `start` (number, default: 1): 1-based offset
+**Use when:** `find table`, `does table exist`, `verify table`  
+**Do not use for:** listing → `list-tables`; schema → `table-describe`; read data → `read-table`
 
-**Usage:**
-- "list tables in Samples"
-- "show tables in sashelp"
-- "list 25 tables in Public"
-
-**Example:**
 ```
-list tables in samples
-show 25 tables in sashelp
+find table iris in Public       → { lib: 'Public', name: 'iris', server: 'cas' }
+find table cars in sashelp in sas → { lib: 'sashelp', name: 'cars', server: 'sas' }
+does customers exist in mylib   → { lib: 'mylib', name: 'customers', server: 'cas' }
 ```
+
+Returns `{ tables: [] }` if not found.
 
 ---
 
-### find-table
+### `table-describe`
 
-Locate a table in a specified library.
+Retrieve column metadata and table statistics.
 
-**Parameters:**
-- `lib` (string, required): Library to search in
-- `name` (string, required): Table name or substring
-- `server` (cas|sas, default: 'cas'): Target environment
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'describe'` | — | Required literal |
+| `table` | string | — | Table name (required) |
+| `lib` | string | — | Library name (optional) |
+| `server` | `'cas'`\|`'sas'` | `'cas'` | Target environment |
 
-**Usage:**
-- "find table iris in Public library in cas"
-- "find table cars in sashelp in sas server"
+**Use when:** `what columns are in`, `describe structure`, `show schema`, `table statistics`  
+**Do not use for:** read rows → `read-table`; listing tables → `list-tables`; find table → `find-table`
 
-**Example:**
 ```
-find table iris in Public
-find table cars in sashelp in sas
+what columns are in cars        → { intent: 'describe', table: 'cars', lib: '<lib>' }
+describe table sales in Public  → { intent: 'describe', table: 'sales', lib: 'Public' }
+show schema for mylib.iris on sas → { intent: 'describe', table: 'iris', lib: 'mylib', server: 'sas' }
 ```
+
+Returns `{ columns: [...], sampleData: [...] }`.
 
 ---
 
-### table-describe
+### `read-table`
 
-Return metadata about a table including columns, types, and statistics.
+Retrieve rows from a CAS or SAS table with optional filtering.
 
-**Parameters:**
-- `table` (string, required): Table name
-- `lib` (string, required): Library containing the table
-- `server` (cas|sas, default: 'cas'): Target environment
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `table` | string | — | Table name (required) |
+| `lib` | string | — | Library name (required) |
+| `server` | `'cas'`\|`'sas'` | `'cas'` | Target environment |
+| `start` | number | 1 | 1-based start row |
+| `limit` | number | 10 | Max rows (1–1000) |
+| `where` | string | — | SQL WHERE clause |
+| `format` | boolean | true | Formatted or raw values |
 
-**Returns:**
-- Column metadata (name, type, label, formats)
-- Table statistics (row count, file size, timestamps)
+**Parsing hints:**
+- `"first N rows"` / `"top N rows"` → `start: 1, limit: N`
+- `"rows N to M"` → `start: N, limit: M-N+1`
+- `"lib.table"` dotted format → split on first dot
 
-**Usage:**
-- "describe table cars in Public"
-- "info on table mydata in mylib"
+**Use when:** `read table`, `show rows`, `read from library`, `filtered data with WHERE`  
+**Do not use for:** table schema → `table-describe`; SQL analytics → `sas-query`; listings → `list-tables`
 
-**Example:**
 ```
-table-describe table=cars lib=Public
-describe table air in lib sashelp on sas server
-```
-
----
-
-### read-table
-
-Retrieve rows from a table in a CAS or SAS library.
-
-**Parameters:**
-- `table` (string, required): Table name
-- `lib` (string, required): Library containing the table
-- `server` (cas|sas, default: 'cas'): Target environment
-- `start` (number, default: 1): Starting row (1-based)
-- `limit` (number, default: 10): Maximum rows to return
-- `where` (string, optional): SQL-style WHERE clause
-- `format` (boolean, default: true): Return formatted or raw values
-- `row` (number, optional): Read a specific row
-
-**Usage:**
-- "read table customers"
-- "show me 10 rows from sales"
-- "read from orders where status = 'shipped'"
-
-**Example:**
-```
-read table cars in Samples
-show 25 rows from customers
-read orders where status = 'shipped' limit 50
+read table cars in Samples      → { table: 'cars', lib: 'Samples', start: 1, limit: 10 }
+show 25 rows from Public.customers → { table: 'customers', lib: 'Public', limit: 25, start: 1 }
+read from mylib.orders where status='shipped'
+  → { table: 'orders', lib: 'mylib', where: "status='shipped'", start: 1, limit: 10 }
 read row 15 from employees in mylib on sas
+  → { table: 'employees', lib: 'mylib', start: 15, limit: 1, server: 'sas' }
 ```
+
+Returns `{ rows: [...], total, filtered_count, columns }`.
 
 ---
 
-### sas-query
+### `sas-query`
 
-Execute SQL queries on SAS tables using PROC SQL.
+Convert a natural language question into a PROC SQL query and execute it.
 
-**Parameters:**
-- `table` (string, required): Table in format libname.tablename
-- `query` (string, required): Natural language query
-- `sql` (string, optional): Generated SQL SELECT statement
-- `job` (string, default: 'sas_sql_tool'): Job to run query on
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `table` | string | — | Table in `lib.table` format (required) |
+| `query` | string | — | Natural language question (required) |
+| `sql` | string | — | Pre-generated SQL SELECT (LLM must generate if omitted) |
+| `job` | string | `'program'` | Job name to execute query through |
 
-**Workflow:**
-1. User provides natural language query
-2. Convert to SAS PROC SQL SELECT statement
-3. Execute and return results
+**Workflow:** natural language → SQL SELECT → execute → return rows + log  
+**Use when:** `how many`, `count/total/average by`, `aggregated analytics`, `statistical summaries`  
+**Do not use for:** raw row reads without aggregation → `read-table`; schema → `table-describe`
 
-**Example:**
 ```
-sasquery table=mylib.clm_dental query="Total paid amount, unique patients by procedure code"
-sasquery table=mylib.students query="How many students in each year as percentage"
+how many cars by make in sashelp.cars
+  → { table: 'sashelp.cars', query: '...', sql: 'SELECT make, COUNT(*) FROM sashelp.cars GROUP BY make' }
+
+total sales by region from mylib.sales
+  → { table: 'mylib.sales', query: '...', sql: 'SELECT region, SUM(amount) FROM mylib.sales GROUP BY region' }
 ```
+
+Returns rows array, column metadata, and SAS log.
 
 ---
 
-## Job Management
+## Jobs Model
 
-### list-jobs
+### `list-jobs`
 
 Enumerate SAS Viya job assets.
 
-**Parameters:**
-- `limit` (number, default: 10): Number of jobs to return
-- `start` (number, default: 1): 1-based offset
-- `where` (string, optional): Filter expression
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'list'` | — | Required literal |
+| `limit` | number | 10 | Page size |
+| `start` | number | 1 | 1-based offset |
+| `where` | string | `''` | Optional filter |
 
-**Usage:**
-- "list jobs"
-- "show jobs"
-- "list 25 jobs"
-
-**Example:**
 ```
-list jobs
-list 25 jobs
+list jobs                       → { intent: 'list', start: 1, limit: 10 }
+list 25 jobs                    → { intent: 'list', start: 1, limit: 25 }
+next jobs                       → { intent: 'list', start: 11, limit: 10 }
 ```
 
 ---
 
-### find-job
+### `find-job`
 
-Locate a specific SAS Viya job.
+Locate a specific job by name.
 
-**Parameters:**
-- `name` (string, required): Exact job name
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | — | Job name (required). Strips `.job` suffix automatically |
 
-**Usage:**
-- "find job cars_job_v4"
-- "does job sales_summary exist"
-- "verify job ETL_Daily"
-
-**Example:**
 ```
-find job cars_job_v4
+find job cars_job_v4            → { name: 'cars_job_v4' }
+does job ETL exist              → { name: 'ETL' }
+find cars_job_v4.job            → { name: 'cars_job_v4' }
+```
+
+Returns `{ jobs: [] }` if not found.
+
+---
+
+### `job-describe`
+
+Return metadata about a specific job (inputs, outputs, description).
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'describe'` | — | Required literal |
+| `name` | string | — | Job name (required). Strips `.job` suffix |
+
+**Use when:** `describe job`, `show job details`, `what does job X do`  
+**Do not use for:** find/verify → `find-job`; list → `list-jobs`; execute → `job-score`
+
+```
+describe job cars_job_v4        → { intent: 'describe', name: 'cars_job_v4' }
+info for job metricsRefresh     → { intent: 'describe', name: 'metricsRefresh' }
 ```
 
 ---
 
-### score-job
+### `job-score`
 
-Execute a job on a SAS Viya server.
+Execute a deployed SAS Viya job with optional input parameters.
 
-**Parameters:**
-- `name` (string, required): Job name
-- `scenario` (string | object, optional): Input parameters
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | — | Job name (required). Strips `.job` suffix |
+| `scenario` | object \| string | `{}` | Input parameters as JSON or `"key=val, ..."` |
 
-**Returns:**
-- Log, listing, and tables (depending on job definition)
+**Use when:** `score job`, `run job`, `execute job`  
+**Do not use for:** arbitrary SAS code → `program-score`; macros → `macro-score`
 
-**Example:**
 ```
-run job xyz param1=10,param2=val2
-score-job myjob scenario a=10,b=20
-job myjob scenario a=10,b=20
+score job xyz                   → { name: 'xyz' }
+run job monthly_etl with month=10, year=2025
+  → { name: 'monthly_etl', scenario: { month: 10, year: 2025 } }
+score xyz.job with month=10, year=2025
+  → { name: 'xyz', scenario: { month: 10, year: 2025 } }
 ```
+
+Returns log output, listings, and tables from the job.
 
 ---
 
-### list-jobdefs
+## Jobdef Models
+
+### `list-jobdefs`
 
 Enumerate SAS Viya job definition assets.
 
-**Parameters:**
-- `limit` (number, default: 10): Number to return
-- `start` (number, default: 1): 1-based offset
-- `where` (string, optional): Filter expression
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'list'` | — | Required literal |
+| `limit` | number | 10 | Page size |
+| `start` | number | 1 | 1-based offset |
+| `where` | string | `''` | Optional filter |
 
-**Usage:**
-- "list jobdefs"
-- "show job definitions"
-
-**Example:**
 ```
-list jobdefs
-list 25 jobdefs
+list jobdefs                    → { intent: 'list', start: 1, limit: 10 }
+list 25 jobdefs                 → { intent: 'list', start: 1, limit: 25 }
 ```
 
 ---
 
-### find-jobdef
+### `find-jobdef`
 
-Locate a specific job definition.
+Locate a specific job definition by name.
 
-**Parameters:**
-- `name` (string, required): Exact jobdef name
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | — | Jobdef name (required). Strips `.jobdef` suffix automatically |
 
-**Usage:**
-- "find jobdef cars_job_v4"
-- "does jobdef ETL exist"
-
-**Example:**
 ```
-find jobdef metricsRefresh
+find jobdef metricsRefresh      → { name: 'metricsRefresh' }
+does jobdef ETL exist           → { name: 'ETL' }
+```
+
+Returns `{ jobdefs: [] }` if not found.
+
+---
+
+### `jobdef-describe`
+
+Return metadata for a specific job definition.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `intent` | `'describe'` | — | Required literal |
+| `name` | string | — | Jobdef name (required). Strips `.jobdef` suffix |
+
+**Use when:** `describe jobdef`, `info for jobdef`, `what does jobdef X do`
+
+```
+describe jobdef cars_job_v4     → { intent: 'describe', name: 'cars_job_v4' }
+describe metricsRefresh.jobdef  → { intent: 'describe', name: 'metricsRefresh' }
 ```
 
 ---
 
-### score-jobdef
+### `jobdef-score`
 
-Execute a job definition on a SAS Viya server.
+Execute a deployed SAS Viya job definition with optional input parameters.
 
-**Parameters:**
-- `name` (string, required): Job definition name
-- `scenario` (string | object, optional): Input parameters
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | — | Jobdef name (required) |
+| `scenario` | object \| string | `{}` | Input parameters as JSON or `"key=val, ..."` |
 
-**Returns:**
-- Log, listing, and tables
+**Use when:** `score jobdef`, `run jobdef`, `execute jobdef`
 
-**Example:**
 ```
-score-jobdef xyz param1=10,param2=val2
-jobdef myjobdef scenario a=10,b=20
+score jobdef xyz                → { name: 'xyz' }
+score jobdef monthly_report with month=10, year=2025
+  → { name: 'monthly_report', scenario: { month: 10, year: 2025 } }
 ```
+
+Returns log output, listings, and tables from the jobdef.
 
 ---
 
-## Program Execution
+## Program Models
 
-### score-program
+### `program-score`
 
-Execute arbitrary SAS code or stored programs on a SAS Viya server.
+Execute arbitrary SAS code or stored `.sas` programs on a SAS Viya compute server.
 
-**Parameters:**
-- `src` (string, required): SAS code or .sas filename
-- `folder` (string, optional): Server folder path if src is a filename
-- `scenario` (string | object, optional): Input parameters
-- `output` (string, optional): Name of output table returned as JSON
-- `limit` (number, default: 100): Max rows from output table
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `src` | string | — | SAS code or `.sas` filename (required) |
+| `folder` | string | `''` | Server folder path (used when `src` is a filename) |
+| `scenario` | string \| object | — | Input parameters as `"key=val, ..."` or `{key: val}` |
+| `output` | string | `''` | Table name to capture and return as JSON |
+| `limit` | number | 100 | Max rows from output table |
 
-**Usage:**
-- Direct code execution
-- Running stored .sas files
-- With input parameters and output capture
+**Use when:** `score program`, `execute SAS code`, `run .sas file`  
+**Do not use for:** macros → `macro-score`; jobs → `job-score`; SQL → `sas-query`; read rows → `read-table`
 
-**Example:**
 ```
-run program "data a; x=1; run;"
-program "data work.a; x=1; run;" output=a limit=50
-run program sample folder=/Public/models output=A limit=50
-program sample folder=/Public/models scenario="name='John', age=45" output=a
+score program 'data a; x=1; run;'
+  → { src: 'data a; x=1; run;' }
+
+score sas file sample in /Public/models output=A limit=50
+  → { src: 'sample', folder: '/Public/models', output: 'A', limit: 50 }
+
+score program with name='John', age=45
+  → { src: '<code>', scenario: { name: 'John', age: 45 } }
 ```
+
+Returns log, ODS output, and (if `output` set) rows from the named table.
 
 ---
 
-### score-macro
+## Macro Models
 
-Submit and execute a SAS macro on a SAS Viya server.
+### `macro-score`
 
-**Parameters:**
-- `macro` (string, required): Macro name (without leading %)
-- `scenario` (string, optional): Parameters or SAS setup code
+Submit and execute a SAS macro on the SAS Viya compute server.
 
-**Scenario formats:**
-- Comma-separated: `"x=1, y=abc"` â†’ converted to %let statements
-- Raw SAS: `"%let x=1; %let y=abc;"` â†’ passed through unchanged
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `macro` | string | — | Macro name without `%` prefix (required) |
+| `scenario` | string | `''` | Parameters as `"x=1, y=abc"` or raw SAS `%let` statements |
 
-**Example:**
+**Scenario handling:**
+- `"x=1, y=2"` → auto-converted to `%let x=1; %let y=2;`
+- `"%let x=1; %let y=2;"` → passed through unchanged
+
+**Use when:** `score macro`, `execute macro with parameters`  
+**Do not use for:** arbitrary SAS code → `program-score`; jobs → `job-score`
+
 ```
-run macro abc with scenario x=1, y=2
-run macro summarize with scenario %let x=1; %let y=2;
+score macro abc                 → { macro: 'abc' }
+score macro summarize with x=1, y=2
+  → { macro: 'summarize', scenario: 'x=1, y=2' }
+score macro xyz with %let a=1; %let b=2;
+  → { macro: 'xyz', scenario: '%let a=1; %let b=2;' }
 ```
+
+Returns log, ODS output, and tables created by the macro.
 
 ---
 
-## Context & Configuration
+## Context & Config
 
-### set-context
+### `set-context`
 
-Set the CAS and SAS server contexts for subsequent tool calls.
+Set or query the active CAS and SAS server contexts for all subsequent tool calls.
 
-**Parameters:**
-- `cas` (string, optional): CAS server name
-- `sas` (string, optional): SAS compute context name
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `cas` | string | — | CAS server name (optional) |
+| `sas` | string | — | SAS compute context name (optional) |
 
-**Returns:**
-- Current CAS and SAS context values
+Call with no parameters to return the current context.
 
-**Usage:**
-- Switch between server environments
-- Check current context (call with no parameters)
+**Use when:** `switch CAS server`, `change compute context`, `what context am I using`  
+**Do not use for:** retrieve env variables → `get-env`; read data → `read-table`
 
-**Example:**
 ```
-set-context cas=finance-cas-server
-set-context sas="SAS Studio Compute Context"
-set-context (returns current context)
+use finance-cas-server          → { cas: 'finance-cas-server' }
+switch to SAS Studio Compute Context → { sas: 'SAS Studio Compute Context' }
+use finance-cas for CAS and batch-compute for SAS
+  → { cas: 'finance-cas', sas: 'batch-compute' }
+what context am I using         → { }
 ```
----
 
-## Utility Tools
-
-Use this to verify that the mcp server is up and running.
-
-### deva-score
-
-Compute a numeric score based on two input values using the formula: (a + b) Ã— 42
-
-**Parameters:**
-- `a` (number, required): First numeric input
-- `b` (number, required): Second numeric input
-
-**Returns:**
-- Numeric result: (a + b) Ã— 42
-
-**Usage:**
-- "Calculate deva score for 5 and 10"
-- For sequences: chain calls left-to-right
-
-**Example:**
-```
-deva-score a=5 b=10  // returns 630
-deva-score a=1 b=2   // returns 126
-```
+Returns `{ cas: <current>, sas: <current> }`.
 
 ---
 
-## Tool Categories Summary
+## Utilities
 
-| Category | Tool Count | Tools |
-|----------|-----------|-------|
-| **Model Management** | 6 | list-models, find-model, model-info, model-score, scr-describe, scr-score |
-| **Library Management** | 2 | list-libraries, find-library |
-| **Table Operations** | 5 | list-tables, find-table, table-describe, read-table, sas-query |
-| **Job Management** | 6 | list-jobs, find-job, job, list-jobdefs, find-jobdef, job-def |
-| **Program Execution** | 2 | score-program, score-macro |
-| **Context & Config** | 1 | set-context |
-| **Utilities** | 1 | deva-score |
-| **Total** | **24** | |
+### `deva-score`
+
+Compute a numeric score using the formula `(a + b) × 42`. Use for health checks and demos.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `a` | number | — | First input (required) |
+| `b` | number | — | Second input (required) |
+
+**Formula:** `score = (a + b) * 42`  
+**Multiple numbers:** chain calls left-to-right — `call(first, second)`, then `call(result, third)`
+
+```
+deva-score a=5 b=10             → { score: 630 }
+deva-score a=1 b=2              → { score: 126 }
+```
+
+Returns `{ score: number }`.
 
 ---
 
 ## Common Patterns
 
-### Discovery â†’ Inspection â†’ Action
+### Discovery → Inspect → Act
 
-1. **List** tools to discover available resources
-2. **Find** tools to locate specific items
-3. **Info** tools to inspect metadata
-4. **Execution** tools to perform actions
+```
+list-*      → browse available resources
+find-*      → verify a specific resource exists
+*-describe  → inspect metadata (inputs, outputs, schema)
+score-* / read-* → execute or retrieve data
+```
 
 ### Pagination
 
-Many list tools support pagination:
-- First page: `{ start: 1, limit: 10 }`
-- Next page: `{ start: 11, limit: 10 }`
+All `list-*` tools use 1-based pagination:
+
+```
+Page 1: { start: 1,  limit: 10 }
+Page 2: { start: 11, limit: 10 }
+Page N: { start: (N-1)*limit + 1, limit: limit }
+```
+
+If the returned count equals `limit`, more rows may be available.
 
 ### Server Targeting
 
-Tools that interact with data support `server` parameter:
-- `'cas'` - CAS server (default)
-- `'sas'` - SAS compute server
+| Value | Meaning |
+|---|---|
+| `'cas'` | CAS in-memory server (default for most tools) |
+| `'sas'` | SAS compute server |
+| `'all'` | Both (supported by `list-libraries` only) |
+
+Change the active server with `set-context`.
 
 ### Scenario Input Formats
 
-Tools accepting scenarios support multiple formats:
-- **String**: `"x=1, y=2"`
-- **Object**: `{x: 1, y: 2}`
-- **Array**: `[{x: 1, y: 2}]`
+All scoring tools accept these equivalent formats:
+
+```
+String:  "age=45, income=60000"
+Object:  { age: 45, income: 60000 }
+Array:   [{ age: 45, income: 60000 }]   ← first element is used
+```
+
+### `.ext` Suffix Stripping
+
+Tools automatically strip recognised file-type suffixes from name parameters:
+
+| Tool | Stripped suffix |
+|---|---|
+| `find-job`, `job-score`, `job-describe` | `.job` |
+| `find-jobdef`, `jobdef-score`, `jobdef-describe` | `.jobdef` |
+| `find-mas`, `mas-describe`, `mas-score` | `.mas` |
+| `find-scr`, `scr-score` | `.scr` |
 
 ---
 
-## Notes
+## Tool Count Summary
 
-- All tools are designed to work with SAS Viya environments
-- Authentication and connectivity are handled by the MCP server configuration
-- Tools are stateless unless context is explicitly set using set-context
-- Error handling returns structured error objects from the backend
-- Case sensitivity varies by backend (library/table names may be case-insensitive)
+| Category | Count | Tool names |
+|---|---|---|
+| MAS Models | 4 | `list-mas`, `find-mas`, `mas-describe`, `mas-score` |
+| SCR Models | 4 | `list-scr`, `find-scr`, `scr-describe`, `scr-score` |
+| Libraries | 2 | `list-libraries`, `find-library` |
+| Tables | 5 | `list-tables`, `find-table`, `table-describe`, `read-table`, `sas-query` |
+| Jobs Model | 4 | `list-jobs`, `find-job`, `job-describe`, `job-score` |
+| Jobdef Models | 4 | `list-jobdefs`, `find-jobdef`, `jobdef-describe`, `jobdef-score` |
+| Program Models | 1 | `program-score` |
+| Macro Models | 1 | `macro-score` |
+| Context & Config | 1 | `set-context` |
+| Utilities | 1 | `deva-score` |
+| **Total** | **27** | |
 
 ---
 
-*Document generated for @sassoftware/mcp-serverjs*  
-*Last updated: December 2024*
-
-
-
+*Source: `src/toolSet/makeTools.js` — @sassoftware/sas-score-mcp-serverjs*

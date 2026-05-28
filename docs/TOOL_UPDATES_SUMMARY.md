@@ -18,7 +18,7 @@ See `TOOL_DESCRIPTION_TEMPLATE.md` for the complete template specification and v
 
 #### Major Updates (5 tools)
 
-1. **findModel.js** - Cleaned up and standardized
+1. **findMas.js** - Cleaned up and standardized
    - âœ‚ï¸ Removed redundant JSON metadata object
    - âœ‚ï¸ Removed confusing/error lines (41-47) that listed find lib/table/job incorrectly
    - âœ… Now has all required template sections
@@ -55,7 +55,7 @@ See `TOOL_DESCRIPTION_TEMPLATE.md` for the complete template specification and v
    - âž• Added "Examples" and "Negative Examples" sections
    - âž• Added "Notes" section explaining left-to-right fold
 
-5. **modelInfo.js** - Expanded with comprehensive structure
+5. **masDescribe.js** - Expanded with comprehensive structure
    - âž• Added "LLM Invocation Guidance" with 4 use cases
    - âž• Added "Do NOT use" section
    - âž• Enhanced "Purpose" statement
@@ -79,7 +79,7 @@ See `TOOL_DESCRIPTION_TEMPLATE.md` for the complete template specification and v
 
 #### Already Conforming (1 tool)
 
-7. **listModels.js** - âœ… Already fully compliant
+7. **listMas.js** - âœ… Already fully compliant
    - Already had comprehensive template format
    - No changes needed
 
@@ -160,11 +160,11 @@ Clear list of what NOT to do and which tools to use instead. Prevents misuse.
 
 ## Files Modified
 
-1. `src/toolSet/findModel.js` - Cleaned up redundancy
+1. `src/toolSet/findMas.js` - Cleaned up redundancy
 2. `src/toolSet/deval.js` - Expanded description (2 â†’ 47 lines)
 3. `src/toolSet/setContext.js` - Expanded description (9 â†’ 60 lines)
 4. `src/toolSet/devaScore.js` - Reformatted (12 â†’ 54 lines)
-5. `src/toolSet/modelInfo.js` - Expanded description (12 â†’ 69 lines)
+5. `src/toolSet/masDescribe.js` - Expanded description (12 â†’ 69 lines)
 6. `src/toolSet/readTable.js` - Enhanced description (56 â†’ 80 lines)
 
 ## Files Created
@@ -186,7 +186,7 @@ Consider updating remaining tools in the toolSet directory to match this templat
 - `tableDescribe.js`
 - `program.js`
 - `sasQuery.js`
-- `modelScore.js`
+- `masScore.js`
 - `scrDescribe.js`
 - `scrScore.js`
 - And any others...

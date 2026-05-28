@@ -7,8 +7,12 @@ import { z } from 'zod';
 import _scrDescribe from '../toolHelpers/_scrDescribe.js';
 
 function scrDescribe(_appContext) {
-
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+scr-describe — return input/output schema for a SCR model.
+PARAMS: intent ('describe', required), name (string, required)
+RETURNS: input/output schema and model metadata
+` : `
 scr-describe -  return the input/output schema and metadata for an SCR (Score Code Runtime) model.
 
 Inputs

@@ -6,55 +6,57 @@
 import { z } from 'zod';
 import _submitCode from '../toolHelpers/_submitCode.js';
 
-function runCasProgram(_appContext) {
-  let description = `
-run-cas-program — execute a CAS program on SAS Viya server.
+function casProgramScore(_appContext) {
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+cas-program-score — execute a CAS program model.
+PARAMS: src (string, required), folder (string, optional), scenario (string|object, optional), output (string, optional), limit (number, optional)
+RETURNS: log output and CAS results, optional output table rows
+` : `
+cas-program-score — execute a CAS program model on SAS Viya server.
 
-USE when: run cas program, execute cas, submit cas, cas action
-DO NOT USE for: macros (use score-macro), sas code (use score-program), jobs (use score-job), jobdefs (use score-jobdef)
+USE when: score cas program, run cas program, execute CAS action, submit CASL
+DO NOT USE for: macros (use macro-score), SAS code (use program-score), jobs (use job-score), jobdefs (use jobdef-score)
 
 PARAMETERS
-- src: string (required) — CAS program to execute verbatim
+- src: string (required) — CAS program or CASL code to execute verbatim
 - scenario: string or object (optional) — input parameters
 - folder: string — server folder path for .sas files
 - output: string — table name to return in response
 - limit: number (default: 100) — max rows to return
 
 ROUTING RULES
-- run cas program action echo → { src: action echo }
-- execute cas action simple.summary → { src: action simple.summary }
+- "run cas program action echo" → { src: "action echo" }
+- "execute cas action simple.summary" → { src: "action simple.summary" }
+- "score cas program sample folder=/Public/models" → { src: "sample", folder: "/Public/models" }
 
 EXAMPLES
-- run cas program action echo → { src: action echo }
-- cas program sample folder=/Public/models → { src: sample, folder: /Public/models }
+- "run cas program action echo" → { src: "action echo" }
+- "cas program sample folder=/Public/models" → { src: "sample", folder: "/Public/models" }
 
 NEGATIVE EXAMPLES (do not route here)
-- score sas macro (use score-macro)
-- submit sas code (use score-program)
-- score job X (use score-job)
+- "score sas macro" (use macro-score)
+- "submit sas code" (use program-score)
+- "score job X" (use job-score)
+- "score jobdef X" (use jobdef-score)
 
 NOTES
-Sends src verbatim without validation. For SAS macros use score-macro. For arbitrary SAS code use score-program.
+Sends src verbatim without validation. For SAS macros use macro-score. For arbitrary SAS code use program-score.
 
 RESPONSE
 Log output and CAS results. If output table specified, returned as markdown table.
 `;
 
   let spec = {
-    name: 'run-cas-program',
+    name: 'cas-program-score',
     description: description,
-    inputSchema:z.object({
+    inputSchema: z.object({
       src: z.string(),
       scenario: z.any(),
       output: z.string().optional(),
       folder: z.string().optional(),
       limit: z.number().optional()
     }),
-    
-  // NOTE: Previously 'required' incorrectly listed 'program' which does not
-  // exist in the schema. This prevented execution in some orchestrators that
-  // enforce required parameter presence, causing only descriptions to appear.
-  // Corrected to 'src'.
     handler: async (params) => {
       let {src, folder, scenario, _appContext} = params;
       // figure out src
@@ -69,35 +71,30 @@ Log output and CAS results. If output table specified, returned as markdown tabl
           filename mcptemp clear;
         `;
       }
-      // figure out macros
 
       // Convert the scenario string to an object
       // Example: "x=1, y=2, z=3" to { x: 1, y: 2, z: 3 }
       let scenarioObj = {};
-      let count = 0;
-      if (typeof scenario === 'object') {
+      if (typeof scenario === 'object' && scenario !== null) {
         scenarioObj = scenario;
       } else if (Array.isArray(scenario)) {
         scenarioObj = scenario[0];
-      } else {
-        //console.error('Incoming scenario', scenario);
+      } else if (typeof scenario === 'string' && scenario.includes('=')) {
         scenarioObj = scenario.split(',').reduce((acc, pair) => {
           let [key, value] = pair.split('=');
           acc[key.trim()] = value;
-          count++;
           return acc;
         }, {});
       }
       params.scenario = scenarioObj;
-  
+
       let iparms = {
-        args: scenario,
+        args: scenarioObj,
         output: params.output,
         limit: params.limit,
         src: isrc,
         _appContext: _appContext
       }
-     // console.error('iparms', iparms);
       let r = await _submitCode(iparms);
       return r;
     }
@@ -105,5 +102,4 @@ Log output and CAS results. If output table specified, returned as markdown tabl
   return spec;
 }
 
-export default runCasProgram;
-
+export default casProgramScore;

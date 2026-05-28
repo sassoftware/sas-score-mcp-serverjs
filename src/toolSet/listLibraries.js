@@ -5,7 +5,12 @@
 import { z } from 'zod';
 import _listLibrary from '../toolHelpers/_listLibrary.js';
 function listLibraries(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+list-libraries — list available libraries.
+PARAMS: intent ('list', required), server ('cas'|'sas'|'all', optional), start (number, default 1), limit (number, default 10)
+RETURNS: array of library names and server assignments
+` : `
 list-libraries — enumerate CAS or SAS libraries.
 
 USE ONLY when: user explicitly asks to list, browse, or enumerate libraries — "list libraries", "show all libs", "browse libraries", "what libraries are available", "next page". Never use to verify if a specific library exists.
@@ -41,7 +46,7 @@ EXAMPLES
 NEGATIVE EXAMPLES (do not route here)
 -- "list tables in SASHELP"      → ${_appContext.brand}-list-tables
 -- "list models / jobs / jobdefs"→ respective tools
--- "score a program to create a lib" → ${_appContext.brand}-score-program
+-- "score a program to create a lib" → ${_appContext.brand}-program-score
 
 PAGINATION
 If returned item count === limit, hint: next start = start + limit.

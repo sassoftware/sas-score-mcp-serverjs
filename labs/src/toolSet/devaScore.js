@@ -10,7 +10,7 @@ function devaScore(_appContext) {
 deva-score â€” compute a numeric score based on two input values.
 
 USE when: calculate deva score, score these values, compute score for numbers
-DO NOT USE for: model scoring (use model-score), statistical calculations, data lookup
+DO NOT USE for: model scoring (use mas-score), statistical calculations, data lookup
 
 PARAMETERS
 - a: number (required) â€” first input value
@@ -30,8 +30,8 @@ EXAMPLES
 - "Deva score 20 and 30" â†’ { a: 20, b: 30 } returns 2100
 
 NEGATIVE EXAMPLES (do not route here)
-- "Score this customer with credit model" (use model-score)
-- "Calculate the mean of these values" (use score-program or sas-query)
+- "Score this customer with credit model" (use mas-score)
+- "Calculate the mean of these values" (use program-score or sas-query)
 - "Statistical analysis of numbers" (use sas-query)
 
 RESPONSE

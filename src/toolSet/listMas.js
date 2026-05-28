@@ -7,7 +7,12 @@ import { z } from 'zod';
 import _listMas from '../toolHelpers/_listMas.js';
 
 function listMas(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+list-mas — list available MAS models.
+PARAMS: intent ('list', required), start (number, default 1), limit (number, default 10)
+RETURNS: array of MAS model names and metadata
+` : `
 list-mas — enumerate models published to MAS.
 
 USE ONLY when: user explicitly asks to browse or enumerate models — "list models", "show all models", "list mas", "next page". Never use to verify if a specific model exists.

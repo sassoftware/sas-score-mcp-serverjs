@@ -6,12 +6,16 @@ import { z } from 'zod';
 import _listJobs from '../toolHelpers/_listJobs.js';
 import _findJob from '../toolHelpers/_findJob.js';
 function findJob(_appContext) {
-  
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+find-job — verify a Job model exists.
+PARAMS: name (string, required)
+RETURNS: job metadata if found, error if not found
+` : `
 find-job — locate a specific SAS Viya job.
 
 USE when: find job, does job exist, is there a job named, lookup job, verify job exists
-DO NOT USE for: list jobs (use ${_appContext.brand}-list-jobs), score job (use ${_appContext.brand}-score-job), score jobdef (use ${_appContext.brand}-score-jobdef), find lib/table/model (use respective tools)
+DO NOT USE for: list jobs (use ${_appContext.brand}-list-jobs), score job (use ${_appContext.brand}-job-score), score jobdef (use ${_appContext.brand}-jobdef-score), find lib/table/model (use respective tools)
 
 PARAMETERS
 - name: string (required) — job name to locate; if multiple supplied, use first
@@ -27,7 +31,7 @@ ROUTING RULES
 - "lookup/verify job <name>" → { name: "<name>" }
 - "find job" with no name → ask "Which job name would you like to find?"
 - "find all jobs / list jobs" → use ${_appContext.brand}-list-jobs instead
-- "score job <name>" → use ${_appContext.brand}-score-job instead
+- "score job <name>" → use ${_appContext.brand}-job-score instead
 
 EXAMPLES
 - "find job cars_job_v4" → { name: "cars_job_v4" }
@@ -36,8 +40,8 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "list jobs" (use ${_appContext.brand}-list-jobs)
-- "score job cars_job_v4" (use ${_appContext.brand}-score-job)
-- "score jobdef cars_job_v4" (use ${_appContext.brand}-score-jobdef)
+- "score job cars_job_v4" (use ${_appContext.brand}-job-score)
+- "score jobdef cars_job_v4" (use ${_appContext.brand}-jobdef-score)
 
 ERRORS
 Returns { jobs: [] } if not found; { jobs: [name, ...] } if found. Never hallucinate job names.

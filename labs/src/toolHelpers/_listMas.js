@@ -5,7 +5,7 @@
 
 import restaf from '@sassoftware/restaf';
 
-async function _listModels(params) {
+async function _listMas(params) {
   let { limit, start , name, _appContext} = params;;
   // setup
 
@@ -23,7 +23,7 @@ async function _listModels(params) {
     if (name != null) {
       payload.qs = {
         filter: `eq(name, '${name}')`
-      } 
+      }
     }
     let result = await store.apiCall(microanalyticScore.links('modules'), payload);
     if (result.itemsList().size === 0) {
@@ -38,4 +38,4 @@ async function _listModels(params) {
   }
 }
 
-export default _listModels;
+export default _listMas;

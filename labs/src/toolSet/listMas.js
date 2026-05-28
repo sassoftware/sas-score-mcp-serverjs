@@ -4,14 +4,14 @@
  */
 
 import { z } from 'zod';
-import _listModels from '../toolHelpers/_listModels.js';
+import _listMas from '../toolHelpers/_listMas.js';
 
-function listModels(_appContext) {
+function listMas(_appContext) {
   let description = `
-list-models — enumerate models published to MAS.
+list-mas — enumerate models published to MAS.
 
 USE ONLY when: user explicitly asks to browse or enumerate models — "list models", "show all models", "next page". Never use to verify if a specific model exists.
-DO NOT USE for: verify or check if a specific model exists (use find-model instead), find model, model metadata, score model, list jobs/tables/libraries
+DO NOT USE for: verify or check if a specific model exists (use find-mas instead), find model, model metadata, score model, list jobs/tables/libraries
 
 PARAMETERS
 - intent: must be 'list' — only pass if user explicitly asked to list/enumerate models. Do NOT use for read, find, or verify.
@@ -28,11 +28,11 @@ EXAMPLES
 - "list 25 models" → { start:1, limit:25 }
 
 NEGATIVE EXAMPLES (do not route here)
-- "find model X" (use find-model)
-- "does model churn_predictor exist" (use find-model)
-- "is model X published to MAS" (use find-model)
-- "describe model X" (use model-info)
-- "score model X" (use model-score)
+- "find model X" (use find-mas)
+- "does model churn_predictor exist" (use find-mas)
+- "is model X published to MAS" (use find-mas)
+- "describe model X" (use mas-describe)
+- "score model X" (use mas-score)
 - "list jobs" (use list-jobs)
 
 ERRORS
@@ -40,7 +40,7 @@ Returns empty array if no models found.
   `;
 
   let spec = {
-    name: 'list-models',
+    name: 'list-mas',
     description: description,
     inputSchema: z.object({
       intent: z.literal('list'),
@@ -49,13 +49,12 @@ Returns empty array if no models found.
     }),
     handler: async (params) => {
       const { intent, ...rest } = params;
-      let r = await _listModels(rest);
+      let r = await _listMas(rest);
       return r;
     }
   }
-  
+
   return spec;
 }
 
-export default listModels;
-
+export default listMas;

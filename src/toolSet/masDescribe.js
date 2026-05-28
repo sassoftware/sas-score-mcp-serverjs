@@ -9,7 +9,12 @@ import _masDescribe from '../toolHelpers/_masDescribe.js';
 const log = debug('tools');
 
 function masDescribe(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+mas-describe — return input/output schema for a MAS model.
+PARAMS: intent ('describe', required), name (string, required)
+RETURNS: input variables, output variables, model type, description
+` : `
 mas-describe — return detailed information about a specific MAS model, including its inputs, outputs, and metadata.
 
 USE when: what inputs does model need, describe model, show variables for model, model inputs/outputs

@@ -8,7 +8,12 @@ import _findmas from '../toolHelpers/_findmas.js';
 
 
 function findMas(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+find-mas — verify a MAS model exists.
+PARAMS: name (string, required)
+RETURNS: model metadata if found, error if not found
+` : `
 find-mas â€” locate a specific MAS mas deployed to MAS server 
 
 USE when: find mas, does mas exist, is mas deployed, lookup mas, verify mas exists

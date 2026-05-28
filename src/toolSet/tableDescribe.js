@@ -7,8 +7,12 @@ import debug from 'debug';
 
 import _tableInfo  from '../toolHelpers/_tableDescribe.js';
 function tableDescribe(_appContext) {
-
-     let describe = `
+  const isAgent = _appContext && _appContext.agent;
+     let describe = isAgent ? `
+table-describe — return column schema for a table.
+PARAMS: intent ('describe', required), lib (string, required), table (string, required), server ('cas'|'sas', required)
+RETURNS: column names, types, labels, formats; table row count and file size
+` : `
 table-describe -  retrieve metadata about a table in a CAS or SAS library.
 
 USE when: what columns, describe structure, show schema, table statistics, column info

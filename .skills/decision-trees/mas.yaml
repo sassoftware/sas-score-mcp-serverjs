@@ -1,6 +1,6 @@
 ---
 resource: "mas"
-description: "Decision tree for MAS models: list, find, describe,score"
+description: "Decision tree for MAS models: list, find, describe, score"
 intents:
   list:
     exec:

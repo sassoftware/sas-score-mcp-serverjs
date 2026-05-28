@@ -180,7 +180,6 @@ User: "What inputs does job model churnRisk need?"
 ```
 
 ### Option E: JobDef Model Details
-.
 
 **Trigger phrases**: "what inputs does jobdef model X need", "describe jobdef model X",
 "jobdef model X metadata", "what inputs does jobdef X need", "describe jobdef X"
@@ -203,6 +202,28 @@ User: "What inputs does jobdef model myScorer need?"
 3. Return: { inputs: [...] }
 ```
 
+---
+
+### Option F: SAS Program Model Details
+
+SAS programs are treated as models — they accept parameters via `scenario` and produce scored outputs.
+
+**Trigger phrases**: "describe sas program X", "what parameters does program X take",
+"program model X info", "describe X.sas"
+
+**Note**: SAS programs do not have a dedicated `describe` tool. If the program is wrapped in a Job, use `sas-score-job-describe`. Otherwise ask the user for parameter documentation.
+
+---
+
+### Option G: CAS Program Model Details
+
+CAS programs are treated as models — they accept CASL parameters via `scenario` and produce CAS results.
+
+**Trigger phrases**: "describe cas program X", "what parameters does cas program X take",
+"cas program model X info", "describe X.casl"
+
+**Note**: CAS programs do not have a dedicated `describe` tool. If the program is wrapped in a JobDef, use `sas-score-jobdef-describe`. Otherwise ask the user for parameter documentation.
+
 ## Decision Tree
 
 ```
@@ -212,7 +233,7 @@ User requests information/details
   â”‚   â†’ Call: sas-score-mas-describe
   â”‚
   â”œâ”€ About a SCR model?
-  â”‚   â†’ Call: sas-score-scr-describe (skip verification; validate URL first)
+  â”‚   â†’ Call: sas-score-scr-describe (skip verification; use name directly)
   â”‚
   â”œâ”€ About a Job model?
   â”‚   â†’ Verify: sas-score-find-job
@@ -220,7 +241,7 @@ User requests information/details
   â”‚
   â”œâ”€ About a JobDef model?
   â”‚   â†’ Verify: sas-score-find-jobdef
-  â”‚   â†’ Call: sas-score-job-describe
+  â”‚   â†’ Call: sas-score-jobdef-describe
   â”‚
   â””â”€ About a table?
       â†’ Verify: sas-score-find-table (determine CAS or SAS server)

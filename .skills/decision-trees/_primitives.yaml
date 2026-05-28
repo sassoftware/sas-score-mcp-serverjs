@@ -1,8 +1,27 @@
 ---
 primitives:
   parse-lib-table:
-    doc: "Split a lib.table reference into lib and table parts."
+    doc: "Split a qualified lib.table string into separate lib and table parts."
+    pattern: "'Public.customers' → lib='Public', table='customers'"
+    detect:
+      in: exec.args.values
+      match: "$lib.$table"
+
   verify-resource:
-    doc: "Standardized wrapper for calling find-* tools and surfacing errors."
+    doc: "Call the appropriate find-* tool before executing; report error and ask for correction if not found."
+    pattern: "find-{resource}(args) → not found: report + ask for clarification → found: proceed to exec"
+    detect:
+      in: intent.verify
+
   format-merge-prediction:
-    doc: "Primitive to merge prediction output into input rows."
+    doc: "Merge model prediction fields back into the original input row."
+    pattern: "{ ...inputFields, ...predictionFields } → single merged result object"
+    detect:
+      in: intent.format
+      match: "merge prediction"
+
+  resolve-server:
+    doc: "Determine whether to use 'cas' or 'sas' server based on known lib name lists; fall back to try-in-order."
+    pattern: "lib in cas-libs → 'cas'; lib in sas-libs → 'sas'; unknown → try 'cas' then 'sas'"
+    detect:
+      in: intent.resolve

@@ -7,7 +7,12 @@ import { z } from 'zod';
 import _scrScore from '../toolHelpers/_scrScore.js';
 
 function scrScore(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+scr-score — score a scenario using a SCR model endpoint.
+PARAMS: name (string, required), scenario (object, optional)
+RETURNS: SCR endpoint response with predictions merged with inputs
+` : `
 scr-score -  score a scenario using a model deployed as a SCR container in Azure or another host.
 
 Inputs

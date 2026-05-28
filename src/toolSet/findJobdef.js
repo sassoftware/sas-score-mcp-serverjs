@@ -5,20 +5,16 @@
 import { z } from 'zod';
 import _findJobdef from '../toolHelpers/_findJobdef.js';
 function findJobdef(_appContext) {
-  let llmDescription= {
-  "purpose": "Map natural language requests to find a jobdef (job definition) in SAS Viya and return structured results.",
-  "param_mapping": {
-    "name": "required - single name. If missing, ask 'Which jobdef name would you like to find?'.",
-
-  },
-  "response_schema": "{ jobs: Array<string|object> }",
-  "behavior": "Return only JSON matching response_schema when invoked by an LLM. If no matches, return { jobs: [] }"
-};
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+find-jobdef — verify a JobDef model exists.
+PARAMS: name (string, required)
+RETURNS: jobdef metadata if found, error if not found
+` : `
 find-jobdef — locate a specific SAS Viya job definition.
 
 USE when: find jobdef, does jobdef exist, is there a jobdef named, lookup jobdef, verify jobdef exists
-DO NOT USE for: list jobdefs (use ${_appContext.brand}-list-jobdefs), score jobdef (use ${_appContext.brand}-score-jobdef), find job/lib/table/model (use respective tools)
+DO NOT USE for: list jobdefs (use ${_appContext.brand}-list-jobdefs), score jobdef (use ${_appContext.brand}-jobdef-score), find job/lib/table/model (use respective tools)
 
 PARAMETERS
 - name: string (required) — jobdef name to locate; if multiple supplied, use first
@@ -31,7 +27,7 @@ ROUTING RULES
 - "lookup/verify jobdef <name>" → { name: "<name>" }
 - "find jobdef" with no name → ask "Which jobdef name would you like to find?"
 - "find all jobdefs / list jobdefs" → use ${_appContext.brand}-list-jobdefs instead
-- "score jobdef <name>" → use ${_appContext.brand}-score-jobdef instead
+- "score jobdef <name>" → use ${_appContext.brand}-jobdef-score instead
 
 EXAMPLES
 - "find jobdef cars_job_v4" → { name: "cars_job_v4" }
@@ -40,7 +36,7 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "list jobdefs" (use ${_appContext.brand}-list-jobdefs)
-- "score jobdef cars_job_v4" (use ${_appContext.brand}-score-jobdef)
+- "score jobdef cars_job_v4" (use ${_appContext.brand}-jobdef-score)
 - "find job ETL" (use ${_appContext.brand}-find-job)
 - "find table cars" (use ${_appContext.brand}-find-table)
 

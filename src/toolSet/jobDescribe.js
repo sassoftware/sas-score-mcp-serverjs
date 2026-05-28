@@ -5,12 +5,16 @@
 import { z } from 'zod';
 import _listJobs from '../toolHelpers/_listJobs.js';
 function jobDescribe(_appContext) {
-
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+job-describe — return input schema for a Job model.
+PARAMS: intent ('describe', required), name (string, required)
+RETURNS: job input variable definitions
+` : `
 job-describe — return information about a specific SAS Viya job.
 
 USE when: describe job, show job details, what does job X do, job metadata, inputs/outputs for job
-DO NOT USE for: find job or verify it exists (use ${_appContext.brand}-find-job), list jobs (use ${_appContext.brand}-list-jobs), score job (use ${_appContext.brand}-score-job)
+DO NOT USE for: find job or verify it exists (use ${_appContext.brand}-find-job), list jobs (use ${_appContext.brand}-list-jobs), score job (use ${_appContext.brand}-job-score)
 
 PARAMETERS
 - intent: must be 'describe' — only pass if user explicitly asked to describe/inspect a job. Do NOT use for find or verify existence.
@@ -27,8 +31,8 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "list jobs" (use ${_appContext.brand}-list-jobs)
-- "score job cars_job_v4" (use ${_appContext.brand}-score-job)
-- "score jobdef cars_job_v4" (use ${_appContext.brand}-score-jobdef)
+- "score job cars_job_v4" (use ${_appContext.brand}-job-score)
+- "score jobdef cars_job_v4" (use ${_appContext.brand}-jobdef-score)
 
 ERRORS
 Returns job metadata 

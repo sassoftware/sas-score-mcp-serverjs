@@ -24,19 +24,15 @@ intents:
       tool: "sas-score-scr-describe"
       args:
         name: "$name"
-    format: "SCR name schema and metadata"
+    format: "SCR model schema and metadata"
   score:
     parse:
       name: "$name"
       scenario: "$scenario"
-    verify:
-      tool: "sas-score-find-scr"
-      args:
-        name: "$name"
+    # SCR: skip find-* verification; score directly
     exec:
       tool: "sas-score-scr-score"
       args:
         name: "$name"
         scenario: "$scenario"
     format: "merge prediction with input"
-

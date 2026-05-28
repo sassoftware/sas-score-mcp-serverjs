@@ -7,7 +7,7 @@
 | "score a=1, b=2 with model **X**" | **SCORE-STRATEGY** → Verify model (FIND-RESOURCE) → `mas-score` (inline scenario) |
 | "run model **X** on table **T**" | **SCORE-STRATEGY** → Verify model + table (FIND-RESOURCE) → `read-table` rows → `mas-score` each row |
 | "score all rows in  caslib **lib.Table** with **X**" | **SCORE-STRATEGY** → Verify model + CAS table → batch read → `mas-score` |
-| "forecast with job **X**" | **SCORE-STRATEGY** → Verify job (FIND-RESOURCE) → `score-jobdef` |
+| "forecast with job **X**" | **SCORE-STRATEGY** → Verify job (FIND-RESOURCE) → `jobdef-score` |
 | "score with SCR model **X**" | **SCORE-STRATEGY** → Skip verification → `scr-score` directly |
 | "read table **Caslib.Table**" | **READ-STRATEGY** → Verify table (FIND-RESOURCE, CAS) → `read-table` |
 | "show first N records from **SASHELP.CLASS**" | **READ-STRATEGY** → Verify table (FIND-RESOURCE, SAS) → `read-table` with `limit` |

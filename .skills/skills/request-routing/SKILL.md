@@ -21,8 +21,8 @@ When any resource reference appears in the form `a.b`, parse `b` to determine th
 | `job` | Job model | name = `a` |
 | `jobdef` | JobDef model | name = `a` |
 | `scr` | SCR model | name = `a` |
-| `sas` | SAS program | program name = `a` |
-| `casl` | CASL program | program name = `a` |
+| `sas` | SAS program model | program name = `a` |
+| `casl` | CAS program model | program name = `a` |
 | **anything else** | **Table** | lib = `a`, table = `b` |
 
 **Rule**: if `b` is not one of `{mas, job, jobdef, scr, sas, casl}`, treat `a.b` as a table reference where `a` is the library name and `b` is the table name.
@@ -47,7 +47,7 @@ Classification
 |---|---|---|---|
 | Find resource | "find", "does X exist", "locate", "verify" | Verify resource | `sas-score-find-library`, `sas-score-find-table`, `sas-score-find-mas`, `sas-score-find-job`, `sas-score-find-jobdef` |
 | Read / Query | "read", "show rows", "how many", "count", "average", "query" | Read / aggregate | `sas-score-read-table`, `sas-score-sas-query` |
-| Score | "score", "predict", "run model" | Score inputs | `sas-score-mas-score`, `sas-score-score-job`, `sas-score-score-jobdef`, `sas-score-scr-score` |
+| Score | "score", "predict", "run model" | Score inputs | `sas-score-mas-score`, `sas-score-scr-score`, `sas-score-job-score`, `sas-score-jobdef-score`, `sas-score-program-score`, `sas-score-cas-program-score` |
 | List / Discover | "list", "show all", "browse" | List resources | `sas-score-list-*` tools (e.g., `sas-score-list-mas`, `sas-score-list-jobs`) |
 | Describe | "describe", "what inputs", "metadata" | Return metadata | `sas-score-*-describe` (mas/job/jobdef/scr/table) |
 
@@ -74,9 +74,11 @@ Execute mapping (concise)
 - Read rows (including WHERE filter): `sas-score-read-table` (lib, table, server, where)
 - SQL aggregation/join only: `sas-score-sas-query` (lib.table, query, sql)
 - MAS scoring: `sas-score-mas-score` (mas, scenario)
-- Job scoring: `sas-score-score-job` (job, scenario)
-- JobDef scoring: `sas-score-score-jobdef` (jobdef, scenario)
+- Job scoring: `sas-score-job-score` (name, scenario)
+- JobDef scoring: `sas-score-jobdef-score` (name, scenario)
 - SCR scoring: `sas-score-scr-score` (name, scenario)
+- Program scoring: `sas-score-program-score` (src, scenario, folder, output, limit)
+- CAS Program scoring: `sas-score-cas-program-score` (src, scenario, folder, output, limit)
 - Describe: `sas-score-*-describe` (mas/job/jobdef/scr/table)
 
 Combined Read + Score (short)
@@ -104,7 +106,7 @@ Error handling (short)
 
 Examples (minimal)
 - Read: "read customers in Public" â†’ find Public (CAS) â†’ read-table â†’ return rows.
-- Score inline: "score a=1,b=2 with job simplejob" â†’ find job â†’ score-job â†’ return merged result.
+- Score inline: "score a=1,b=2 with job simplejob" â†’ find job â†’ job-score â†’ return merged result.
 - Score table: "score Public.customers with model risk" â†’ find table (CAS) & model (MAS) â†’ read rows â†’ score â†’ return merged.
 
 Notes: Keep this SKILL as the canonical, compact router; agent wrappers should be short and reference this document for details and examples.

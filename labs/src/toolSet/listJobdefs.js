@@ -10,7 +10,7 @@ function listJobdefs(_appContext) {
 list-jobdefs â€” enumerate SAS Viya job definitions (jobdefs) assets.
 
 USE when: list jobdefs, show jobdefs, browse jobdefs, list available jobdefs, next page
-DO NOT USE for: find single jobdef (use find-jobdef), execute jobdef (use score-jobdef), find job (use find-job), sas code (use score-program)
+DO NOT USE for: find single jobdef (use find-jobdef), execute jobdef (use jobdef-score), find job (use find-job), sas code (use program-score)
 
 PARAMETERS
 - intent: must be 'list' — only pass if user explicitly asked to list/enumerate jobdefs. Do NOT use for find, verify, or execute.
@@ -33,8 +33,8 @@ NEGATIVE EXAMPLES (do not route here)
 - does jobdef X exist (use find-jobdef)
 - is jobdef X available (use find-jobdef)
 - list jobs (use list-jobs)
-- run jobdef abc (use score-jobdef)
-- list models (use list-models)
+- run jobdef abc (use jobdef-score)
+- list models (use list-mas)
 
 PAGINATION
 If returned length === limit, hint: next start = start + limit. Empty result with start > 1 means paged past end.

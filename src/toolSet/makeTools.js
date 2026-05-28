@@ -27,11 +27,12 @@ import devaScore from './devaScore.js';
 
 
 
-import scoreProgram from './scoreProgram.js';
-import scoreMacro from './scoreMacro.js';
-import scoreJob from './scoreJob.js';
+import programScore from './programScore.js';
+import casProgramScore from './casProgramScore.js';
+import macroScore from './macroScore.js';
+import jobScore from './jobScore.js';
 import listJobs from './listJobs.js';
-import scoreJobdef from './scoreJobdef.js';
+import jobdefScore from './jobdefScore.js';
 import findJob from './findJob.js';
 import listJobdefs from './listJobdefs.js';
 import findJobdef from './findJobdef.js';
@@ -65,17 +66,18 @@ function makeTools(_appContext) {
     readTable(_appContext),
     sasQuery(_appContext),
 
-    scoreProgram(_appContext),
-    scoreMacro(_appContext),
+    programScore(_appContext),
+    casProgramScore(_appContext),
+    macroScore(_appContext),
 
     findJob(_appContext),
     listJobs(_appContext),
-    scoreJob(_appContext),
+    jobScore(_appContext),
     listJobdefs(_appContext),
     findJobdef(_appContext),
     jobDescribe(_appContext),
     jobdefDescribe(_appContext),
-    scoreJobdef(_appContext),
+    jobdefScore(_appContext),
 
     devaScore(_appContext),
     setContext(_appContext)

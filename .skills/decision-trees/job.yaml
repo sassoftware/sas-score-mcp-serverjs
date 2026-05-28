@@ -1,6 +1,6 @@
 ---
 resource: "job"
-description: "Decision tree for Jobs: list, find, describe, score"
+description: "Decision tree for Job models: list, find, describe, score"
 intents:
   list:
     exec:
@@ -8,7 +8,7 @@ intents:
       args:
         start: 1
         limit: 10
-    format: "list of jobs"
+    format: "list of job models"
   find:
     parse:
       name: "$name"
@@ -28,7 +28,7 @@ intents:
       tool: "sas-score-job-describe"
       args:
         name: "$name"
-    format: "job metadata and schema"
+    format: "job model metadata and schema"
   score:
     parse:
       name: "$name"
@@ -38,7 +38,7 @@ intents:
       args:
         name: "$name"
     exec:
-      tool: "sas-score-score-job"
+      tool: "sas-score-job-score"
       args:
         name: "$name"
         scenario: "$scenario"

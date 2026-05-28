@@ -7,44 +7,44 @@ import { z } from 'zod';
 import _submitCode from '../toolHelpers/_submitCode.js';
 
 
-function scoreMacro(_appContext) {
+function macroScore(_appContext) {
   let description = `
-score-macro — submit and execute a SAS macro on SAS Viya server.
+macro-score — submit and execute a SAS macro on SAS Viya server.
 
-USE when: score macro, execute macro with parameters
-DO NOT USE for: arbitrary SAS code (use score-program), jobs, jobdefs
+USE when: run macro, execute macro with parameters
+DO NOT USE for: arbitrary SAS code (use program-score), jobs, jobdefs
 
 PARAMETERS
 - macro: string — macro name without "%" (required)
 - scenario: string — parameters or setup code (optional). Accepts: "x=1, y=abc" or "%let x=1; %let y=abc;"
 
 ROUTING RULES
-- "score macro abc" → { macro: "abc", scenario: "" }
-- "score macro abc with x=1, y=2" → { macro: "abc", scenario: "x=1, y=2" }
-- "score macro xyz with %let a=1; %let b=2;" → { macro: "xyz", scenario: "%let a=1; %let b=2;" }
+- "run macro abc" → { macro: "abc", scenario: "" }
+- "run macro abc with x=1, y=2" → { macro: "abc", scenario: "x=1, y=2" }
+- "run macro xyz with %let a=1; %let b=2;" → { macro: "xyz", scenario: "%let a=1; %let b=2;" }
 
 EXAMPLES
-- "score macro abc" → { macro: "abc", scenario: "" }
-- "score macro summarize with x=1, y=2" → { macro: "summarize", scenario: "x=1, y=2" }
+- "run macro abc" → { macro: "abc", scenario: "" }
+- "run macro summarize with x=1, y=2" → { macro: "summarize", scenario: "x=1, y=2" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "score SAS code" (use score-program)
-- "score job X" (use score-job)
-- "score jobdef X" (use score-jobdef)
+- "run SAS code" (use program-score)
+- "run job X" (use job-score)
+- "run jobdef X" (use jobdef-score)
 
 ERRORS
 Returns log, ods, tables created by macro. Auto-converts "x=1, y=2" to "%let x=1; %let y=2;" format.
   `;
 
   let spec = {
-    name: 'score-macro',
+    name: 'macro-score',
     description: description,
-    
+
     inputSchema: z.object({
       macro: z.string(),
       scenario: z.string().optional()
     }),
-     
+
     handler: async (params) => {
       const scenarioRaw = (params.scenario || '').trim();
       let setup = '';
@@ -78,5 +78,4 @@ Returns log, ods, tables created by macro. Auto-converts "x=1, y=2" to "%let x=1
   return spec;
 }
 
-export default scoreMacro;
-
+export default macroScore;

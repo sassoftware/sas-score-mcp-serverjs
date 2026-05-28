@@ -6,12 +6,17 @@
 import { z } from 'zod';
 import _submitCode from '../toolHelpers/_submitCode.js';
 
-function scoreProgram(_appContext) {
-  let description = `
-score-program — execute SAS code or programs on SAS Viya server.
+function programScore(_appContext) {
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+program-score — execute a SAS program model.
+PARAMS: src (string, required), folder (string, optional), scenario (string|object, optional), output (string, optional), limit (number, optional)
+RETURNS: log, ODS output, optional output table rows
+` : `
+program-score — execute a SAS program model on SAS Viya server.
 
 USE when: score program, execute SAS code, run .sas file
-DO NOT USE for: macros (use score-macro), jobs (use score-job), jobdefs (use score-jobdef), SQL queries (use sas-query), read data (use read-table)
+DO NOT USE for: macros (use macro-score), jobs (use job-score), jobdefs (use jobdef-score), SQL queries (use sas-query), read data (use read-table)
 
 PARAMETERS
 - src: string — SAS code or .sas filename (required)
@@ -30,9 +35,9 @@ EXAMPLES
 - "score sas file sample in /Public" → { src: "sample", folder: "/Public", output: "", limit: 100 }
 
 NEGATIVE EXAMPLES (do not route here)
-- "score macro X" (use score-macro)
-- "score job X" (use score-job)
-- "score jobdef X" (use score-jobdef)
+- "score macro X" (use macro-score)
+- "score job X" (use job-score)
+- "score jobdef X" (use jobdef-score)
 - "SQL query" (use sas-query)
 - "read table" (use read-table)
 
@@ -41,7 +46,7 @@ Returns log, ods, tables array, data (if output specified). Error if execution f
   `;
 
   let spec = {
-    name: 'score-program',
+    name: 'program-score',
     description: description,
     inputSchema: z.object({
       src: z.string(),
@@ -65,7 +70,7 @@ Returns log, ods, tables array, data (if output specified). Error if execution f
         `;
       }
       // figure out macros
-  
+
       if (typeof scenario === 'string' && scenario.includes('=')) {
         scenario = scenario.split(',').reduce((acc, pair) => {
           const [k, ...rest] = pair.split('=');
@@ -81,7 +86,6 @@ Returns log, ods, tables array, data (if output specified). Error if execution f
         src: isrc,
         _appContext: _appContext
       }
-     // console.error('iparms', iparms);
       let r = await _submitCode(iparms);
       return r;
     }
@@ -89,5 +93,4 @@ Returns log, ods, tables array, data (if output specified). Error if execution f
   return spec;
 }
 
-export default scoreProgram;
-
+export default programScore;

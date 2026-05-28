@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import listModels from './listModels.js';
+import listMas from './listMas.js';
 import listTables from './listTables.js';
-import modelScore from './modelScore.js';
-import modelInfo from './modelInfo.js';
+import masScore from './masScore.js';
+import masDescribe from './masDescribe.js';
 import findLibrary from './findLibrary.js';
 import readTable from './readTable.js';
 import tableDescribe from './tableDescribe.js';
@@ -18,12 +18,12 @@ import scrScore from './scrScore.js';
 import devaScore from './devaScore.js';
 
 import findTable from './findTable.js';
-import findModel from './findModel.js';
-import runProgram from './runProgram.js';
-import runMacro from './runMacro.js';
-import runJob from './runJob.js';
+import findMas from './findMas.js';
+import programScore from './programScore.js';
+import macroScore from './macroScore.js';
+import jobScore from './jobScore.js';
 import listJobs from './listJobs.js';
-import runJobdef from './runJobdef.js';
+import jobdefScore from './jobdefScore.js';
 import findJob from './findJob.js';
 import listJobdefs from './listJobdefs.js';
 import findJobdef from './findJobdef.js';
@@ -38,11 +38,11 @@ function makeTools(_appContext) {
 
   // get the tool definitions and handler 
   let list = [
-    listModels(_appContext),
-    
-    findModel(_appContext),
-    modelInfo(_appContext),
-    modelScore(_appContext),
+    listMas(_appContext),
+
+    findMas(_appContext),
+    masDescribe(_appContext),
+    masScore(_appContext),
 
     scrDescribe(_appContext),
     scrScore(_appContext),
@@ -55,15 +55,15 @@ function makeTools(_appContext) {
     readTable(_appContext),
     sasQuery(_appContext),
 
-    runProgram(_appContext),
-    runMacro(_appContext),
+    programScore(_appContext),
+    macroScore(_appContext),
 
     findJob(_appContext),
     listJobs(_appContext),
-    runJob(_appContext),
+    jobScore(_appContext),
     listJobdefs(_appContext),
     findJobdef(_appContext),
-    runJobdef(_appContext),
+    jobdefScore(_appContext),
 
     devaScore(_appContext),
     setContext(_appContext)

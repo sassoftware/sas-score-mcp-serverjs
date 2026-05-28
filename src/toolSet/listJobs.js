@@ -5,12 +5,16 @@
 import { z } from 'zod';
 import _listJobs from '../toolHelpers/_listJobs.js';
 function listJobs(_appContext) {
-
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+list-jobs — list available Job models.
+PARAMS: intent ('list', required), start (number, default 1), limit (number, default 10)
+RETURNS: array of job names and metadata
+` : `
 list-jobs — enumerate SAS Viya job assets.
 
 USE when: list jobs, show jobs, browse jobs, list available jobs, next page
-DO NOT USE for: find single job (use ${_appContext.brand}-find-job), score job (use ${_appContext.brand}-score-job), score jobdef (use ${_appContext.brand}-score-jobdef), sas code (use ${_appContext.brand}-score-program)
+DO NOT USE for: find single job (use ${_appContext.brand}-find-job), score job (use ${_appContext.brand}-job-score), score jobdef (use ${_appContext.brand}-jobdef-score), sas code (use ${_appContext.brand}-program-score)
 
 PARAMETERS
 - intent: must be 'list' — only pass if user explicitly asked to list/enumerate jobs. Do NOT use for find, verify, or execute.
@@ -30,7 +34,7 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - find job abc (use ${_appContext.brand}-find-job)
-- score job abc (use ${_appContext.brand}-score-job)
+- score job abc (use ${_appContext.brand}-job-score)
 - list models (use ${_appContext.brand}-list-models)
 - list tables in lib xyz (use ${_appContext.brand}-list-tables)
 

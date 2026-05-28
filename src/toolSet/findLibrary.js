@@ -5,12 +5,16 @@
 import { z } from 'zod';
 import _listLibrary from '../toolHelpers/_listLibrary.js';
 function findLibrary(_appContext) {
-  
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+find-library — verify a library exists.
+PARAMS: name (string, required), server ('cas'|'sas', optional)
+RETURNS: library metadata if found, error if not found
+` : `
 find-library â€” locate a specific CAS or SAS library.
 
 USE when: find library, find lib, does library exist, is library available, lookup library
-DO NOT USE for: list libraries (use ${_appContext.brand}-list-libraries), find table/job/jobdef/model (use respective tools), table structure (use ${_appContext.brand}-table-describe), create library (use ${_appContext.brand}-score-program)
+DO NOT USE for: list libraries (use ${_appContext.brand}-list-libraries), find table/job/jobdef/model (use respective tools), table structure (use ${_appContext.brand}-table-describe), create library (use ${_appContext.brand}-program-score)
 
 PARAMETERS
 - name: string (required) â€” library/caslib name; if multiple supplied, use first

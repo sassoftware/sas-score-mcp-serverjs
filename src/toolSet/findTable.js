@@ -8,7 +8,12 @@ import { z } from 'zod';
 import _findTable from '../toolHelpers/_findTable.js';
 
 function findTable(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+find-table — verify a table exists in a library.
+PARAMS: lib (string, required), name (string, required), server ('cas'|'sas', optional)
+RETURNS: table metadata if found, error if not found
+` : `
 find-table â€” locate a specific table in a CAS or SAS library.
 
 USE when: find table, does table exist, is table in library, verify table exists, locate table

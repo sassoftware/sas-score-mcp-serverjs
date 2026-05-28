@@ -10,7 +10,7 @@ function getEnv(_appContext) {
 get-env â€” retrieve a variable value from the runtime environment.
 
 USE when: what is the value of, get me, show current, what's the, retrieve environment variable
-DO NOT USE for: read table data (use read-table), model info (use model-info), find/run job (use find-job/score-job), set context (use set-context)
+DO NOT USE for: read table data (use read-table), model info (use mas-describe), find/run job (use find-job/job-score), set context (use set-context)
 
 PARAMETERS
 - name: string (required) â€” variable name to retrieve (case-sensitive)
@@ -21,7 +21,7 @@ ROUTING RULES
 - "show <var>" â†’ { name: "<var>" }
 - "get" with no variable â†’ ask "Which variable would you like to retrieve?"
 - "what context am I using" â†’ use set-context instead (no params)
-- "set <var> to <value>" â†’ use set-context or score-program instead
+- "set <var> to <value>" â†’ use set-context or program-score instead
 
 EXAMPLES
 - "What's the value of myVar" â†’ { name: "myVar" }
@@ -30,7 +30,7 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "Read rows from customers" (use read-table)
-- "Get model details for myModel" (use model-info)
+- "Get model details for myModel" (use mas-describe)
 - "Set the CAS server to finance-prod" (use set-context)
 
 ERRORS

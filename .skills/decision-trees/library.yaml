@@ -4,7 +4,7 @@ description: "Decision tree for library operations: list, find"
 intents:
   list:
     parse:
-      server: "$server" # 'cas' | 'sas' | 'all' — inferred from request
+      server: "$server"   # 'cas' | 'sas' | 'all' — inferred from request
     exec:
       tool: "sas-score-list-libraries"
       args:
@@ -15,7 +15,7 @@ intents:
   find:
     parse:
       name: "$name"
-      server: "$server" # 'cas' | 'sas' — default 'cas'
+      server: "$server"   # 'cas' | 'sas' — default 'cas'
     exec:
       tool: "sas-score-find-library"
       args:

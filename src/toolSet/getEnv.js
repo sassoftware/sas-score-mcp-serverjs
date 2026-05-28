@@ -10,7 +10,7 @@ function getEnv(_appContext) {
 get-env — retrieve a variable value from the runtime environment.
 
 USE when: what is the value of, get me, show current, what's the, retrieve environment variable
-DO NOT USE for: read table data (use ${_appContext.brand}-read-table), model info (use ${_appContext.brand}-model-info), find/score job (use ${_appContext.brand}-find-job/${_appContext.brand}-score-job), set context (use ${_appContext.brand}-set-context)
+DO NOT USE for: read table data (use ${_appContext.brand}-read-table), model info (use ${_appContext.brand}-model-info), find/score job (use ${_appContext.brand}-find-job/${_appContext.brand}-job-score), set context (use ${_appContext.brand}-set-context)
 
 PARAMETERS
 - name: string (required) — variable name to retrieve (case-sensitive)
@@ -21,7 +21,7 @@ ROUTING RULES
 - "show <var>" → { name: "<var>" }
 - "get" with no variable → ask "Which variable would you like to retrieve?"
     - "what context am I using" → use ${_appContext.brand}-set-context instead (no params)
-    - "set <var> to <value>" → use ${_appContext.brand}-set-context or ${_appContext.brand}-score-program instead
+    - "set <var> to <value>" → use ${_appContext.brand}-set-context or ${_appContext.brand}-program-score instead
 
 EXAMPLES
 - "What's the value of myVar" → { name: "myVar" }

@@ -1,43 +1,43 @@
-﻿/*
- * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+/*
+ * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import { z } from 'zod';
 import _jobSubmit from '../toolHelpers/_jobSubmit.js';
 
-function runJob(_appContext) {
- 
-  let description = `
-score-job â€” execute a deployed SAS Viya job.
+function jobdefScore(_appContext) {
 
-USE when: run job, execute job, run with parameters
-DO NOT USE for: arbitrary SAS code (use score-program), macros (use score-macro), list/find jobs
+  let description = `
+jobdef-score — execute a SAS Viya job definition.
+
+USE when: run jobdef, execute jobdef, run with parameters
+DO NOT USE for: arbitrary SAS code (use program-score), macros (use macro-score), list/find jobdefs
 
 PARAMETERS
-- name: string â€” job name (required)
-- scenario: string | object â€” input parameters. Accepts: "x=1, y=2" or {x:1, y:2}
+- name: string — jobdef name (required)
+- scenario: string | object — input parameters. Accepts: "x=1, y=2" or {x:1, y:2}
 
 ROUTING RULES
-- "run job xyz" â†’ { name: "xyz" }
-- "run job xyz with param1=10, param2=val2" â†’ { name: "xyz", scenario: {param1:10, param2:"val2"} }
+- "run jobdef xyz" → { name: "xyz" }
+- "run jobdef xyz with param1=10, param2=val2" → { name: "xyz", scenario: {param1:10, param2:"val2"} }
 
 EXAMPLES
-- "run job xyz" â†’ { name: "xyz" }
-- "run job monthly_etl with month=10, year=2025" â†’ { name: "monthly_etl", scenario: {month:10, year:2025} }
+- "run jobdef xyz" → { name: "xyz" }
+- "run jobdef monthly_report with month=10, year=2025" → { name: "monthly_report", scenario: {month:10, year:2025} }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use score-program)
-- "run macro X" (use score-macro)
-- "list jobs" (use list-jobs)
-- "find job X" (use find-job)
+- "run SAS code" (use program-score)
+- "run macro X" (use macro-score)
+- "list jobdefs" (use list-jobdefs)
+- "find jobdef X" (use find-jobdef)
 
 ERRORS
-Returns log output, listings, tables from job. Error if job not found.
-`;
+Returns log output, listings, tables from jobdef. Error if jobdef not found.
+  `;
 
   let spec = {
-    name: 'score-job',
+    name: 'jobdef-score',
     description: description,
     inputSchema: z.object({
       name: z.string(),
@@ -47,7 +47,7 @@ Returns log output, listings, tables from job. Error if job not found.
       let scenario = params.scenario;
       let scenarioObj = {};
       let count = 0;
-      // 
+      //
       if (scenario == null) {
         scenarioObj = {};
       } else if (typeof scenario === 'object') {
@@ -67,7 +67,7 @@ Returns log output, listings, tables from job. Error if job not found.
           }, {});
         }
       }
-      params.type = 'job';
+      params.type = 'def';
       params.scenario = scenarioObj;
       // Provide runtime context for auth and server settings
       let r = await _jobSubmit(params);
@@ -77,6 +77,4 @@ Returns log output, listings, tables from job. Error if job not found.
   return spec;
 }
 
-export default runJob;
-
-
+export default jobdefScore;

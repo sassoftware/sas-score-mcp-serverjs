@@ -1,14 +1,14 @@
 ---
 resource: "jobdef"
-description: "Decision tree for JobDefs: list, find, describe, score"
+description: "Decision tree for JobDef models: list, find, describe, score"
 intents:
   list:
     exec:
-      tool: "sas-score-list-jobdef"
+      tool: "sas-score-list-jobdefs"
       args:
         start: 1
         limit: 10
-    format: "list of jobdefs"
+    format: "list of jobdef models"
   find:
     parse:
       name: "$name"
@@ -28,7 +28,7 @@ intents:
       tool: "sas-score-jobdef-describe"
       args:
         name: "$name"
-    format: "jobdef metadata and schema"
+    format: "jobdef model metadata and schema"
   score:
     parse:
       name: "$name"
@@ -38,8 +38,8 @@ intents:
       args:
         name: "$name"
     exec:
-      tool: "sas-score-score-jobdef"
+      tool: "sas-score-jobdef-score"
       args:
         name: "$name"
         scenario: "$scenario"
-    format: "jobdef run output"
+    format: "merge prediction with input"

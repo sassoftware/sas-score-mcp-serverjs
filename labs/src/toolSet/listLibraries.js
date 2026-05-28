@@ -41,7 +41,7 @@ EXAMPLES
 NEGATIVE EXAMPLES (do not route here)
 - "list tables in SASHELP"      â†’ list-tables
 - "list models / jobs / jobdefs"â†’ respective tools
-- "run a program to create a lib" â†’ score-program
+- "run a program to create a lib" â†’ program-score
 
 PAGINATION
 If returned item count === limit, hint: next start = start + limit.

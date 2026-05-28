@@ -7,8 +7,13 @@ import debug from 'debug';
 
 import _readTable from  '../toolHelpers/_readTable.js';
 function readTable(_appContext) {
-   
-     let describe = `
+  const isAgent = _appContext && _appContext.agent;
+
+     let describe = isAgent ? `
+read-table — read rows from a CAS or SAS table.
+PARAMS: lib (string, required), table (string, required), server ('cas'|'sas', required), where (string, optional filter), start (number, default 1), limit (number, default 10)
+RETURNS: array of row objects
+` : `
 read-table -  retrieve rows from a table in a CAS or SAS library.
 
 USE when: read table, show rows, read from library, filtered data with WHERE
@@ -47,7 +52,7 @@ NEGATIVE EXAMPLES (do not route here)
 - "list tables in Samples" (use list-tables)
 - "what columns are in cars" (use table-describe)
 - "execute SQL query" (use sas-query)
-- "run SAS code" (use score-program)
+- "run SAS code" (use program-score)
 
 ERRORS
 Returns rows array, total count, filtered_count, columns metadata. Empty array if no matches.

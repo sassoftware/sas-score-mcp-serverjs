@@ -1,27 +1,40 @@
 ---
 name: score-strategy
 description: >
-  Unified scoring workflow. Handles MAS, Job, JobDef, SCR, and combined read+score scenarios.
-  Always verify resources before scoring.
+  Unified scoring workflow. Handles all model types: MAS, SCR, Job, JobDef, SAS Program, and CAS Program.
+  Also handles combined read+score (table rows) scenarios.
+  Always verify resources before scoring (except SCR and programs).
 ---
 
 # Score Strategy
 
+## Model Types
+
+SAS Viya supports the following model types for scoring:
+
+| Category | Type | Suffix | Description |
+|---|---|---|---|
+| Analytical | MAS | `.mas` | Micro Analytic Score — real-time, low-latency scoring |
+| Analytical | SCR | `.scr` | Score Code Runtime — containerized scoring endpoint |
+| Execution | Job | `.job` | SAS Viya Job deployed as a scoring model |
+| Execution | JobDef | `.jobdef` | SAS Viya Job Definition deployed as a scoring model |
+| Execution | Program | `.sas` | SAS program executed as a scoring model |
+| Execution | CAS Program | `.casl` | CASL program executed as a CAS scoring model |
+
 ## Model Type from `a.b` Notation
 
 See request-routing skill for the canonical `a.b` parsing rule.
-Short form: if `b ∈ {mas, job, jobdef, scr}` → model type; anything else → table reference.
+Short form: if `b ∈ {mas, job, jobdef, scr, sas, casl}` → model type; anything else → table reference.
 
 ## Rules
 
  Step 1: If table is specified as the source of the data, use read-strategy to read the data
  Step 2: Always verify the model exists with find-resources skill before attempting to score
+         (Exception: SCR models and programs may be scored directly without pre-verification)
  Step 3: 
   - If Step 1 and Step 2 are successful, score the data read from the table with the appropriate scoring tool based on model type.
     - Cap batch scoring at 10 rows by default; ask user before proceeding with larger batches.
   - if either Step 1 or Step 2 fails, return an error message indicating the issue (e.g. "Model X not found", "Table Y not found") and ask for corrected identifiers.
-
-Verify model → score with provided input values.
 
 ## Inline Scenario Scoring
 
@@ -30,9 +43,11 @@ Verify model → score with provided input values.
 | Type | Tool |
 |---|---|
 | MAS | `sas-score-mas-score({ model, scenario })` |
-| Job | `sas-score-run-job({ name, scenario })` |
-| JobDef | `sas-score-run-jobdef({ name, scenario })` |
-| SCR | `sas-score-scr-score({ url, scenario })` |
+| Job | `sas-score-job-score({ name, scenario })` |
+| JobDef | `sas-score-jobdef-score({ name, scenario })` |
+| SCR | `sas-score-scr-score({ name, scenario })` |
+| Program | `sas-score-program-score({ src, scenario, folder, output, limit })` |
+| CAS Program | `sas-score-cas-program-score({ src, scenario, folder, output, limit })` |
 
 ## Table Row Scoring
 

@@ -8,7 +8,12 @@ import _findScr from '../toolHelpers/_findScr.js';
 
 
 function findScr(_appContext) {
-  let description = `
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+find-scr — verify an SCR model exists.
+PARAMS: name (string, required)
+RETURNS: SCR model metadata if found, error if not found
+` : `
 find-scr â€” locate a specific SCR scr deployed to SCR server 
 
 USE when: find scr, does scr exist, is scr deployed, lookup scr, verify scr exists

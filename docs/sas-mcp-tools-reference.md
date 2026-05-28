@@ -11,8 +11,10 @@ All tools are registered as sas-score-<toolname>
 - [Model Management & Scoring](#model-management--scoring)
 - [Library Management](#library-management)
 - [Table Operations](#table-operations)
-- [Job Management](#job-management)
-- [Program Execution](#program-execution)
+- [Jobs Model](#jobs-model)
+- [Jobdef Models](#jobdef-models)
+- [Program Models](#program-models)
+- [Macro Models](#macro-models)
 - [Context & Configuration](#context--configuration)
 - [Utility Tools](#utility-tools)
 
@@ -20,7 +22,7 @@ All tools are registered as sas-score-<toolname>
 
 ## Model Management & Scoring
 
-### list-models
+### sas-score-list-mas
 
 Enumerate models published to MAS (Model Aggregation Service).
 
@@ -42,7 +44,7 @@ list 25 models
 
 ---
 
-### find-model
+### sas-score-find-mas
 
 Locate a specific model deployed to MAS.
 
@@ -61,7 +63,7 @@ find model myModel
 
 ---
 
-### model-info
+### sas-score-mas-describe
 
 Retrieve detailed metadata for a deployed model including input/output variables, data types, and constraints.
 
@@ -80,12 +82,12 @@ Retrieve detailed metadata for a deployed model including input/output variables
 
 **Example:**
 ```
-model-info model=churnRisk
+sas-score-mas-describe model=churnRisk
 ```
 
 ---
 
-### model-score
+### sas-score-mas-score
 
 Score user-supplied scenario data using a MAS-published model.
 
@@ -105,13 +107,13 @@ Score user-supplied scenario data using a MAS-published model.
 
 **Example:**
 ```
-model-score model=mycoolmodel scenario={x:1,y:2}
-model-score model=cancer1 scenario="age=45, sex=M, tumor=stage2"
+sas-score-mas-score model=mycoolmodel scenario={x:1,y:2}
+sas-score-mas-score model=cancer1 scenario="age=45, sex=M, tumor=stage2"
 ```
 
 ---
 
-### scr-describe
+### sas-score-scr-describe
 
 Return input/output schema and metadata for an SCR (Score Code Runtime) model.
 
@@ -124,12 +126,12 @@ Return input/output schema and metadata for an SCR (Score Code Runtime) model.
 
 **Example:**
 ```
-scr-describe name="https://scr-host/models/loan"
+sas-score-scr-describe name="https://scr-host/models/loan"
 ```
 
 ---
 
-### scr-score
+### sas-score-scr-score
 
 Score a scenario using an SCR container model.
 
@@ -143,15 +145,15 @@ Score a scenario using an SCR container model.
 
 **Example:**
 ```
-scr-score url="loan" scenario="age=45, income=60000"
-scr-score url="https://scr-host/models/loan" scenario={age:45, income:60000}
+sas-score-scr-score url="loan" scenario="age=45, income=60000"
+sas-score-scr-score url="https://scr-host/models/loan" scenario={age:45, income:60000}
 ```
 
 ---
 
 ## Library Management
 
-### list-libraries
+### sas-score-list-libraries
 
 Enumerate CAS or SAS libraries.
 
@@ -176,7 +178,7 @@ show me 25 cas libraries
 
 ---
 
-### find-library
+### sas-score-find-library
 
 Locate a specific CAS or SAS library.
 
@@ -199,7 +201,7 @@ find library sasuser in sas
 
 ## Table Operations
 
-### list-tables
+### sas-score-list-tables
 
 Enumerate tables within a specific CAS or SAS library.
 
@@ -222,7 +224,7 @@ show 25 tables in sashelp
 
 ---
 
-### find-table
+### sas-score-find-table
 
 Locate a table in a specified library.
 
@@ -243,7 +245,7 @@ find table cars in sashelp in sas
 
 ---
 
-### table-describe
+### sas-score-table-describe
 
 Return metadata about a table including columns, types, and statistics.
 
@@ -262,13 +264,13 @@ Return metadata about a table including columns, types, and statistics.
 
 **Example:**
 ```
-table-describe table=cars lib=Public
+sas-score-table-describe table=cars lib=Public
 describe table air in lib sashelp on sas server
 ```
 
 ---
 
-### read-table
+### sas-score-read-table
 
 Retrieve rows from a table in a CAS or SAS library.
 
@@ -297,7 +299,7 @@ read row 15 from employees in mylib on sas
 
 ---
 
-### sas-query
+### sas-score-sas-query
 
 Execute SQL queries on SAS tables using PROC SQL.
 
@@ -314,15 +316,15 @@ Execute SQL queries on SAS tables using PROC SQL.
 
 **Example:**
 ```
-sasquery table=mylib.clm_dental query="Total paid amount, unique patients by procedure code"
-sasquery table=mylib.students query="How many students in each year as percentage"
+sas-score-sas-query table=mylib.clm_dental query="Total paid amount, unique patients by procedure code"
+sas-score-sas-query table=mylib.students query="How many students in each year as percentage"
 ```
 
 ---
 
-## Job Management
+## Jobs Model
 
-### list-jobs
+### sas-score-list-jobs
 
 Enumerate SAS Viya job assets.
 
@@ -344,7 +346,7 @@ list 25 jobs
 
 ---
 
-### find-job
+### sas-score-find-job
 
 Locate a specific SAS Viya job.
 
@@ -363,7 +365,7 @@ find job cars_job_v4
 
 ---
 
-### score-job
+### sas-score-job-score
 
 Execute a job on a SAS Viya server.
 
@@ -376,14 +378,15 @@ Execute a job on a SAS Viya server.
 
 **Example:**
 ```
-run job xyz param1=10,param2=val2
-score-job myjob scenario a=10,b=20
-job myjob scenario a=10,b=20
+sas-score-job-score xyz param1=10,param2=val2
+sas-score-job-score myjob scenario a=10,b=20
 ```
 
 ---
 
-### list-jobdefs
+## Jobdef Models
+
+### sas-score-list-jobdefs
 
 Enumerate SAS Viya job definition assets.
 
@@ -404,7 +407,7 @@ list 25 jobdefs
 
 ---
 
-### find-jobdef
+### sas-score-find-jobdef
 
 Locate a specific job definition.
 
@@ -422,7 +425,7 @@ find jobdef metricsRefresh
 
 ---
 
-### score-jobdef
+### sas-score-jobdef-score
 
 Execute a job definition on a SAS Viya server.
 
@@ -435,15 +438,15 @@ Execute a job definition on a SAS Viya server.
 
 **Example:**
 ```
-score-jobdef xyz param1=10,param2=val2
-jobdef myjobdef scenario a=10,b=20
+sas-score-jobdef-score xyz param1=10,param2=val2
+sas-score-jobdef-score myjobdef scenario a=10,b=20
 ```
 
 ---
 
-## Program Execution
+## Program Models
 
-### score-program
+### sas-score-program-score
 
 Execute arbitrary SAS code or stored programs on a SAS Viya server.
 
@@ -461,15 +464,17 @@ Execute arbitrary SAS code or stored programs on a SAS Viya server.
 
 **Example:**
 ```
-run program "data a; x=1; run;"
-program "data work.a; x=1; run;" output=a limit=50
-run program sample folder=/Public/models output=A limit=50
-program sample folder=/Public/models scenario="name='John', age=45" output=a
+sas-score-program-score "data a; x=1; run;"
+sas-score-program-score "data work.a; x=1; run;" output=a limit=50
+sas-score-program-score sample folder=/Public/models output=A limit=50
+sas-score-program-score sample folder=/Public/models scenario="name='John', age=45" output=a
 ```
 
 ---
 
-### score-macro
+## Macro Models
+
+### sas-score-macro-score
 
 Submit and execute a SAS macro on a SAS Viya server.
 
@@ -483,15 +488,15 @@ Submit and execute a SAS macro on a SAS Viya server.
 
 **Example:**
 ```
-run macro abc with scenario x=1, y=2
-run macro summarize with scenario %let x=1; %let y=2;
+sas-score-macro-score abc with scenario x=1, y=2
+sas-score-macro-score summarize with scenario %let x=1; %let y=2;
 ```
 
 ---
 
 ## Context & Configuration
 
-### set-context
+### sas-score-set-context
 
 Set the CAS and SAS server contexts for subsequent tool calls.
 
@@ -508,9 +513,9 @@ Set the CAS and SAS server contexts for subsequent tool calls.
 
 **Example:**
 ```
-set-context cas=finance-cas-server
-set-context sas="SAS Studio Compute Context"
-set-context (returns current context)
+sas-score-set-context cas=finance-cas-server
+sas-score-set-context sas="SAS Studio Compute Context"
+sas-score-set-context (returns current context)
 ```
 ---
 
@@ -518,7 +523,7 @@ set-context (returns current context)
 
 Use this to verify that the mcp server is up and running.
 
-### deva-score
+### sas-score-deva-score
 
 Compute a numeric score based on two input values using the formula: (a + b) Ã— 42
 
@@ -535,8 +540,8 @@ Compute a numeric score based on two input values using the formula: (a + b) Ã�
 
 **Example:**
 ```
-deva-score a=5 b=10  // returns 630
-deva-score a=1 b=2   // returns 126
+sas-score-deva-score a=5 b=10  // returns 630
+sas-score-deva-score a=1 b=2   // returns 126
 ```
 
 ---
@@ -545,13 +550,15 @@ deva-score a=1 b=2   // returns 126
 
 | Category | Tool Count | Tools |
 |----------|-----------|-------|
-| **Model Management** | 6 | list-models, find-model, model-info, model-score, scr-describe, scr-score |
-| **Library Management** | 2 | list-libraries, find-library |
-| **Table Operations** | 5 | list-tables, find-table, table-describe, read-table, sas-query |
-| **Job Management** | 6 | list-jobs, find-job, job, list-jobdefs, find-jobdef, job-def |
-| **Program Execution** | 2 | score-program, score-macro |
-| **Context & Config** | 1 | set-context |
-| **Utilities** | 1 | deva-score |
+| **Model Management** | 6 | sas-score-list-mas, sas-score-find-mas, sas-score-mas-describe, sas-score-mas-score, sas-score-scr-describe, sas-score-scr-score |
+| **Library Management** | 2 | sas-score-list-libraries, sas-score-find-library |
+| **Table Operations** | 5 | sas-score-list-tables, sas-score-find-table, sas-score-table-describe, sas-score-read-table, sas-score-sas-query |
+| **Jobs Model** | 3 | sas-score-list-jobs, sas-score-find-job, sas-score-job-score |
+| **Jobdef Models** | 3 | sas-score-list-jobdefs, sas-score-find-jobdef, sas-score-jobdef-score |
+| **Program Models** | 1 | sas-score-program-score |
+| **Macro Models** | 1 | sas-score-macro-score |
+| **Context & Config** | 1 | sas-score-set-context |
+| **Utilities** | 1 | sas-score-deva-score |
 | **Total** | **24** | |
 
 ---
@@ -590,7 +597,7 @@ Tools accepting scenarios support multiple formats:
 
 - All tools are designed to work with SAS Viya environments
 - Authentication and connectivity are handled by the MCP server configuration
-- Tools are stateless unless context is explicitly set using set-context
+- Tools are stateless unless context is explicitly set using sas-score-set-context
 - Error handling returns structured error objects from the backend
 - Case sensitivity varies by backend (library/table names may be case-insensitive)
 
