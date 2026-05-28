@@ -30,7 +30,9 @@
       "Bash(python3 -c \"from PIL import Image, ImageDraw, ImageFont; print\\('Pillow OK'\\)\")",
       "Bash(python3 -c \"import PIL; print\\(PIL.__version__\\)\")",
       "Bash(grep -v \"macro-score\\\\`\")",
-      "Bash(python3 render-slides.py)"
+      "Bash(python3 render-slides.py)",
+      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\src\\\\toolSet\" -File)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.skills\\\\\" -Force | Select-Object FullName | Sort-Object FullName)"
     ]
   }
 }

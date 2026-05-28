@@ -20,6 +20,7 @@ intents:
   describe:
     parse:
       name: "$name"
+    # SCR: skip find-* verification; describe directly
     exec:
       tool: "sas-score-scr-describe"
       args:

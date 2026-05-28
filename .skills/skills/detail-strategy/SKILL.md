@@ -71,7 +71,7 @@ If verification fails, inform the user and ask for additional details or correct
 ```
 
 sas-score-mas-describe({
-  name: "<model name>"
+  model: "<model name>"
 })
 ```
 
@@ -86,7 +86,7 @@ sas-score-mas-describe({
 User: "What inputs does mas model churnRisk need?"
 
 1. Find: sas-score-find-mas({ name: "churnRisk" })
-2. Get info: sas-score-mas-describe({ name: "churnRisk" })
+2. Get info: sas-score-mas-describe({ model: "churnRisk" })
 3. Return: { inputs: [...], outputs: [...], description: "..." }
 ```
 

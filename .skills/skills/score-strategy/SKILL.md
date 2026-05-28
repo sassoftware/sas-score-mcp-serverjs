@@ -1,7 +1,7 @@
 ---
 name: score-strategy
 description: >
-  Unified scoring workflow. Handles all model types: MAS, SCR, Job, JobDef, SAS Program, and CAS Program.
+  Unified scoring workflow. Handles all model types: MAS, SCR, Job, JobDef, SAS Program, CAS Program, and Macro.
   Also handles combined read+score (table rows) scenarios.
   Always verify resources before scoring (except SCR and programs).
 ---
@@ -48,6 +48,7 @@ Verify model → score with provided input values.
 | SCR | `sas-score-scr-score({ name, scenario })` |
 | Program | `sas-score-program-score({ src, scenario, folder, output, limit })` |
 | CAS Program | `sas-score-cas-program-score({ src, scenario, folder, output, limit })` |
+| Macro | `sas-score-macro-score({ macro, scenario })` |
 
 ## Table Row Scoring
 

@@ -26,11 +26,12 @@ All of the following are treated as **models** that can be scored:
 - **JobDef** (`.jobdef`) — SAS Viya Job Definition model: `sas-score-jobdef-score`
 - **Program** (`.sas`) — SAS Program model: `sas-score-program-score`
 - **CAS Program** (`.casl`) — CASL Program model: `sas-score-cas-program-score`
+- **Macro** — SAS macro by name: `sas-score-macro-score`
 
 ## Canonical tool mappings (short)
 - Find: `sas-score-find-library`, `sas-score-find-table`, `sas-score-find-mas`, `sas-score-find-job`, `sas-score-find-jobdef`
 - Read / Query: `sas-score-read-table`, `sas-score-sas-query`
-- Score models: `sas-score-mas-score`, `sas-score-scr-score`, `sas-score-job-score`, `sas-score-jobdef-score`, `sas-score-program-score`, `sas-score-cas-program-score`
+- Score models: `sas-score-mas-score`, `sas-score-scr-score`, `sas-score-job-score`, `sas-score-jobdef-score`, `sas-score-program-score`, `sas-score-cas-program-score`, `sas-score-macro-score`
 - List: `sas-score-list-libraries`, `sas-score-list-tables`, `sas-score-list-mas`, `sas-score-list-jobs`, `sas-score-list-jobdefs`
 - Detail: `sas-score-mas-describe`, `sas-score-job-describe`, `sas-score-jobdef-describe`, `sas-score-scr-describe`, `sas-score-table-describe`
 

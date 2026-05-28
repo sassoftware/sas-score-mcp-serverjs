@@ -1,6 +1,6 @@
 ---
 resource: "program"
-description: "Decision tree for SAS program and CAS program model execution"
+description: "Decision tree for SAS program, CAS program, and macro model execution"
 intents:
   score:
     parse:
