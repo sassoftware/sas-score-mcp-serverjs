@@ -30,7 +30,7 @@ Short form: if `b ∈ {mas, job, jobdef, scr, sas, casl}` → model type; anythi
 
  Step 1: If table is specified as the source of the data, use read-strategy to read the data
  Step 2: Always verify the model exists with find-resources skill before attempting to score
-         (Exception: SCR models and programs may be scored directly without pre-verification)
+         (Exception: programs may be scored directly without pre-verification)
  Step 3: 
   - If Step 1 and Step 2 are successful, score the data read from the table with the appropriate scoring tool based on model type.
     - Cap batch scoring at 10 rows by default; ask user before proceeding with larger batches.

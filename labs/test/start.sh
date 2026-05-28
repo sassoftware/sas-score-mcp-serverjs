@@ -1,1 +1,0 @@
-npx @sassoftware/sas-score-mcp-serverjs@test 
