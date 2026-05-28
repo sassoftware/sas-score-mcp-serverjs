@@ -63,7 +63,8 @@ Verify model → score with provided input values.
 **Flow**:
 1. Find model →  use find-resources skill
 2. Read table → use read-strategy skill
-3. Score each row with the appropriate scoring tool
+3. Score each row with the appropriate scoring tool. 
+  - The tools accept a single row as input, so the skill will loop over rows and call the tool for each one.
 4. Return rows with predictions appended
 
 ## Error Handling

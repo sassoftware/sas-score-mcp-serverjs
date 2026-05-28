@@ -440,6 +440,7 @@ Options:
     PORT                          ${appEnvBase.PORT}
     HTTPS                         ${appEnvBase.contexts.HTTPS}
     CLIENT                        ${appEnvBase.mcpClient}
+    AGENT                         ${appEnvBase.agent}
 
   Authentication options:
     AUTHFLOW                      ${process.env.AUTHFLOW}  

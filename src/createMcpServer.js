@@ -89,6 +89,7 @@ async function createMcpServer(cache, _appContext) {
     let r = mcpServer.registerTool(toolName, config, toolHandler);
     toolNames.push(toolName);
   });
+  console.error(`[Note] Tool Descriptions - Agent Mode: ${_appContext.agent}`);
   console.error(`[Note] Registered ${toolSet.length} tools: ${toolNames}`);
   cache.set("mcpServer", mcpServer);
   return mcpServer;

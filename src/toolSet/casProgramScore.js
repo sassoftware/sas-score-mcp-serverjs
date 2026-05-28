@@ -8,6 +8,7 @@ import _submitCode from '../toolHelpers/_submitCode.js';
 
 function casProgramScore(_appContext) {
   const isAgent = _appContext && _appContext.agent;
+
   let description = isAgent ? `
 cas-program-score — execute a CAS program model.
 PARAMS: src (string, required), folder (string, optional), scenario (string|object, optional), output (string, optional), limit (number, optional)
