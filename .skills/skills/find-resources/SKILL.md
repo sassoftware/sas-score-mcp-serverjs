@@ -29,6 +29,8 @@ Parse any `a.b` notation before choosing a find tool:
 
 **Tool**: `sas-score-find-table({ lib, name, server })`
 
+**GATE** When verifying a table, call `sas-score-find-table` directly with `lib` and `name` — **never** call `sas-score-find-library` or any library-check tool first. The find-table tool already validates both the library and the table in one call. Skipping the library check is intentional and required.
+
 **Logic**:
 1. If server specified, look there first -> `sas-score-find-table({ lib, name, server })`
   - If not found, return error immediately (do not attempt other server)'

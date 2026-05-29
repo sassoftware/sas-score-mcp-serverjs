@@ -8,7 +8,7 @@ description: >
 
 ## Rules
 
-- Verify the table exists first using find-resources strategy.
+- Verify the table exists first using find-resources strategy. Call `sas-score-find-table` directly — **do not** check the library separately before calling find-table.
 - Use `sas-score-read-table` for **all** row reads, including filtered reads with a WHERE clause.
 - Use `sas-score-sas-query` **only** when the request requires SQL aggregation (COUNT, SUM, AVG, MIN, MAX), GROUP BY, JOIN, or computed columns.
 - A WHERE clause alone is not a reason to use sas-query — use read-table with the `where` parameter.
