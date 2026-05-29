@@ -9,17 +9,29 @@
   },
   "repository": "https://github.com/sassoftware/sas-score-mcp-serverjs",
   "license": "Apache-2.0",
-  "keywords": ["sas", "viya", "scoring", "mcp", "analytics"],
+  "keywords": [
+    "sas",
+    "viya",
+    "scoring",
+    "mcp",
+    "analytics"
+  ],
   "skills": "./skills/",
-  "agents": ["./agents/sas-score-mcp-serverjs-agent.md"],
+  "agents": [
+    "./agents/sas-score-mcp-serverjs-agent.md"
+  ],
   "mcpServers": {
     "sas-score-mcp-serverjs": {
       "command": "npx",
-      "args": ["-y", "@sassoftware/sas-score-mcp-serverjs-agent"],
+      "args": [
+        "-y",
+        "@sassoftware/sas-score-mcp-serverjs"
+      ],
       "env": {
         "VIYA_SERVER": "${VIYA_SERVER}",
-        "AUTHFLOW": "${AUTHFLOW:-oauth}",
-        "CLIENTID": "${CLIENTID:-vscodemcp}"
+        "AUTHFLOW": "${AUTHFLOW:-sascli}",
+        "CLIENTID": "${CLIENTID:-vscodemcp}",
+        "AGENT": "${AGENT:-TRUE}"
       }
     }
   },
@@ -34,13 +46,14 @@
       "type": "string",
       "title": "Auth flow",
       "description": "Authentication flow: oauth, code, sascli, token, or bearer",
-      "default": "oauth"
+      "default": "sascli"
     },
-    "CLIENTID": {
-      "type": "string",
-      "title": "OAuth client ID",
-      "description": "OAuth client ID registered on the Viya server",
-      "default": "vscodemcp"
+
+      "AGENT": {
+        "type": "string",
+        "title": "Agent mode",
+        "description": "If TRUE, the skills must be deployed",
+        "default": "TRUE"
+      }
     }
   }
-}
