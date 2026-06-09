@@ -5,7 +5,6 @@
 
 import _listJobdefs from './_listJobdefs.js';  
 async function _findJobdef(params) {
-    params.tool = 'find';
     return  await _listJobdefs(params);
 }
 export default _findJobdef;

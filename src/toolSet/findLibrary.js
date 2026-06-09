@@ -8,7 +8,7 @@ function findLibrary(_appContext) {
   const isAgent = _appContext && _appContext.agent;
   let description = isAgent ? `
 find-library — verify a library exists.
-PARAMS: name (string, required), server ('cas'|'sas', optional)
+PARAMS: name (string, required), server ('cas'|'sas', required)
 RETURNS: library metadata if found, error if not found
 ` : `
 find-library â€” locate a specific CAS or SAS library.
@@ -18,7 +18,7 @@ DO NOT USE for: list libraries (use ${_appContext.brand}-list-libraries), find t
 
 PARAMETERS
 - name: string (required) â€” library/caslib name; if multiple supplied, use first
-- server: 'cas' | 'sas' (default: 'cas') â€” target environment
+- server: 'cas' | 'sas' (required) â€” target environment
 
 ROUTING RULES
 - "find lib <name>" â†’ { name: "<name>", server: "cas" }

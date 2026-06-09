@@ -11,7 +11,7 @@ function findTable(_appContext) {
   const isAgent = _appContext && _appContext.agent;
   let description = isAgent ? `
 find-table — verify a table exists in a library.
-PARAMS: lib (string, required), name (string, required), server ('cas'|'sas', optional)
+PARAMS: lib (string, required), name (string, required), server ('cas'|'sas', required)
 RETURNS: table metadata if found, error if not found
 ` : `
 find-table â€” locate a specific table in a CAS or SAS library.
@@ -22,7 +22,7 @@ DO NOT USE for: list tables (use ${_appContext.brand}-list-tables), table schema
 PARAMETERS
 - lib: string (required) â€” library name (e.g., 'Public', 'sashelp')
 - name: string (required) â€” table name to locate
-- server: 'cas' | 'sas' . If not specified set it to 'cas' â€” target environment
+- server: 'cas' | 'sas' (required) â€” target environment
 
 ROUTING RULES
 - "find table <name> in <lib>" â†’ { lib: "<lib>", name: "<name>", server: "cas" }

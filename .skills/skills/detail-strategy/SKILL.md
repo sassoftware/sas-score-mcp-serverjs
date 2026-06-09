@@ -18,7 +18,7 @@ If the specified resource is ambiguous, ask the user for clarification (e.g. "Ar
 Verification rules
 - Always verify the target resource exists using the appropriate `find-*` tool before attempting retrieval, except for SCR models (see Exceptions below).
 - For tables, determine server (CAS vs SAS) during verification; if ambiguous, ask the user for the full `lib.table` or server.
-- For models, strip suffixes such as `.mas`, `.job`, `.jobdef` or `.scr` before lookup to avoid lookup failures.
+- For models, strip suffixes such as `.mas`, `.job`, `.jobdef`,`.scr`, `.cas`,  before lookup to avoid lookup failures.
 
 Defaults & exceptions
 - Default model type: MAS when the user says `model X` without specifying a type.
@@ -215,14 +215,6 @@ SAS programs are treated as models — they accept parameters via `scenario` and
 
 ---
 
-### Option G: CAS Program Model Details
-
-CAS programs are treated as models — they accept CASL parameters via `scenario` and produce CAS results.
-
-**Trigger phrases**: "describe cas program X", "what parameters does cas program X take",
-"cas program model X info", "describe X.casl"
-
-**Note**: CAS programs do not have a dedicated `describe` tool. If the program is wrapped in a JobDef, use `sas-score-jobdef-describe`. Otherwise ask the user for parameter documentation.
 
 ## Decision Tree
 

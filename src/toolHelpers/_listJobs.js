@@ -6,7 +6,7 @@
 import restaf from '@sassoftware/restaf';
 
 async function _listJobs(params) {
-  let { limit, start, name, _appContext } = params;
+  let { limit, start, name, tool, _appContext } = params;
 
   let store = restaf.initStore(_appContext.storeConfig);
   let msg = await store.logon(_appContext.logonPayload);
@@ -33,21 +33,31 @@ async function _listJobs(params) {
     }
 
     let names = {};
-    
+
     jobList.itemsList().map((id, n) => {
       let jname = jobList.items(id, 'data', 'jobRequest', 'name');
-      
+
       if (names[jname] == null) {
         let value = jobList.items(id, 'data', 'jobRequest', 'jobDefinition', 'parameters');
-        names[jname] = {parameters: (value == null) ? {} : value.toJS() };
+        names[jname] = { parameters: (value == null) ? {} : value.toJS() };
       }
     });
     console.error('parameters', JSON.stringify(names, null, 2));
-    let response  = {jobs: Object.keys(names)};
+    let response = { jobs: Object.keys(names) };
     console.error('response', JSON.stringify(response, null, 2));
 
-    if (name != null && params.tool === 'find') {
-      response = { job:[name] };
+    if (name != null) {
+      if (tool === 'find') {
+        response = { job: [name] };
+      } else if (tool === 'describe') {
+        let p = [];
+        names[name].parameters.map((v, k) => {
+          if (v.name.startsWith('_') === false) {
+            p.push(v);
+          }
+        });
+        response = { describe: p };
+      };
     }
     return {
       content: [{ type: 'text', text: JSON.stringify(response) }],

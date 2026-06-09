@@ -32,7 +32,20 @@
       "Bash(grep -v \"macro-score\\\\`\")",
       "Bash(python3 render-slides.py)",
       "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\src\\\\toolSet\" -File)",
-      "Bash(Get-ChildItem -Recurse \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.skills\\\\\" -Force | Select-Object FullName | Sort-Object FullName)"
+      "Bash(Get-ChildItem -Recurse \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\.skills\\\\\" -Force | Select-Object FullName | Sort-Object FullName)",
+      "Bash(python -m markitdown docs/template.pptx)",
+      "Bash(python -m markitdown docs/sas-score-mcp-workflow.pptx)",
+      "Bash(python \"C:\\\\Users\\\\kumar\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\a35345ae-86f7-43a0-afe2-85da30bf47c6\\\\b9cfb122-c9bc-41c4-9ffc-5a498b106405\\\\skills\\\\pptx\\\\scripts\\\\office\\\\unpack.py\" docs/template.pptx docs/unpacked-template/)",
+      "Bash(python -c \"import sys; import xml.etree.ElementTree as ET; tree=ET.parse\\(sys.stdin\\); root=tree.getroot\\(\\); [print\\(ET.tostring\\(el,encoding='unicode'\\)\\) for el in root.iter\\(\\) if 'clr' in el.tag.lower\\(\\) or 'color' in el.tag.lower\\(\\) or 'font' in el.tag.lower\\(\\)]\")",
+      "Bash(cat \"C:\\\\Users\\\\kumar\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\a35345ae-86f7-43a0-afe2-85da30bf47c6\\\\b9cfb122-c9bc-41c4-9ffc-5a498b106405\\\\skills\\\\pptx\\\\pptxgenjs.md\" 2>&1 | head -80)",
+      "Bash(node gen-presentations.js)",
+      "Bash(node --input-type=commonjs)",
+      "Bash(python -c \"from pptx import Presentation; p=Presentation\\('C:/dev/github/sas-score-mcp-serverjs/docs/sas-score-mcp-overview.pptx'\\); print\\(len\\(p.slides\\), 'slides'\\); [print\\(f'Slide {i+1}:', [sh.text[:60] for sh in sl.shapes if hasattr\\(sh,'text'\\) and sh.text.strip\\(\\)][:4]\\) for i,sl in enumerate\\(p.slides\\)]\")",
+      "Bash(python -m markitdown \"C:/dev/github/sas-score-mcp-serverjs/docs/sas-score-mcp-overview.pptx\")",
+      "Bash(python -m markitdown \"C:/dev/github/sas-score-mcp-serverjs/docs/sas-score-mcp-workflow.pptx\")",
+      "Bash(python -m markitdown \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\docs\\\\sas-score-mcp-workflow.pptx\")",
+      "Bash(python -m markitdown \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\docs\\\\sas-score-mcp-overview.pptx\")",
+      "Bash(python -m markitdown sas-score-mcp-overview.pptx)"
     ]
   }
 }

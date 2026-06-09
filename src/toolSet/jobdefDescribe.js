@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { z } from 'zod';
-import _listJobdefs from '../toolHelpers/_listJobdefs.js';
+import _findJobdef from '../toolHelpers/_findJobdef.js';
 function jobdefDescribe(_appContext) {
   const isAgent = _appContext && _appContext.agent;
   let description = isAgent ? `
@@ -52,7 +52,8 @@ Returns job metadata
       if (rest.name != null && rest.name.endsWith('.jobdef')) {
         rest.name = rest.name.slice(0, -7);
       }
-      let r = await _listJobdefs(rest);
+      rest.tool = 'describe';
+      let r = await _findJobdef(rest);
       return r;
     }
   }

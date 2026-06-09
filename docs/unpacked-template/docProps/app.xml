@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <Template/>
+  <Application>Microsoft Office PowerPoint</Application>
+  <PresentationFormat>Custom</PresentationFormat>
+  <Slides>25</Slides>
+  <Notes>11</Notes>
+  <HiddenSlides>1</HiddenSlides>
+  <ScaleCrop>false</ScaleCrop>
+  <HeadingPairs>
+    <vt:vector size="4" baseType="variant">
+      <vt:variant>
+        <vt:lpstr>Theme</vt:lpstr>
+      </vt:variant>
+      <vt:variant>
+        <vt:i4>1</vt:i4>
+      </vt:variant>
+      <vt:variant>
+        <vt:lpstr>Slide Titles</vt:lpstr>
+      </vt:variant>
+      <vt:variant>
+        <vt:i4>25</vt:i4>
+      </vt:variant>
+    </vt:vector>
+  </HeadingPairs>
+  <TitlesOfParts>
+    <vt:vector size="26" baseType="lpstr">
+      <vt:lpstr>SAS - EXTERNAL</vt:lpstr>
+      <vt:lpstr>Welcome slide</vt:lpstr>
+      <vt:lpstr>Open Source Community of Practice</vt:lpstr>
+      <vt:lpstr>Title of upcoming presentation</vt:lpstr>
+      <vt:lpstr>Open source AI tools from SAS</vt:lpstr>
+      <vt:lpstr>Session Overview</vt:lpstr>
+      <vt:lpstr>Meet today&#x2019;s projects</vt:lpstr>
+      <vt:lpstr>SAS MCP Server</vt:lpstr>
+      <vt:lpstr>SAS Score MCP Server JS</vt:lpstr>
+      <vt:lpstr>SAS MAS Scorer</vt:lpstr>
+      <vt:lpstr>SAS Agentic AI Accelerator</vt:lpstr>
+      <vt:lpstr>Let&#x2019;s start the show.</vt:lpstr>
+      <vt:lpstr>SAS MCP Server</vt:lpstr>
+      <vt:lpstr>SAS MCP Server</vt:lpstr>
+      <vt:lpstr>Demo</vt:lpstr>
+      <vt:lpstr>SAS Score MCP Server JS</vt:lpstr>
+      <vt:lpstr>SAS Score MCP Server JS</vt:lpstr>
+      <vt:lpstr>Demo</vt:lpstr>
+      <vt:lpstr>SAS MAS Scorer</vt:lpstr>
+      <vt:lpstr>SAS MAS Scorer</vt:lpstr>
+      <vt:lpstr>Demo</vt:lpstr>
+      <vt:lpstr>SAS Agentic AI Accelerator</vt:lpstr>
+      <vt:lpstr>SAS Agentic AI Accelerator</vt:lpstr>
+      <vt:lpstr>Demo</vt:lpstr>
+      <vt:lpstr>Questions</vt:lpstr>
+      <vt:lpstr>Thanks.</vt:lpstr>
+    </vt:vector>
+  </TitlesOfParts>
+  <Company/>
+  <LinksUpToDate>false</LinksUpToDate>
+  <SharedDoc>false</SharedDoc>
+  <HyperlinksChanged>false</HyperlinksChanged>
+  <AppVersion>16.0000</AppVersion>
+</Properties>

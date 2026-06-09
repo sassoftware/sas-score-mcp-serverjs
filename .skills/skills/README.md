@@ -13,30 +13,39 @@ This folder contains simplified, consolidated strategies for working with SAS Vi
    - Step 2: Execute the request
    - Step 3: Merge results
 
-2. **find-resources** — Resource verification strategy
+2. **find-library-server** — Library existence and server verification
+   - Verifies a library exists in CAS or SAS
+   - Returns confirmed `{ lib, server }` pair
+   - Called by find-resources and list-tables before any library-scoped operation
+
+3. **find-resources** — Resource verification strategy
    - How to find/verify libraries, tables, models, jobs, jobdefs
+   - Delegates library checks to find-library-server
    - Server determination logic
-   - Default libraries reference
 
-3. **list-resource** — Resource listing strategy
-   - How to list/browse libraries, tables, models, jobs, jobdefs
-   - Pagination parameters and strategy
-   - Server determination for tables
-   - Differences between find (verify) vs list (discover)
+3. **list-library** — List SAS Viya libraries
+   - Calls sas-score-list-libraries with server parameter
 
-4. **read-strategy** — Data reading strategy
+4. **list-tables** — List tables in a library
+   - Verifies library exists (CAS first, then SAS) before listing
+   - Passes confirmed lib and server to sas-score-list-tables
+
+5. **list-mas-job-jobdef** — List MAS models, Jobs, and JobDefs
+   - Routes to sas-score-list-mas, sas-score-list-jobs, or sas-score-list-jobdefs
+
+6. **read-strategy** — Data reading strategy
    - Raw row reads (sas-score-read-table)
    - Analytical queries (sas-score-sas-query)
    - Decision tree for choosing the right tool
 
-5. **score-strategy** — Scoring workflow
+7. **score-strategy** — Scoring workflow
    - All model types: MAS, SCR, Job, JobDef, Program, CAS Program
    - Inline scenarios vs table rows
    - Result formatting and merging
 
 ### Agent
 
-6. **sas-score-mcp-serverjs-agent** — Main agent instructions
+8. **sas-score-mcp-serverjs-agent** — Main agent instructions
    - Orchestration logic
    - Decision trees
    - Implementation checklist
@@ -115,7 +124,9 @@ If you were using the old `.skills` folder:
 | Old Skill | New Location |
 |---|---|
 | sas-find-resources-strategy | FIND-RESOURCE.md |
-| sas-list-resource-strategy | REQUEST-ROUTING.md + list-* tools |
+| sas-list-resource-strategy (libraries) | list-library/SKILL.md |
+| sas-list-resource-strategy (tables) | list-tables/SKILL.md |
+| sas-list-resource-strategy (models/jobs) | list-mas-job-jobdef/SKILL.md |
 | sas-find-library-smart | FIND-RESOURCE.md (library section) |
 | sas-list-tables-smart | READ-STRATEGY.md + list-tables tool |
 | sas-read-strategy | READ-STRATEGY.md |
@@ -145,8 +156,11 @@ The `.skills/` directory (one level up from here) is a Claude Code plugin. It bu
 │   └── sas-score-mcp-serverjs-agent.md
 └── skills/
     ├── request-routing/SKILL.md
+    ├── find-library-server/SKILL.md
     ├── find-resources/SKILL.md
-    ├── list-resource/SKILL.md
+    ├── list-library/SKILL.md
+    ├── list-tables/SKILL.md
+    ├── list-mas-job-jobdef/SKILL.md
     ├── read-strategy/SKILL.md
     ├── score-strategy/SKILL.md
     └── detail-strategy/SKILL.md

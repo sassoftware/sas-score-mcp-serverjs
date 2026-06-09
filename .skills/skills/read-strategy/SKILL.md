@@ -6,12 +6,34 @@ description: >
 
 # Read Table Strategy
 
-## Rules
+## Mandatory two-step sequence — never skip or reorder
 
-- Verify the table exists first using find-resources strategy. Call `sas-score-find-table` directly — **do not** check the library separately before calling find-table.
-- Use `sas-score-read-table` for **all** row reads, including filtered reads with a WHERE clause.
-- Use `sas-score-sas-query` **only** when the request requires SQL aggregation (COUNT, SUM, AVG, MIN, MAX), GROUP BY, JOIN, or computed columns.
-- A WHERE clause alone is not a reason to use sas-query — use read-table with the `where` parameter.
+**Step 1 and Step 2 are required for every read request. Step 2 must never run before Step 1 succeeds.**
+
+---
+
+### Step 1 — Verify the table exists and resolve its server (REQUIRED)
+
+**GATE**: 
+
+Do not check for the existence of the library separately. Follow the workflow below. The sas-score-find-table tool will check for the existence of the table in the specified library and server, which implicitly verifies the library as well.
+  
+## Workflow to read a table
+
+### Step 1 — Verify the table exists and resolve its server (REQUIRED)
+1. Call `sas-score-find-table({ lib, name: table, server: "cas" })`
+   - ✅ Found → confirmed `lib` = lib as given, confirmed `server` = `"cas"` → go to Step 2
+   - ❌ Not found → call `sas-score-find-table({ lib: lib.toUpperCase(), name: table, server: "sas" })`
+     - ✅ Found → confirmed `lib` = uppercased lib, confirmed `server` = `"sas"` → go to Step 2
+     - ❌ Not found in either → **stop**. Tell the user the table was not found.
+
+
+### Step 2 — Read the table
+
+Use the confirmed `lib` and `server` from Step 1. Never guess or default the server.
+
+**Use `sas-score-read-table`** for all row reads, including filtered reads with a WHERE clause.
+**Use `sas-score-sas-query`** only when the request requires SQL aggregation (COUNT, SUM, AVG, MIN, MAX), GROUP BY, JOIN, or computed columns. A WHERE clause alone is not a reason to use sas-query.
 
 ## Read Table (`sas-score-read-table`)
 
@@ -32,7 +54,7 @@ description: >
 
 **Dotted format**: `"lib.table"` → `lib: "lib"`, `table: "table"` (split on first dot).
 
-**Parameters**: `lib`, `table`, `server` (from find-resources), `start`, `limit`, `where`
+**Parameters**: `lib`, `table`, `server` (confirmed from Step 1 — required), `start`, `limit`, `where`
 
 ## SQL Query (`sas-score-sas-query`)
 

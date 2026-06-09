@@ -1,8 +1,8 @@
 ﻿---
 name: request-routing
 description: >
-  Route SAS Viya requests for finding resources, reading tables, running queries,
-  scoring MAS/job/jobdef/SCR models, listing resources, and describing metadata.
+  Route SAS Viya requests for finding resources,reading tables, running queries,
+  scoring MAS/job/jobdef/SCR/cas models, listing resources, and describing metadata.
   Use when the task involves choosing the correct SAS Viya tool or deciding whether
   to verify, read, query, score, list, or describe a resource.
 ---
@@ -21,8 +21,7 @@ When any resource reference appears in the form `a.b`, parse `b` to determine th
 | `job` | Job model | name = `a` |
 | `jobdef` | JobDef model | name = `a` |
 | `scr` | SCR model | name = `a` |
-| `sas` | SAS program model | program name = `a` |
-| `casl` | CAS program model | program name = `a` |
+| `cas` | CAS model in a cas table| name = `a` |
 | **anything else** | **Table** | lib = `a`, table = `b` |
 
 **Rule**: if `b` is not one of `{mas, job, jobdef, scr, sas, casl}`, treat `a.b` as a table reference where `a` is the library name and `b` is the table name.
@@ -48,7 +47,7 @@ Classification
 | Find resource | "find", "does X exist", "locate", "verify" | Verify resource | `sas-score-find-library`, `sas-score-find-table`, `sas-score-find-mas`, `sas-score-find-job`, `sas-score-find-jobdef` |
 | Read / Query | "read", "show rows", "how many", "count", "average", "query" | Read / aggregate | `sas-score-read-table`, `sas-score-sas-query` |
 | Score | "score", "predict", "run model" | Score inputs | `sas-score-mas-score`, `sas-score-scr-score`, `sas-score-job-score`, `sas-score-jobdef-score`, `sas-score-program-score`, `sas-score-cas-program-score` |
-| List / Discover | "list", "show all", "browse" | List resources | `sas-score-list-*` tools (e.g., `sas-score-list-mas`, `sas-score-list-jobs`) |
+| List / Discover | "list", "show all", "browse" | List resources | Use **list-library** skill for libraries, **list-tables** skill for tables in a library, **list-mas-job-jobdef** skill for models/jobs/jobdefs |
 | Describe | "describe", "what inputs", "metadata" | Return metadata | `sas-score-*-describe` (mas/job/jobdef/scr/table) |
 
 Verification rules

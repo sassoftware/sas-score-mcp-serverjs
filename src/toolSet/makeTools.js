@@ -25,10 +25,9 @@ import scrScore from './scrScore.js';
 
 import devaScore from './devaScore.js';
 
-
-
 import programScore from './programScore.js';
 import casProgramScore from './casProgramScore.js';
+import casModelScore from './casModelScore.js';
 import macroScore from './macroScore.js';
 import jobScore from './jobScore.js';
 import listJobs from './listJobs.js';
@@ -68,6 +67,7 @@ function makeTools(_appContext) {
 
     programScore(_appContext),
     casProgramScore(_appContext),
+    casModelScore(_appContext),
     macroScore(_appContext),
 
     findJob(_appContext),
