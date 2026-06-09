@@ -1,8 +1,0 @@
----
-primitives:
-  parse-lib-table:
-    doc: "Split a lib.table reference into lib and table parts."
-  verify-resource:
-    doc: "Standardized wrapper for calling find-* tools and surfacing errors."
-  format-merge-prediction:
-    doc: "Primitive to merge prediction output into input rows."

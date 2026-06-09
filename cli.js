@@ -139,6 +139,7 @@ Options:
   MCP server options:
     -t, --mcptype <type>           MCP server type: http or stdio (default: http)
     -m, --mcphost <host>           MCP server host - can be remote URL - (default: http://localhost:8080)
+    --agent                 Enable agent mode (default: false) with a pre-configured set of skills based on the client specified
   
   Authentication options:
     -c, --clientid <id>            Client ID for oauth authentication(pkce preferred. default: vscodemcp)
@@ -204,7 +205,7 @@ process.env.AUTHFLOW = args.values.authflow || process.env.AUTHFLOW || 'oauth';
 process.env.MCPCLIENT = args.values.client || process.env.MCPCLIENT || 'github';
 process.env.VIYA_SERVER = args.values.viya || process.env.VIYA_SERVER;
 process.env.CLIENTID = args.values.clientid || process.env.CLIENTID || 'vscodemcp';
-process.env.CLIENTSECRET = null;
+process.env.CLIENTSECRET = args.values.clientid || process.env.CLIENTID || null;
 process.env.SAS_CLI_PROFILE = args.values.profile || process.env.SAS_CLI_PROFILE || 'Default';
 process.env.SAS_CLI_CONFIG = args.values.config || process.env.SAS_CLI_CONFIG || os.homedir(); // default to user home directory
 process.env.CASSERVER = args.values.casserver || process.env.CASSERVER || 'cas-shared-default';
@@ -275,6 +276,7 @@ const appEnvBase = {
   version: version,
   mcpType: mcpType,
   mcpClient: process.env.MCPCLIENT || 'github',
+  agent: (process.env.AGENT === 'TRUE') ? true : false,
   mcpHost: (process.env.MCPHOST == null) ? 'http://localhost:8080' : process.env.MCPHOST,
   brand: (process.env.BRAND == null) ? BRAND : process.env.BRAND,
   HTTPS: https,
@@ -438,6 +440,7 @@ Options:
     PORT                          ${appEnvBase.PORT}
     HTTPS                         ${appEnvBase.contexts.HTTPS}
     CLIENT                        ${appEnvBase.mcpClient}
+    AGENT                         ${appEnvBase.agent}
 
   Authentication options:
     AUTHFLOW                      ${process.env.AUTHFLOW}  

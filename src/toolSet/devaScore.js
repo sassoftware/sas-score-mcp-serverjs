@@ -5,8 +5,13 @@
 import { z } from 'zod';
 
 function devaScore(_appContext) {
+  const isAgent = _appContext && _appContext.agent;
 let brand = _appContext.brand + '-';
-    let description = `
+    let description = isAgent ? `
+deva-score — run a demonstration scoring calculation.
+PARAMS: a (number, required), b (number, required)
+RETURNS: computed result for a and b
+` : `
 deva-score — compute a numeric score based on two input values.
 
 USE when: calculate deva score, score these values, compute score for numbers
@@ -31,7 +36,7 @@ EXAMPLES
 
 NEGATIVE EXAMPLES (do not route here)
 - "Score this customer with credit model" (use ${brand}model-score)
-- "Calculate the mean of these values" (use ${brand}run-sas-program or ${brand}sas-query)
+- "Calculate the mean of these values" (use ${brand}program-score or ${brand}sas-query)
 - "Statistical analysis of numbers" (use ${brand}sas-query)
 
 RESPONSE

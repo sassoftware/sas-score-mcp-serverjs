@@ -1,4 +1,4 @@
-# SAS MCP Server Tools Reference
+﻿# SAS MCP Server Tools Reference
 
 ## Overview
 
@@ -11,8 +11,10 @@ All tools are registered as sas-score-<toolname>
 - [Model Management & Scoring](#model-management--scoring)
 - [Library Management](#library-management)
 - [Table Operations](#table-operations)
-- [Job Management](#job-management)
-- [Program Execution](#program-execution)
+- [Jobs Model](#jobs-model)
+- [Jobdef Models](#jobdef-models)
+- [Program Models](#program-models)
+- [Macro Models](#macro-models)
 - [Context & Configuration](#context--configuration)
 - [Utility Tools](#utility-tools)
 
@@ -20,7 +22,7 @@ All tools are registered as sas-score-<toolname>
 
 ## Model Management & Scoring
 
-### list-models
+### list-mas
 
 Enumerate models published to MAS (Model Aggregation Service).
 
@@ -42,7 +44,7 @@ list 25 models
 
 ---
 
-### find-model
+### find-mas
 
 Locate a specific model deployed to MAS.
 
@@ -61,7 +63,7 @@ find model myModel
 
 ---
 
-### model-info
+### mas-describe
 
 Retrieve detailed metadata for a deployed model including input/output variables, data types, and constraints.
 
@@ -80,12 +82,12 @@ Retrieve detailed metadata for a deployed model including input/output variables
 
 **Example:**
 ```
-model-info model=churnRisk
+mas-describe model=churnRisk
 ```
 
 ---
 
-### model-score
+### mas-score
 
 Score user-supplied scenario data using a MAS-published model.
 
@@ -105,13 +107,13 @@ Score user-supplied scenario data using a MAS-published model.
 
 **Example:**
 ```
-model-score model=mycoolmodel scenario={x:1,y:2}
-model-score model=cancer1 scenario="age=45, sex=M, tumor=stage2"
+mas-score model=mycoolmodel scenario={x:1,y:2}
+mas-score model=cancer1 scenario="age=45, sex=M, tumor=stage2"
 ```
 
 ---
 
-### scr-info
+### scr-describe
 
 Return input/output schema and metadata for an SCR (Score Code Runtime) model.
 
@@ -124,7 +126,7 @@ Return input/output schema and metadata for an SCR (Score Code Runtime) model.
 
 **Example:**
 ```
-scr-info name="https://scr-host/models/loan"
+scr-describe name="https://scr-host/models/loan"
 ```
 
 ---
@@ -138,7 +140,7 @@ Score a scenario using an SCR container model.
 - `scenario` (string | object | array, optional): Input values
 
 **Usage:**
-- Run scrInfo first to inspect expected inputs
+- Run scrDescribe first to inspect expected inputs
 - Omit scenario to get model metadata
 
 **Example:**
@@ -243,7 +245,7 @@ find table cars in sashelp in sas
 
 ---
 
-### table-info
+### table-describe
 
 Return metadata about a table including columns, types, and statistics.
 
@@ -262,7 +264,7 @@ Return metadata about a table including columns, types, and statistics.
 
 **Example:**
 ```
-table-info table=cars lib=Public
+table-describe table=cars lib=Public
 describe table air in lib sashelp on sas server
 ```
 
@@ -320,7 +322,7 @@ sasquery table=mylib.students query="How many students in each year as percentag
 
 ---
 
-## Job Management
+## Jobs Model
 
 ### list-jobs
 
@@ -363,7 +365,7 @@ find job cars_job_v4
 
 ---
 
-### run-job
+### job-score
 
 Execute a job on a SAS Viya server.
 
@@ -377,11 +379,13 @@ Execute a job on a SAS Viya server.
 **Example:**
 ```
 run job xyz param1=10,param2=val2
-run-job myjob scenario a=10,b=20
+job-score myjob scenario a=10,b=20
 job myjob scenario a=10,b=20
 ```
 
 ---
+
+## Jobdef Models
 
 ### list-jobdefs
 
@@ -422,7 +426,7 @@ find jobdef metricsRefresh
 
 ---
 
-### run-jobdef
+### jobdef-score
 
 Execute a job definition on a SAS Viya server.
 
@@ -435,15 +439,15 @@ Execute a job definition on a SAS Viya server.
 
 **Example:**
 ```
-run-jobdef xyz param1=10,param2=val2
+jobdef-score xyz param1=10,param2=val2
 jobdef myjobdef scenario a=10,b=20
 ```
 
 ---
 
-## Program Execution
+## Program Models
 
-### run-program
+### program-score
 
 Execute arbitrary SAS code or stored programs on a SAS Viya server.
 
@@ -469,7 +473,9 @@ program sample folder=/Public/models scenario="name='John', age=45" output=a
 
 ---
 
-### run-macro
+## Macro Models
+
+### macro-score
 
 Submit and execute a SAS macro on a SAS Viya server.
 
@@ -478,8 +484,8 @@ Submit and execute a SAS macro on a SAS Viya server.
 - `scenario` (string, optional): Parameters or SAS setup code
 
 **Scenario formats:**
-- Comma-separated: `"x=1, y=abc"` → converted to %let statements
-- Raw SAS: `"%let x=1; %let y=abc;"` → passed through unchanged
+- Comma-separated: `"x=1, y=abc"` â†’ converted to %let statements
+- Raw SAS: `"%let x=1; %let y=abc;"` â†’ passed through unchanged
 
 **Example:**
 ```
@@ -520,14 +526,14 @@ Use this to verify that the mcp server is up and running.
 
 ### deva-score
 
-Compute a numeric score based on two input values using the formula: (a + b) × 42
+Compute a numeric score based on two input values using the formula: (a + b) Ã— 42
 
 **Parameters:**
 - `a` (number, required): First numeric input
 - `b` (number, required): Second numeric input
 
 **Returns:**
-- Numeric result: (a + b) × 42
+- Numeric result: (a + b) Ã— 42
 
 **Usage:**
 - "Calculate deva score for 5 and 10"
@@ -545,11 +551,13 @@ deva-score a=1 b=2   // returns 126
 
 | Category | Tool Count | Tools |
 |----------|-----------|-------|
-| **Model Management** | 6 | list-models, find-model, model-info, model-score, scr-info, scr-score |
+| **Model Management** | 6 | list-mas, find-mas, mas-describe, mas-score, scr-describe, scr-score |
 | **Library Management** | 2 | list-libraries, find-library |
-| **Table Operations** | 5 | list-tables, find-table, table-info, read-table, sas-query |
-| **Job Management** | 6 | list-jobs, find-job, job, list-jobdefs, find-jobdef, job-def |
-| **Program Execution** | 2 | run-program, run-macro |
+| **Table Operations** | 5 | list-tables, find-table, table-describe, read-table, sas-query |
+| **Jobs Model** | 3 | list-jobs, find-job, job-score |
+| **Jobdef Models** | 3 | list-jobdefs, find-jobdef, jobdef-score |
+| **Program Models** | 1 | program-score |
+| **Macro Models** | 1 | macro-score |
 | **Context & Config** | 1 | set-context |
 | **Utilities** | 1 | deva-score |
 | **Total** | **24** | |
@@ -558,7 +566,7 @@ deva-score a=1 b=2   // returns 126
 
 ## Common Patterns
 
-### Discovery → Inspection → Action
+### Discovery â†’ Inspection â†’ Action
 
 1. **List** tools to discover available resources
 2. **Find** tools to locate specific items
@@ -598,3 +606,6 @@ Tools accepting scenarios support multiple formats:
 
 *Document generated for @sassoftware/mcp-serverjs*  
 *Last updated: December 2024*
+
+
+

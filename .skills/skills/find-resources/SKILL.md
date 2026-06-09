@@ -5,164 +5,62 @@ description: >
   Determines server for tables (CAS vs SAS). Never use list tools for verifying or finding specific resources; list tools are for discovery and exploration only.
 ---
 
+**GATE** Do not use list-* tools for verification — those are for explicit user list requests only. Always use the specific find-* tool to verify existence of a resource before attempting to use it.
+
 # Unified Resource Finding Strategy
 
 Use this strategy to verify that a resource exists before executing any action.
+Never use `list-*` tools for verification — those are for explicit user browse requests only.
 
-Verification rules
-- Use `find-*` tools to confirm resource existence; do not use `list-*` tools for verification.
-- For tables, determine server (CAS vs SAS) from the library; if unknown, try CAS first then SAS (uppercase lib for SAS).
-- For models with no explicit type, default to MAS unless the user specifies otherwise.
-- SCR models require a URL/endpoint; ask the user for the endpoint rather than attempting a find.
+## Dotted `a.b` Resource Reference Parsing
 
-Do **not** use list tools for verifying or finding specific resources. List tools are for discovery and exploration only, not for confirming the existence of a specific resource.
+Parse any `a.b` notation before choosing a find tool:
 
-## Resource Types and Find Tools
+| `b` value | Resource type | Find tool |
+|---|---|---|
+| `mas` | MAS model | `sas-score-find-mas`, name=`a` |
+| `job` | Job model | `sas-score-find-job`, name=`a` |
+| `jobdef` | JobDef model | `sas-score-find-jobdef`, name=`a` |
+| `scr` | SCR model | no find tool — ask user for URL |
+| `cas` | CAS model | `sas-score-find-table({ name: name, server: 'cas' })` |
+| **anything else** | **Table** | `sas-score-find-table`, lib=`a`, table=`b` |
 
-### 1. Find Library
+## Find Library
 
-**Trigger**: "find library X", "does library X exist", "check if library X", "locate library X"
+**Workflow**
 
-**Tool**: `sas-score-find-library`
+Use skill `find-library-server` to verify library existence and determine server. 
 
+## Find Table
 
-**Logic**:
-1. If server is specified: Use that server directly.
-2. If server is not specified:
-  - Step 1: Try CAS first: `sas-score-find-library({ name: "<lib>", server: "cas" })`
-  - Step 2: If not found in CAS, try SAS with the library name uppercased: `sas-score-find-library({ name: "<LIB>", server: "sas" })`
-  - Step 3: Report which server (or not found in either)
+**workflow** 
 
-**Known default libraries**:
-- CAS: Casuser, Formats, ModelPerformanceData, Models, Public, Samples, SystemData
-- SAS: MAPS, MAPSGFK, MAPSSAS, SASDQREF, SASHELP, SASUSER, WORK
+Step 1. Use find-library-server skill to verify the library exists and in which server:
+   - ✅ Found → return go to Step 2 
+   - ❌ Not found → library does not exist; **stop** and report not found to the user
 
----
-
-### 2. Find Table
-
-**Trigger**: "find table X", "does table X exist in Y", "locate table X in library Y"
-
-**Tool**: `sas-score-find-table`
-
-**Required inputs**: 
-- Library name
-- Table name
-- Server (determined from library context or user specification)
-
-
-**Logic**:
-1. If you already know that the table exists in a specific server, return that result directly.
-2. Otherwise, follow these steps:
-  - Step 1: If library is a known CAS library (Casuser, Public, Samples, etc.), use CAS as server.
-  - Step 2: If library is a known SAS library (SASHELP, WORK, SASUSER, etc.), use SAS as server.
-  - Step 3: If the server has been identified in an earlier step for this library, use that as the server.
-3. If server is known at this point:
-  - If server is SAS, uppercase the library name and try: `sas-score-find-table({ lib: "<LIB>", name: "<table>", server: "sas" })`
-  - Otherwise, use the provided server: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "<server>" })`
-4. If server is not known:
-  - Step 1: Try CAS first: `sas-score-find-table({ lib: "<library>", name: "<table>", server: "cas" })`
-  - Step 2: If not found in CAS, try SAS with the library name uppercased: `sas-score-find-table({ lib: "<LIBRARY>", name: "<table>", server: "sas" })`
-5. If the table was found, report success and server.
-6. If not found, report failure.
-
-**Output**: Table server location (CAS or SAS)
+Step 2. Use sas-score-find-table tool with the library and server from step 1: `sas-score-find-table({ lib: "<lib>", name: "<TABLE_NAME>", server: <server })`
+   - ✅ Found → return success with confirmed lib, table, and server
+   - ❌ Not found → table does not exist; **stop** and report not found to the user
 
 ---
+ 
 
-### 3. Find Scoring Model
+## Find Model of type MAS, Job, Jobdef, SCR, cas
 
-**Trigger**: "find model X.mas", "find mas model X", "find job model X", "find jobdef model X",
-"find scr model X", "does model X exist", "locate model X", "find job X", "does job X exist",
-"find jobdef X", "does jobdef X exist"
+**Workflow** 
 
-**Routing** — use the model type to pick the right find tool:
+Step 1. Strip any suffix (`.mas`, `.job`, `.jobdef`, `.scr`) before lookup — use the base name only.
 
-| User phrase / suffix                           | Model type | Find Tool              |
-|------------------------------------------------|------------|------------------------|
-| `find mas model X` / `X.mas` / `mas X`         | MAS        | `sas-score-find-mas` |
-| `find job model X` / `X.job` / `job X`         | Job        | `sas-score-find-job`   |
-| `find jobdef model X` / `X.jobdef` / `jobdef X`| JobDef     | `sas-score-find-jobdef`|
-| `find scr model X` / `X.scr` / `scr X`         | SCR        | *(no tool — ask for URL)*|
-
-
-#### MAS Model
-
-**Tool**: `sas-score-find-mas`
-
-**Logic**: Strip `.mas` suffix if present, use base name.
-```
-sas-score-find-mas({ name: "<model>" })
-```
-
-#### Job Model
-
-**Tool**: `sas-score-find-job`
-
-**Logic**: Strip `.job` suffix if present, use base name.
-```
-sas-score-find-job({ name: "<job>" })
-```
-
-#### JobDef Model
-
-**Tool**: `sas-score-find-jobdef`
-
-**Logic**: Strip `.jobdef` suffix if present, use base name.
-```
-sas-score-find-jobdef({ name: "<jobdef>" })
-```
-
-#### SCR Model
-
-**Action**: Ask user for the SCR URL/endpoint. SCR models do not have a pre-verification tool.
-If the SCR URL/endpoint is invalid or missing, prompt the user to provide a valid URL.
-
-
----
-
-
-
-## Generic Model Type Inference
-
-If user says "find model X" without a type qualifier, infer the type from the suffix or adjective form:
-
-| Pattern                              | Type    | Find Tool               |
-|--------------------------------------|---------|-------------------------|
-| `X.mas` / `mas model X` / `mas X`    | MAS     | `sas-score-find-mas`  |
-| `X.job` / `job model X` / `job X`    | Job     | `sas-score-find-job`    |
-| `X.jobdef` / `jobdef model X` / `jobdef X` | JobDef | `sas-score-find-jobdef` |
-| `X.scr` / `scr model X` / `scr X`    | SCR     | Skip (no find tool)     |
-| (none)                               | Default to MAS | `sas-score-find-mas` |
-
----
-
-## Clarifying Questions
-
-If required information is missing:
-- "Which library contains the table?" (if table lookup missing library)
-- "Which server? (CAS or SAS)" (if ambiguous and not a known default)
-- "Is this a MAS model, Job, or JobDef?" (if model type ambiguous)
-
----
-
-## Output Format
-
-For **found** resources:
-- Confirm exact resource name from tool result
-- Confirm server (for CAS/SAS resources)
-- Example: "Found table customers in Public library (CAS)"
-
-For **not found** resources:
-- State clearly: "Table xyz not found in library ABC on either CAS or SAS"
-- Ask for verification or correction
-
----
+| Type | Tool |
+|---|---|
+| MAS (default when type unspecified) | `sas-score-find-mas({ name })` |
+| Job | `sas-score-find-job({ name })` |
+| JobDef | `sas-score-find-jobdef({ name })` |
+| SCR | `sas-score-find-scr({ name })` |
+| cas | `sas-score-find-table({ name: name, server: 'cas' })` |
 
 ## Error Handling
 
-If tool returns empty or error:
-1. Confirm the resource name spelling with user
-2. For tables: Confirm library name and server
-3. For models: Ask whether MAS, Job, or JobDef
-4. Ask user to verify resource exists on the server
+- Not found → confirm spelling, library name, and server with user.
+- Resource type unclear → ask: MAS, Job, JobDef, or SCR?

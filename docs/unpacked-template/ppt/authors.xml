@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<p188:authorLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p188="http://schemas.microsoft.com/office/powerpoint/2018/8/main">
+  <p188:author id="{D72CBA08-A13A-1AE3-3CDE-8B1F9BA81A35}" name="Colby Hoke" initials="" userId="S::Colby.Hoke@sas.com::330680df-4cc1-486b-b75e-40293401dc4c" providerId="AD"/>
+  <p188:author id="{4B708D14-BD54-920F-18BB-8395E60AE589}" name="Alice McClure" initials="AM" userId="S::alice.mcclure@sas.com::6210c489-566a-4639-8da1-84bcfd842f43" providerId="AD"/>
+  <p188:author id="{218D0E36-371F-DCCB-B7D7-854DE8FBC39E}" name="Ruth Suehle" initials="RS" userId="S::ruth.suehle@sas.com::2c5f31af-eb36-4d59-931e-840db978e223" providerId="AD"/>
+  <p188:author id="{6DFEA739-C4EE-3CDE-94E6-A95954A908DE}" name="Tine Haaber" initials="TH" userId="S::Tine.Haaber@SAS.COM::b28dffea-6139-4081-9090-e82e8f843744" providerId="AD"/>
+  <p188:author id="{CBE54089-982A-F916-6551-1F04A04836A3}" name="Bryan Behrenshausen" initials="" userId="S::Bryan.Behrenshausen@sas.com::ff82ee7e-0923-4a66-bbd6-ed68c87db14a" providerId="AD"/>
+  <p188:author id="{A67EC2E6-65EC-8627-7F83-1DBC74F8C2B7}" name="Barry Peddycord" initials="BP" userId="S::barry.peddycord@sas.com::4959c50f-f456-42e9-8cee-5ae13475c42c" providerId="AD"/>
+</p188:authorLst>

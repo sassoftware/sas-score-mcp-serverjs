@@ -1,5 +1,5 @@
-/*
- * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+﻿/*
+ * Copyright Â© 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -8,35 +8,40 @@ import _findmas from '../toolHelpers/_findmas.js';
 
 
 function findMas(_appContext) {
-  let description = `
-find-mas — locate a specific MAS mas deployed to MAS server 
+  const isAgent = _appContext && _appContext.agent;
+  let description = isAgent ? `
+find-mas — verify a MAS model exists.
+PARAMS: name (string, required)
+RETURNS: model metadata if found, error if not found
+` : `
+find-mas â€” locate a specific MAS mas deployed to MAS server 
 
 USE when: find mas, does mas exist, is mas deployed, lookup mas, verify mas exists
-DO NOT USE for: list mass (use ${_appContext.brand}-list-mass), mas info/variables (use ${_appContext.brand}-mas-info), score mas (use ${_appContext.brand}-mas-score), find table/job/lib (use respective tools), scr mass (use ${_appContext.brand}-scr-info/${_appContext.brand}-scr-score)
+DO NOT USE for: list mass (use ${_appContext.brand}-list-mass), mas info/variables (use ${_appContext.brand}-mas-describe), score mas (use ${_appContext.brand}-mas-score), find table/job/lib (use respective tools), scr mass (use ${_appContext.brand}-scr-describe/${_appContext.brand}-scr-score)
 
 PARAMETERS
-- name: string (required) — mas name to locate; if multiple supplied, use first
+- name: string (required) â€” mas name to locate; if multiple supplied, use first
 
 ROUTING RULES
-- "find mas <name>" → { name: "<name>" }
-- "find name.mas" → { name: "<name>" }
-- "does mas <name> exist" → { name: "<name>" }
-- "is mas <name> deployed" → { name: "<name>" }
-- "lookup/verify mas <name>" → { name: "<name>" }
-- "find mas" with no name → ask "Which mas name would you like to find?"
-- "find all mass / list mass" → use ${_appContext.brand}-list-mas instead
-- "describe mas / mas info" → use ${_appContext.brand}-mas-info instead
+- "find mas <name>" â†’ { name: "<name>" }
+- "find name.mas" â†’ { name: "<name>" }
+- "does mas <name> exist" â†’ { name: "<name>" }
+- "is mas <name> deployed" â†’ { name: "<name>" }
+- "lookup/verify mas <name>" â†’ { name: "<name>" }
+- "find mas" with no name â†’ ask "Which mas name would you like to find?"
+- "find all mass / list mass" â†’ use ${_appContext.brand}-list-mas instead
+- "describe mas / mas info" â†’ use ${_appContext.brand}-mas-describe instead
 
 EXAMPLES
-- "find mas mymas" → { name: "mymas" }
-- "does mas churn_score exist" → { name: "churn_score" }
-- "is mas riskmas deployed" → { name: "riskmas" }
-- "lookup mas claims_fraud_v1" → { name: "claims_fraud_v1" }
+- "find mas mymas" â†’ { name: "mymas" }
+- "does mas churn_score exist" â†’ { name: "churn_score" }
+- "is mas riskmas deployed" â†’ { name: "riskmas" }
+- "lookup mas claims_fraud_v1" â†’ { name: "claims_fraud_v1" }
 
 NEGATIVE EXAMPLES (do not route here)
 - "list mass" (use ${_appContext.brand}-list-mas)
 - "score mas mymas" (use ${_appContext.brand}-mas-score)
-- "mas info for churnRisk" (use ${_appContext.brand}-mas-info)
+- "mas info for churnRisk" (use ${_appContext.brand}-mas-describe)
 
 ERRORS
 Returns { mass: [] } if not found; { mass: [name, ...] } if found. Never hallucinate mas names.
@@ -54,6 +59,7 @@ Returns { mass: [] } if not found; { mass: [name, ...] } if found. Never halluci
           params.name = params.name.slice(0, -4);
         }
       }
+      params.tool = 'find';
       let r = await _findmas(params);
       return r;
     }
@@ -62,4 +68,5 @@ Returns { mass: [] } if not found; { mass: [name, ...] } if found. Never halluci
 }
 
 export default findMas;
+
 

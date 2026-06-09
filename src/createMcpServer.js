@@ -78,6 +78,7 @@ async function createMcpServer(cache, _appContext) {
   // Register the tools with brand prefix
   console.error(`[Note] Brand: ${_appContext.brand}`);
   let toolNames = [];
+  let totalDescription = 0;
   toolSet.forEach((tool, i) => {
     let toolName = _appContext.brand + '-' + tool.name;
     //tool.inputSchema.additionalProperties = false; // disallow extra properties 
@@ -85,11 +86,14 @@ async function createMcpServer(cache, _appContext) {
       description: tool.description,
       inputSchema: tool.inputSchema
     }
+    totalDescription += tool.description.length;``
     let toolHandler = wrapf(cache, tool.handler);
     let r = mcpServer.registerTool(toolName, config, toolHandler);
     toolNames.push(toolName);
   });
+  console.error(`[Note]  Agent Mode: ${_appContext.agent}`);
   console.error(`[Note] Registered ${toolSet.length} tools: ${toolNames}`);
+  console.error(`[Note] Total description length: ${totalDescription} characters`); 
   cache.set("mcpServer", mcpServer);
   return mcpServer;
 }

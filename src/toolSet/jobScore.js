@@ -7,12 +7,17 @@ import { z } from 'zod';
 import _jobSubmit from '../toolHelpers/_jobSubmit.js';
 
 function jobScore(_appContext) {
- 
-  let description = `
-job-score — score with a deployed SAS Viya job.
+  const isAgent = _appContext && _appContext.agent;
 
-USE when: score with job, run job, execute job
-DO NOT USE for: arbitrary SAS code (use run-sas-program), macros (use run-macro), list/find jobs
+  let description = isAgent ? `
+job-score — score by executing a SAS Viya Job model.
+PARAMS: name (string, required), scenario (object, optional)
+RETURNS: job log, ODS output, and any result tables
+` : `
+job-score — score with a deployed SAS Viya job model.
+
+USE when: score with job, run job, execute job model
+DO NOT USE for: arbitrary SAS code (use program-score), macros (use macro-score), list/find jobs
 
 PARAMETERS
 - name: string — job name (required)
@@ -32,8 +37,8 @@ EXAMPLES
 - "run job monthly_etl with month=10, year=2025" → { name: "monthly_etl", scenario: {month:10, year:2025} }
 
 NEGATIVE EXAMPLES (do not route here)
-- "run SAS code" (use run-sas-program)
-- "run macro X" (use run-macro)
+- "run SAS code" (use program-score)
+- "score macro X" (use macro-score)
 - "list jobs" (use list-jobs)
 - "find job X" (use find-job)
 
@@ -42,7 +47,7 @@ Returns log output, listings, tables from job. Error if job not found.
 `;
 
   let spec = {
-    name: 'run-job',
+    name: 'job-score',
     description: description,
     inputSchema: z.object({
       name: z.string(),

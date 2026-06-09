@@ -6,7 +6,7 @@ import restaf from '@sassoftware/restaf';
 
 
 async function _listJobdefs(params) {
-  let { limit, start, name, _appContext } = params;
+  let { limit, start, name, tool, _appContext } = params;
   
   let store = restaf.initStore(_appContext.storeConfig);
   let msg = await store.logon(_appContext.logonPayload);
@@ -41,7 +41,17 @@ async function _listJobdefs(params) {
 
     let response = {jobDefinitions: Object.keys(names)};
     if (name != null) {
-      response = { name: name, parameters: names[name].parameters };
+      if (tool === 'find') {
+        response = { job: [name] };
+      } else if (tool === 'describe') {
+        let p = [];
+        names[name].parameters.map((v, k) => {
+          if (v.name.startsWith('_') === false) {
+            p.push(v);
+          }
+        });
+        response = { describe: p };
+      };
     }
 
     return {

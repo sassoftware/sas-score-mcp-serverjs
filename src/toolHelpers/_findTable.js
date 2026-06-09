@@ -5,6 +5,7 @@
 
 import _listTables from './_listTables.js';
 async function _findTable(params) {
+  params.tool = 'find';
   return await _listTables(params);
 }
 export default _findTable;

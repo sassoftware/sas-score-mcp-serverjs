@@ -6,137 +6,82 @@ description: >
 
 # Read Table Strategy
 
-Use this strategy when the user requests to read, fetch, or query data from a table.
+## Mandatory two-step sequence — never skip or reorder
 
-Rules summary
-- Verification rules: verify the table exists using `find-*` and determine the server (CAS vs SAS); ask the user if ambiguous. Do not assume a default server unless explicitly instructed.
-- Execution rules: choose `sas-score-read-table` for raw row reads and `sas-score-sas-query` for aggregations/joins/groupings; if intent is ambiguous, ask the user.
-- Error handling: surface clear guidance when table or column names are missing or misspelled.
-
-## Prerequisites
-
-Before reading:
-1. Verify the table exists using find-resource strategy
-2. Determine the server (CAS or SAS) from the find-resource verification step. If the server cannot be determined, ask the user to specify. Do not proceed with a default server unless explicitly instructed by the user.
+**Step 1 and Step 2 are required for every read request. Step 2 must never run before Step 1 succeeds.**
 
 ---
 
-## Two Types of Read Operations
+### Step 1 — Verify the table exists and resolve its server (REQUIRED)
 
-### Type 1: Raw Row Read
+**GATE**: 
 
-**Trigger phrases**: "read rows from", "show first N records", "fetch records where", "get data from table"
+Do not check for the existence of the library separately. Follow the workflow below. The sas-score-find-table tool will check for the existence of the table in the specified library and server, which implicitly verifies the library as well.
+  
+## Workflow to read a table
 
-**Tool**: `sas-score-read-table`
-
-**When to use**:
-- User wants raw records, not aggregations
-- User wants to filter by WHERE clause
-- User wants to browse data
-
-**Parameters**:
-```
-lib: "<library>"           # from find-resource verification
-table: "<table>"           # from find-resource verification
-server: "cas" or "sas"     # from find-resource verification
-start: <row number>        # default 1
-limit: <max rows>          # default 10, max 1000
-where: "<SQL WHERE clause>"  # optional filter
-format: true               # default: use formatted values
-```
-
-**Example**:
-```
-sas-score-read-table({
-  lib: "Public",
-  table: "customers",
-  server: "cas",
-  limit: 25,
-  where: "status='active'"
-})
-```
-
----
-
-### Type 2: Analytical Query
-
-**Trigger phrases**: "how many", "count by", "average", "total", "sum", "group by", "aggregate", "distinct", "join"
-
-**Tool**: `sas-score-sas-query`
-
-**When to use**:
-- User wants aggregations (SUM, AVG, COUNT, etc.)
-- User wants GROUP BY or distinct counts
-- User wants JOIN across tables
-- User wants statistical summaries
-
-**Parameters**:
-```
-table: "lib.table"         # CAS: "Public.customers", SAS: "SASHELP.cars"
-query: "<natural language question>"
-sql: "<SELECT SQL>"        # optional: pre-generated SQL
-```
-
-**Example**:
-```
-sas-score-sas-query({
-  table: "Public.customers",
-  query: "count of customers by region and status",
-  sql: "SELECT region, status, COUNT(*) as count FROM Public.customers GROUP BY region, status"
-})
-```
-
----
+### Step 1 — Verify the table exists and resolve its server (REQUIRED)
+1. Call `sas-score-find-table({ lib, name: table, server: "cas" })`
+   - ✅ Found → confirmed `lib` = lib as given, confirmed `server` = `"cas"` → go to Step 2
+   - ❌ Not found → call `sas-score-find-table({ lib: lib.toUpperCase(), name: table, server: "sas" })`
+     - ✅ Found → confirmed `lib` = uppercased lib, confirmed `server` = `"sas"` → go to Step 2
+     - ❌ Not found in either → **stop**. Tell the user the table was not found.
 
 
-## Decision Tree
+### Step 2 — Read the table
+
+Use the confirmed `lib` and `server` from Step 1. Never guess or default the server.
+
+**Use `sas-score-read-table`** for all row reads, including filtered reads with a WHERE clause.
+**Use `sas-score-sas-query`** only when the request requires SQL aggregation (COUNT, SUM, AVG, MIN, MAX), GROUP BY, JOIN, or computed columns. A WHERE clause alone is not a reason to use sas-query.
+
+## Read Table (`sas-score-read-table`)
+
+**When**: raw rows, filtered rows, browsing — anything that is not an aggregation or join.
+
+**Parsing row count from user input**:
+
+| User says | start | limit |
+|---|---|---|
+| "first N rows/records" | 1 | N |
+| "top N rows" | 1 | N |
+| "N rows" / "N records" | 1 | N |
+| "rows N to M" | N | M−N+1 |
+| "starting from row N" | N | 10 |
+| (not specified) | 1 | 10 |
+
+> "first" always means start at row 1 and return N rows. It is never a row offset.
+
+**Dotted format**: `"lib.table"` → `lib: "lib"`, `table: "table"` (split on first dot).
+
+**Parameters**: `lib`, `table`, `server` (confirmed from Step 1 — required), `start`, `limit`, `where`
+
+## SQL Query (`sas-score-sas-query`)
+
+**When**: COUNT/SUM/AVG/MIN/MAX, GROUP BY, JOIN across tables, or computed columns.
+
+**NOT for**: simple filtered reads — use read-table with `where` instead.
+
+**Parameters**: `table` (as `"lib.table"`), `query`, `sql`
+
+## Decision
 
 ```
-User requests data from table
-  ↓
-Is it an aggregation? (count, sum, avg, group by, distinct, etc.)
-  ├─ YES → Use sas-score-sas-query
-  └─ NO → Use sas-score-read-table
-
-If the user's intent is ambiguous or mixes aggregation and raw reads, ask the user to clarify whether they want raw records or aggregated results before proceeding.
+Does the request need aggregation (COUNT/SUM/AVG/GROUP BY) or a JOIN?
+  YES → sas-score-sas-query
+  NO  → sas-score-read-table  (pass filter in `where` parameter if needed)
 ```
-
----
 
 ## Table Name Format
 
-- **CAS tables**: `Caslib.table` or `Public.customers` (mixed case table)
-- **SAS tables**: `LIBREF.table` or `SASHELP.cars` (uppercase libref, case-insensitive table)
-
----
+- CAS: `Public.customers`, `Caslib.table`
+- SAS: `SASHELP.cars`, `LIBREF.table` (uppercase libref)
+- Dotted input `"x.y"` → lib=`x`, table=`y`
 
 ## Error Handling
 
 | Error | Action |
 |---|---|
-| Table not found | Verify table exists with find-resource first |
-| Server mismatch | Use server from find-resource verification |
-| Empty result | Ask user to adjust WHERE clause or criteria |
-| Column not found | Ask user to verify column name (case sensitivity) |
-
----
-
-## Examples
-
-### Example 1: Browse customer records
-**Request**: "read first 20 customers from Public"
-1. Find table customers in Public → CAS
-2. Read: `sas-score-read-table({ lib: "Public", table: "customers", server: "cas", limit: 20 })`
-3. Return 20 rows
-
-### Example 2: Find active customers in a region
-**Request**: "fetch customers from Public where status='active' and region='East'"
-1. Find table customers in Public → CAS
-2. Read: `sas-score-read-table({ lib: "Public", table: "customers", server: "cas", where: "status='active' and region='East'" })`
-3. Return matching rows
-
-### Example 3: Aggregate customers by region
-**Request**: "how many customers by region in Public.customers"
-1. Find table customers in Public → CAS
-2. Query: `sas-score-sas-query({ table: "Public.customers", query: "count of customers by region", sql: "SELECT region, COUNT(*) FROM Public.customers GROUP BY region" })`
-3. Return aggregated result
+| Table not found | Verify with find-resources first |
+| Empty result | Ask user to adjust WHERE clause |
+| Column not found | Ask user to verify column name (case-sensitive) |

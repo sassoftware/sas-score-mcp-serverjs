@@ -147,11 +147,11 @@ Before marking a tool as conforming to the template:
 
 ## Tools Updated to Template
 
-- [x] listModels.js - ✅ Already conforms
-- [x] findModel.js - 🔧 Needs cleanup (remove redundancy)
+- [x] listMas.js - ✅ Already conforms
+- [x] findMas.js - 🔧 Needs cleanup (remove redundancy)
 - [ ] deval.js - 🔧 Needs major expansion
 - [ ] devaScore.js - 🔧 Needs expansion
 - [ ] setContext.js - 🔧 Needs expansion
-- [ ] modelInfo.js - 🔧 Needs expansion
+- [ ] masDescribe.js - 🔧 Needs expansion
 - [ ] readTable.js - ✅ Mostly conforms (minor tweaks)
 - [ ] ... (other tools)

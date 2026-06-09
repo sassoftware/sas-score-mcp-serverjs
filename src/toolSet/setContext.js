@@ -6,11 +6,16 @@
 import {z} from 'zod';
 
 function setContext(_appContext) {
-    let description = `
+  const isAgent = _appContext && _appContext.agent;
+    let description = isAgent ? `
+set-context — set runtime context variables (CAS server, SAS server, etc.).
+PARAMS: cas (string, optional), sas (string, optional), other key=value context fields
+RETURNS: updated context confirmation
+` : `
 set-context — set the CAS and SAS server contexts for subsequent tool calls.
 
 USE when: switch to CAS server, change compute context, check current context, set both
-DO NOT USE for: get variables (use get-env), read data (use read-table), run programs (use run-sas-program)
+DO NOT USE for: get variables (use get-env), read data (use read-table), score programs (use program-score)
 
 PARAMETERS
 - cas: string — CAS server name (optional), e.g. 'cas-shared-default', 'finance-cas-server'
@@ -30,7 +35,7 @@ EXAMPLES
 NEGATIVE EXAMPLES (do not route here)
 - "read table cars" (use read-table)
 - "what's the value of X" (use get-env)
-- "run program" (use run-sas-program)
+- "score program" (use program-score)
 
 ERRORS
 Returns current or updated context values {cas, sas}. Error if server not found or invalid name.

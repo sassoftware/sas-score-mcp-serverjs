@@ -1,7 +1,8 @@
----
+﻿---
 name: detail-strategy
 description: >
-  Unified detail/information/describe retrieval strategy. Handles MAS models, Job models, JobDef models, SCR models, and tables. Verify resources exist using find-resources skill before retrieving details (except SCR models, which can be queried directly).
+  Use this strategy when the user requests information about a resource. This is a  
+  Unified detail/information/describe retrieval strategy. Handles MAS models, Job models, JobDef models, SCR models, and tables. Verify resources exist using find-resources skill before retrieving details 
 ---
 
 # Detail Strategy
@@ -17,7 +18,7 @@ If the specified resource is ambiguous, ask the user for clarification (e.g. "Ar
 Verification rules
 - Always verify the target resource exists using the appropriate `find-*` tool before attempting retrieval, except for SCR models (see Exceptions below).
 - For tables, determine server (CAS vs SAS) during verification; if ambiguous, ask the user for the full `lib.table` or server.
-- For models, strip suffixes such as `.mas`, `.job`, `.jobdef` or `.scr` before lookup to avoid lookup failures.
+- For models, strip suffixes such as `.mas`, `.job`, `.jobdef`,`.scr`, `.cas`,  before lookup to avoid lookup failures.
 
 Defaults & exceptions
 - Default model type: MAS when the user says `model X` without specifying a type.
@@ -29,45 +30,32 @@ Defaults & exceptions
 
 ### Phase 1: Classify the Resource Type
 
-Determine resource type from context/naming conventions:
+Determine resource type from context/naming conventions.
+
+**Dotted `a.b` notation rule**: parse `b` to determine type. If `b` is not in `{mas, job, jobdef, scr, sas, casl}`, treat `a.b` as a table where lib=`a`, table=`b`.
 
 | Pattern                  | Resource Type |
 |--------------------------|---------------|
-| `mas X` or `X.mas`       | MAS model  X   |
-| `mas model X`            | MAS model  X   |
-| `scr X` or `X.scr`       | SCR model X    |
-| `scr model X`            | SCR model  X   |
-| `job model X`            | Job model  X   |
-| `jobdef X` or `X.jobdef` | JobDef model  X |
-| `jobdef model X`         | JobDef model  X |
-| `table X in library Y`   | Table  X in library Y |
-| `model X.mas`            | MAS model  X   |
-| `model X.job`            | Job model  X   |
-| `model X.jobdef`         | JobDef model  X |
-| `model X.scr`            | SCR model  X   |
-| `model X` (ambiguous)    | Default to MAS model (explicit convention) |
+| `X.mas` or `mas X` or `mas model X` | MAS model, name=X |
+| `X.job` or `job X` or `job model X` | Job model, name=X |
+| `X.jobdef` or `jobdef X` or `jobdef model X` | JobDef model, name=X |
+| `X.scr` or `scr X` or `scr model X` | SCR model, name=X |
+| `a.b` where b ∉ {mas,job,jobdef,scr,sas,casl} | **Table**: lib=a, name=b |
+| `table X in library Y`   | Table X in library Y |
+| `model X` (no suffix)    | Default to MAS model (explicit convention) |
 
 If resource is ambiguous, ask user for clarification.
 
-### Phase 2: Verify Resource Exists (Skip for SCR Models)
+### Phase 2: Verify Resource Exists 
 
-**IMPORTANT**: Strip the suffix if user included it, use base name for lookup (e.g. "churnRisk.mas" → "churnRisk") to avoid lookup failures.
+**IMPORTANT**: Strip the suffix if user included it, use base name for lookup (e.g. "churnRisk.mas" â†’ "churnRisk") to avoid lookup failures.
 
-For each resource type, use the appropriate verification tool:
-
-| Resource Type | Tool              |
-|---------------|-------------------|
-| MAS model     | sas-score-find-mas |
-| Job model     | sas-score-find-job   |
-| JobDef model  | sas-score-find-jobdef |
-| Table         | sas-score-find-table  |
-| SCR model     | *(no verification needed)* |
+Use find-resources skill to verify the resource exists
 
 If verification fails, inform the user and ask for additional details or corrections.
 
 ---
 
-## Detail Retrieval Process
 
 ### Phase 3: Get Details
 
@@ -77,12 +65,12 @@ If verification fails, inform the user and ask for additional details or correct
 "mas model X metadata", "mas model X information", "describe model X" (default to MAS),
 "what inputs does mas X need", "describe mas X"
 
-**Tool**: `sas-score-mas-info`
+**Tool**: `sas-score-mas-describe`
 
 **Parameters**:
 ```
 
-sas-score-mas-info({
+sas-score-mas-describe({
   model: "<model name>"
 })
 ```
@@ -98,7 +86,7 @@ sas-score-mas-info({
 User: "What inputs does mas model churnRisk need?"
 
 1. Find: sas-score-find-mas({ name: "churnRisk" })
-2. Get info: sas-score-mas-info({ model: "churnRisk" })
+2. Get info: sas-score-mas-describe({ model: "churnRisk" })
 3. Return: { inputs: [...], outputs: [...], description: "..." }
 ```
 
@@ -109,12 +97,12 @@ User: "What inputs does mas model churnRisk need?"
 **Trigger phrases**: "what does SCR model X need", "describe SCR model X", "scr model X inputs",
 "scr model X schema", "what inputs does scr model X need", "describe scr X"
 
-**Tool**: `sas-score-scr-info`
+**Tool**: `sas-score-scr-describe`
 
 **Parameters**:
 ```
-sas-score-scr-info({
-  url: "<scr endpoint>"
+sas-score-scr-describe({
+  name: "<scr model name>"
 })
 ```
 
@@ -125,13 +113,13 @@ sas-score-scr-info({
 
 **Example**:
 ```
-User: "Show inputs for SCR model at https://scr-host/models/loan"
+User: "Show inputs for SCR model loan"
 
-1. Get info: sas-score-scr-info({ url: "https://scr-host/models/loan" })
+1. Get info: sas-score-scr-describe({ name: "loan" })
 2. Return: { inputs: [...], outputs: [...] }
 ```
 
-**Note**: SCR models typically do not require pre-verification (can call scr-info directly)
+**Note**: SCR models do not require pre-verification (call scr-describe directly with the model name)
 
 ---
 
@@ -139,11 +127,11 @@ User: "Show inputs for SCR model at https://scr-host/models/loan"
 
 **Trigger phrases**: "what columns in table X", "describe table X", "show schema for table X", "table X structure", "table X metadata"
 
-**Tool**: `sas-score-table-info`
+**Tool**: `sas-score-table-describe`
 
 **Parameters**:
 ```
-sas-score-table-info({
+sas-score-table-describe({
   lib: "<library>",
   table: "<table name>",
   server: "<cas|sas>"
@@ -159,8 +147,8 @@ sas-score-table-info({
 User: "What columns are in the customers table in Public?"
 
 1. Find: sas-score-find-table({ lib: "Public", name: "customers", server: "cas" })
-2. Get info: sas-score-table-info({ lib: "Public", table: "customers", server: "cas" })
-3. Return: { columns: [...], tableInfo: {...} }
+2. Get info: sas-score-table-describe({ lib: "Public", table: "customers", server: "cas" })
+3. Return: { columns: [...], tableDescribe: {...} }
 ```
 
 ---
@@ -170,12 +158,12 @@ User: "What columns are in the customers table in Public?"
 "show variables for job model X", "job model X metadata", "job model X information",
 "what inputs does job X need", "describe job X"
 
-**Tool**: `sas-score-job-info`
+**Tool**: `sas-score-job-describe`
 
 **Parameters**:
 ```
-sas-score-job-info({
-  model: "<model name>"
+sas-score-job-describe({
+  name: "<model name>"
 })
 ```
 
@@ -186,33 +174,70 @@ sas-score-job-info({
 ```
 User: "What inputs does job model churnRisk need?"
 
-1. Find: sas-score-find-job({ name: "churnRisk" })
-2. Get info: sas-score-job-info({ model: "churnRisk" })
+1. Find: use find-resources skill to job exists
+2. Get Details: sas-score-job-describe({ name: "churnRisk" })
 3. Return: { inputs: [...] }
 ```
+
+### Option E: JobDef Model Details
+
+**Trigger phrases**: "what inputs does jobdef model X need", "describe jobdef model X",
+"jobdef model X metadata", "what inputs does jobdef X need", "describe jobdef X"
+
+**Tool**: `sas-score-jobdef-describe` 
+
+**Parameters**:
+```
+sas-score-jobdef-describe({
+  name: "<jobdef name>"
+})
+```
+
+**Example**:
+```
+User: "What inputs does jobdef model myScorer need?"
+
+1. Find: sas-score-find-jobdef({ name: "myScorer" })
+2. Get info: sas-score-jobdef-describe({ name: "myScorer" })
+3. Return: { inputs: [...] }
+```
+
+---
+
+### Option F: SAS Program Model Details
+
+SAS programs are treated as models — they accept parameters via `scenario` and produce scored outputs.
+
+**Trigger phrases**: "describe sas program X", "what parameters does program X take",
+"program model X info", "describe X.sas"
+
+**Note**: SAS programs do not have a dedicated `describe` tool. If the program is wrapped in a Job, use `sas-score-job-describe`. Otherwise ask the user for parameter documentation.
+
+---
+
 
 ## Decision Tree
 
 ```
 User requests information/details
-  ├─ About a MAS model?
-  │   → Verify: sas-score-find-mas
-  │   → Call: sas-score-mas-info
-  │
-  ├─ About a SCR model?
-  │   → Call: sas-score-scr-info (skip verification; validate URL first)
-  │
-  ├─ About a Job model?
-  │   → Verify: sas-score-find-job
-  │   → Call: sas-score-job-info
-  │
-  ├─ About a JobDef model?
-  │   → Verify: sas-score-find-jobdef
-  │   → Call: sas-score-job-info
-  │
-  └─ About a table?
-      → Verify: sas-score-find-table (determine CAS or SAS server)
-      → Call: sas-score-table-info
+  â”œâ”€ About a MAS model?
+  â”‚   â†’ Verify: sas-score-find-mas
+  â”‚   â†’ Call: sas-score-mas-describe
+  â”‚
+  â”œâ”€ About a SCR model?
+  â”‚   â†’ Call: sas-score-scr-describe (skip verification; use name directly)
+  â”‚
+  â”œâ”€ About a Job model?
+  â”‚   â†’ Verify: sas-score-find-job
+  â”‚   â†’ Call: sas-score-job-describe
+  â”‚
+  â”œâ”€ About a JobDef model?
+  â”‚   â†’ Verify: sas-score-find-jobdef
+  â”‚   â†’ Call: sas-score-jobdef-describe
+  â”‚
+  â””â”€ About a table?
+      â†’ Verify: sas-score-find-table (determine CAS or SAS server)
+      â†’ Call: sas-score-table-describe
 ```
 
 ---
@@ -232,16 +257,16 @@ For each detail/information request:
 
 ## Response Format
 
-Always append a **Strategy Summary** to responses:
+Always append a **Strategy Summary** to responses (canonical template from `request-routing/SKILL.md`):
 
 ```
 ---
-
 **Strategy Summary:**
-- **Classification**: [Resource type identified]
-- **Verification**: [Resource found or skipped (SCR)]
-- **Tool Used**: [Detail tool invoked]
-- **Server**: [CAS/SAS for tables, N/A for models]
+- **Classification**: [Find / Read / Score / List / Describe]
+- **Verification**: [Resources verified / skipped]
+- **Tool(s)**: [Primary tool(s) invoked]
+- **Decision**: [Server chosen, model type, mapping]
+- **Next steps**: [Follow-ups or clarifications]
 ```
 
 ---
@@ -250,10 +275,10 @@ Always append a **Strategy Summary** to responses:
 
 If a request fails:
 
-1. **Resource not found** → Ask user to verify name/spelling
-2. **Server mismatch** → Re-verify server location with find-resources
-3. **Invalid URL (SCR)** → Ask for correct SCR endpoint URL
-4. **Tool error** → Return error message verbatim and ask for clarification
+1. **Resource not found** â†’ Ask user to verify name/spelling
+2. **Server mismatch** â†’ Re-verify server location with find-resources
+3. **Invalid name (SCR)** → Ask for correct SCR model name
+4. **Tool error** â†’ Return error message verbatim and ask for clarification
 
 ---
 
@@ -265,8 +290,8 @@ If a request fails:
 
 **Workflow**:
 1. Classify: MAS model detail request
-2. Verify: Find model creditScore → Found ✓
-3. Execute: `sas-score-mas-info({ model: "creditScore" })`
+2. Verify: Find model creditScore â†’ Found âœ“
+3. Execute: `sas-score-mas-describe({ model: "creditScore" })`
 4. Return: Model inputs, outputs, and description
 
 ### Example 2: SCR Model Schema
@@ -275,7 +300,7 @@ If a request fails:
 
 **Workflow**:
 1. Classify: SCR model detail request
-2. Execute: `sas-score-scr-info({ url: "https://scr-host/models/loan" })`
+2. Execute: `sas-score-scr-describe({ name: "loan" })`
 3. Return: Input schema and output schema
 
 ### Example 3: Table Columns
@@ -284,6 +309,8 @@ If a request fails:
 
 **Workflow**:
 1. Classify: Table detail request
-2. Verify: Find table customers in Public → CAS ✓
-3. Execute: `sas-score-table-info({ lib: "Public", table: "customers", server: "cas" })`
+2. Verify:  verify table exists with find-resources skill
+3. Execute: `sas-score-table-describe({ lib: "Public", table: "customers", server: "$server" })` where $server is determined from verification step
 4. Return: Column names, types, and table metadata
+
+

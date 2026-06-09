@@ -1,0 +1,59 @@
+{
+  "name": "sas-score-mcp-serverjs",
+  "displayName": "SAS Viya Score MCP",
+  "version": "0.0.6",
+  "description": "Skills, agent, and MCP server for reading and scoring data via SAS Viya",
+  "author": {
+    "name": "Deva Kumar",
+    "email": "deva.kumar@sas.com"
+  },
+  "repository": "https://github.com/sassoftware/sas-score-mcp-serverjs",
+  "license": "Apache-2.0",
+  "keywords": [
+    "sas",
+    "viya",
+    "scoring",
+    "mcp",
+    "analytics"
+  ],
+  "skills": "./skills/",
+  "agents": [
+    "./agents/sas-score-mcp-serverjs-agent.md"
+  ],
+  "mcpServers": {
+    "sas-score-mcp-serverjs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sassoftware/sas-score-mcp-serverjs"
+      ],
+      "env": {
+        "VIYA_SERVER": "${VIYA_SERVER}",
+        "AUTHFLOW": "${AUTHFLOW:-sascli}",
+        "CLIENTID": "${CLIENTID:-vscodemcp}",
+        "AGENT": "${AGENT:-TRUE}"
+      }
+    }
+  },
+  "userConfig": {
+    "VIYA_SERVER": {
+      "type": "string",
+      "title": "SAS Viya server URL",
+      "description": "Base URL of your SAS Viya server, e.g. https://my-viya.example.com",
+      "required": true
+    },
+    "AUTHFLOW": {
+      "type": "string",
+      "title": "Auth flow",
+      "description": "Authentication flow: oauth, code, sascli, token, or bearer",
+      "default": "sascli"
+    },
+
+      "AGENT": {
+        "type": "string",
+        "title": "Agent mode",
+        "description": "If TRUE, the skills must be deployed",
+        "default": "TRUE"
+      }
+    }
+  }

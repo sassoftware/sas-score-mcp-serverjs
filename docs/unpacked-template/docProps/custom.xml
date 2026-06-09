@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="2" name="ArticulateGUID">
+    <vt:lpwstr>451006F2-8E20-4D4E-B05C-4B5D02827FD6</vt:lpwstr>
+  </property>
+  <property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="3" name="ArticulatePath">
+    <vt:lpwstr>2020-Template-External</vt:lpwstr>
+  </property>
+  <property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="4" name="ContentTypeId">
+    <vt:lpwstr>0x0101009ED1E456CCEDE840ACB11EFB2D6815C1</vt:lpwstr>
+  </property>
+</Properties>
