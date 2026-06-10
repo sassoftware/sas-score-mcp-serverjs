@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import _findmas from '../toolHelpers/_findmas.js';
+import _findMas from '../toolHelpers/_findMas.js';
 
 
 function findMas(_appContext) {
@@ -60,7 +60,7 @@ Returns { mass: [] } if not found; { mass: [name, ...] } if found. Never halluci
         }
       }
       params.tool = 'find';
-      let r = await _findmas(params);
+      let r = await _findMas(params);
       return r;
     }
   }
