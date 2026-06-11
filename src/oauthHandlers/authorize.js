@@ -8,12 +8,17 @@ import baseUrl from "./baseUrl.js";
 function authorize(req, res, appContext, pkceStore, codeStore) {
     const { response_type, redirect_uri, state, scope } = req.query;
     console.error("===============================================================");
+    console.error("[NOTE] query parameters:", { response_type, redirect_uri, state, scope });
+    let callbackUri = appContext.mcpHost + '/callback';
+    console.error("[Note] Constructed callbackUri:", callbackUri);
+    console.error("[Note] appContext.AUTHEXTERNAL:", appContext.AUTHEXTERNAL);
     if (appContext.AUTHEXTERNAL === true) {
         console.error('*************************************************************');
         console.error("[Error] Received request for /authorize endpoint with external authorization expected");
         console.error('*************************************************************');
+        callbackUri = redirect_uri;
     }
-    console.error("[NOTE] query parameters:", { response_type, redirect_uri, state, scope });
+   
     if (response_type !== "code") {
         return res.status(400).json({ error: "unsupported_response_type" });
     }
@@ -27,7 +32,7 @@ function authorize(req, res, appContext, pkceStore, codeStore) {
 
     pkceStore.set(ourState, { codeVerifier, clientRedirectUri: redirect_uri, clientState: state, codeChallenge });
 
-    const callbackUri = appContext.mcpHost + '/callback';
+  
     console.error("[Note] callbackUri:", callbackUri);
     let urlConfig = {
         response_type: "code",

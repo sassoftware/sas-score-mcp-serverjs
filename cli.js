@@ -266,12 +266,12 @@ let authFlow = process.env.AUTHFLOW;
 let mcpHost = process.env.MCPHOST;
 
 if (authFlow === 'oauth' || authFlow === 'oauthclient') {
-  authFlow = 'bearer';
   authExternal = (authFlow === 'oauthclient') ? true : false;
+  authFlow = 'bearer';
 } else if (authFlow === 'bearer') {
   authExternal = true; // in bearer token flow we assume the token is generated externally and passed in via env variable or token file, so we set authExternal to true to indicate that  
 }
-  let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "FALSE";
+let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "FALSE";
 const appEnvBase = {
   version: version,
   mcpType: mcpType,
