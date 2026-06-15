@@ -1,0 +1,34 @@
+{
+  "name": "@sassoftware/sas-score-langchain",
+  "version": "1.0.0",
+  "description": "LangChain agent client for the SAS Score MCP Server — includes all skills as system-prompt context",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".":                     "./src/index.js",
+    "./expressMiddleware":   "./src/expressMiddleware.js"
+  },
+  "files": [
+    "src/",
+    "skills/"
+  ],
+  "scripts": {
+    "example": "node src/example.js"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.0",
+    "@langchain/langgraph": "^0.2.0",
+    "@langchain/mcp-adapters": "^0.3.0"
+  },
+  "peerDependencies": {
+    "@langchain/anthropic": "^0.3.0",
+    "@langchain/openai": "^0.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@langchain/anthropic": { "optional": true },
+    "@langchain/openai": { "optional": true }
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

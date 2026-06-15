@@ -42,6 +42,7 @@ function processHeaders(req, res, next, cache, appContext) {
       if (token != null) {
         console.error("[Note] Using user supplied token for authorization");
         headerCache.bearerToken = token;
+        console.error("[Note] incoming token:", token);
       } else {
         console.error("[Note] No Authorization token provided in header for external authorization.");
         console.error("[Note] Returning 404 since we are configured for external token and no token provided in header.");
