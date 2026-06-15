@@ -31,7 +31,7 @@ function processHeaders(req, res, next, cache, appContext) {
   //for now, ignore Authorization if authflow is not bearer
   let token = (hdr != null) ? hdr.slice(7) : null;
   debugger;
-  console.error('[Note} AUTHFLOW=',   appContext.AUTHFLOW);
+  console.error('[Note} AUTHFLOW=',appContext.AUTHFLOW);
   console.error("[Note] External authorization :", appContext.AUTHEXTERNAL);
   if (appContext.AUTHFLOW === 'bearer') {
     debugger;
@@ -84,7 +84,7 @@ function processHeaders(req, res, next, cache, appContext) {
       // start auth flow process since no token provided in header and we are not configured for external token
     }
   }
- // console.error("Header cache after processing:", headerCache);
+  console.error("Header cache after processing:", headerCache);
   cache.set("headerCache", headerCache);
   next();
 }
