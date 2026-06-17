@@ -60,6 +60,8 @@ Surface backend error directly; never fabricate jobdef names.
     handler: async (params) => {
       // _listJobdefs handles all validation and defaults
       const { intent, ...rest } = params;
+      rest.start = rest.start ?? 1;
+      rest.limit = rest.limit ?? 10;
       const result = await _listJobdefs(rest);
       return result;
     }

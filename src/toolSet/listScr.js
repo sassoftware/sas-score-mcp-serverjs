@@ -49,7 +49,10 @@ Returns empty array if no scrs found.
       start: z.number().optional()
     }),
     handler: async (params) => { 
-      let r  = await _listScr(params);
+      const { intent, ...rest } = params;
+      rest.start = rest.start ?? 1;
+      rest.limit = rest.limit ?? 10;
+      let r  = await _listScr(rest);
       return r;
     }
   }

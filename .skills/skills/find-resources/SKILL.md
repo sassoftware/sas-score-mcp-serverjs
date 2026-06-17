@@ -39,7 +39,8 @@ Step 1. Use find-library-server skill to verify the library exists and in which 
    - ✅ Found → return go to Step 2 
    - ❌ Not found → library does not exist; **stop** and report not found to the user
 
-Step 2. Use sas-score-find-table tool with the library and server from step 1: `sas-score-find-table({ lib: "<lib>", name: "<TABLE_NAME>", server: <server })`
+Step 2. Use sas-score-find-table tool with the library and server from step 1: 
+   - If server is sas, then uppercase the table name before calling `sas-score-find-table({ lib: "<lib>", name: "<TABLE_NAME>", server: <server })`
    - ✅ Found → return success with confirmed lib, table, and server
    - ❌ Not found → table does not exist; **stop** and report not found to the user
 

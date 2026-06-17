@@ -66,6 +66,8 @@ Returns empty array if no tables found.
     }),
     handler: async (params) => {
       const { intent, ...rest } = params;
+      rest.start = rest.start ?? 1;
+      rest.limit = rest.limit ?? 10;
       let r = await _listTables(rest);
       return r;
     }

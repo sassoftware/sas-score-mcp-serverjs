@@ -58,6 +58,8 @@ Surface backend error directly; never fabricate job names.
     handler: async (params) => {
       // _listJob handles all validation and defaults
       const { intent, ...rest } = params;
+      rest.start = rest.start ?? 1;
+      rest.limit = rest.limit ?? 10;
       const result = await _listJobs(rest);
       return result;
     }

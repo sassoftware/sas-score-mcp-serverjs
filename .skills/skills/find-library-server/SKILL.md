@@ -20,7 +20,9 @@ description: >
    - ✅ Found → return `{ lib: "<lib>", server: "cas" }`
    - ❌ Not found → go to step 2
 
-2. Call `sas-score-find-library({ name: "<LIB_UPPERCASED>", server: "sas" })`
+2. Look in SAS 
+ - Uppercase the library name 
+ - call `sas-score-find-library({ name: "<LIB_UPPERCASED>", server: "sas" })`
    - ✅ Found → return `{ lib: "<LIB_UPPERCASED>", server: "sas" }`
    - ❌ Not found → library does not exist; **stop** and report not found to the user
 

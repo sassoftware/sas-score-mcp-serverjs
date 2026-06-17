@@ -73,6 +73,8 @@ Return structured error with a message field. Never hallucinate library names.
     // 'server' has a default so we don't mark it required
     handler: async (params) => {
       const { intent, ...rest } = params;
+      rest.start = rest.start ?? 1;
+      rest.limit = rest.limit ?? 10;
       rest.server = (rest.server || 'all').toLowerCase();
       let r = await _listLibrary(rest);
       return r;
