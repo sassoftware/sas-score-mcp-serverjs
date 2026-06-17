@@ -51,8 +51,8 @@ Returns log output, listings, tables from jobdef. Error if jobdef not found.
     handler: async (params) => {
       let {scenario, name} = params;
 
-      if (name.endsWith('.job')) {
-        params.name = name.slice(0, -4);
+      if (name.endsWith('.jobdef')) {
+        name = name.slice(0, -7);
       }
       // Convert the scenario string to an object
       // Example: "x=1, y=2, z=3" to { x: 1, y: 2, z: 3 }
@@ -71,7 +71,8 @@ Returns log output, listings, tables from jobdef. Error if jobdef not found.
           return acc;
         }, {});
       }
-      params.scenario = scenarioObj;      
+      params.scenario = scenarioObj; 
+      params.name = name;
       params.type = 'def';
       // Provide runtime context for auth and server settings
       let r = await _jobSubmit(params);

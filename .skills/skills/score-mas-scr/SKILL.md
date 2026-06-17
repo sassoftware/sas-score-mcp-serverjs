@@ -22,12 +22,14 @@ description: >
 ## Inline Scenario Scoring
 
 **MAS:**
-1. Verify: `sas-score-find-mas({ model })`
-2. Score: `sas-score-mas-score({ model, scenario })`
+1. Strip suffix '.mas' from the model name, if present
+2. Verify: `sas-score-find-mas({ model })`
+3. Score: `sas-score-mas-score({ model, scenario })`
 
 **SCR:**
-1. Verify: `sas-score-find-scr({ model })`
-2. Score: `sas-score-scr-score({ model, scenario })`
+1. Strip suffix '.scr' from the model name, if present
+2. Verify: `sas-score-find-scr({ model })`
+3. Score: `sas-score-scr-score({ model, scenario })`
 
 ## Table Row Scoring
 

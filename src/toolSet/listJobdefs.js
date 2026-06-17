@@ -38,7 +38,7 @@ NEGATIVE EXAMPLES (do not route here)
 - is jobdef X available (use ${_appContext.brand}-find-jobdef)
 - list jobs (use ${_appContext.brand}-list-jobs)
 - score jobdef abc (use ${_appContext.brand}-jobdef-score)
-- list models (use ${_appContext.brand}-list-models)
+- list mas (use ${_appContext.brand}-list-mas)
 
 PAGINATION
 If returned length === limit, hint: next start = start + limit. Empty result with start > 1 means paged past end.

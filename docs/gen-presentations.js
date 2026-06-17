@@ -87,7 +87,74 @@ function card(sl, pres, x, y, w, h, title, body, bgColor) {
     "Route · Verify · Score — five skills, one router"
   );
 
-  // ── Slide 2: What are skills? ──────────────────────────────────────────────
+  // ── Slide 2: Target Audience ──────────────────────────────────────────────
+  {
+    let sl = pres.addSlide();
+    sl.addShape(pres.ShapeType.rect, { x: 0, y: 0, w: 10, h: 5.625, fill: { color: C.white } });
+    sectionHeader(sl, pres, "Target Audience");
+
+    // ── Card 1: SAS Users ──────────────────────────────────────────────────
+    sl.addShape(pres.ShapeType.roundRect, {
+      x: 0.4, y: 0.75, w: 4.2, h: 3.8,
+      fill: { color: C.palBlue }, line: { color: C.ltBlue, width: 0.75 }, rectRadius: 0.1
+    });
+    // number badge
+    sl.addShape(pres.ShapeType.ellipse, {
+      x: 0.55, y: 0.88, w: 0.5, h: 0.5,
+      fill: { color: C.navy }, line: { color: C.navy }
+    });
+    sl.addText("1", {
+      x: 0.55, y: 0.88, w: 0.5, h: 0.5,
+      fontFace: FONT_HDR, fontSize: 14, bold: true, color: C.white, align: "center", valign: "middle", margin: 0
+    });
+    sl.addText("SAS Users", {
+      x: 1.15, y: 0.9, w: 3.2, h: 0.44,
+      fontFace: FONT_HDR, fontSize: 18, bold: true, color: C.navy, margin: 0
+    });
+    sl.addText(
+      'SAS users who want to use natural language (“chat”) to execute prebuilt SAS code and models.',
+      {
+        x: 0.6, y: 1.5, w: 3.8, h: 1.1,
+        fontFace: FONT_BDY, fontSize: 12, color: C.navy, margin: 0, valign: "top"
+      }
+    );
+    sl.addText("See the Quick Reference for details.", {
+      x: 0.6, y: 2.75, w: 3.8, h: 0.4,
+      fontFace: FONT_BDY, fontSize: 11, italic: true, color: C.blue, margin: 0
+    });
+
+    // ── Card 2: MCP Tool Developers ───────────────────────────────────────
+    sl.addShape(pres.ShapeType.roundRect, {
+      x: 5.4, y: 0.75, w: 4.2, h: 3.8,
+      fill: { color: C.navy }, line: { color: C.blue, width: 0.75 }, rectRadius: 0.1
+    });
+    // number badge
+    sl.addShape(pres.ShapeType.ellipse, {
+      x: 5.55, y: 0.88, w: 0.5, h: 0.5,
+      fill: { color: C.ltBlue }, line: { color: C.ltBlue }
+    });
+    sl.addText("2", {
+      x: 5.55, y: 0.88, w: 0.5, h: 0.5,
+      fontFace: FONT_HDR, fontSize: 14, bold: true, color: C.navy, align: "center", valign: "middle", margin: 0
+    });
+    sl.addText("MCP Tool Developers", {
+      x: 6.15, y: 0.9, w: 3.2, h: 0.44,
+      fontFace: FONT_HDR, fontSize: 16, bold: true, color: C.white, margin: 0
+    });
+    sl.addText(
+      "SAS developers who want to extend the capabilities of the server with their own tools.",
+      {
+        x: 5.6, y: 1.5, w: 3.8, h: 1.1,
+        fontFace: FONT_BDY, fontSize: 12, color: C.palBlue, margin: 0, valign: "top"
+      }
+    );
+    sl.addText("See the Developer Guide for details.", {
+      x: 5.6, y: 2.75, w: 3.8, h: 0.4,
+      fontFace: FONT_BDY, fontSize: 11, italic: true, color: C.ltBlue, margin: 0
+    });
+  }
+
+  // ── Slide 3: What are skills? ──────────────────────────────────────────────
   {
     let sl = pres.addSlide();
     sl.addShape(pres.ShapeType.rect, { x: 0, y: 0, w: 10, h: 5.625, fill: { color: C.white } });

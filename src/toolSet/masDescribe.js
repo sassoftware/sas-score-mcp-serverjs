@@ -36,8 +36,8 @@ EXAMPLES
 - "Show variables for myModel" → { model: "myModel" }
 
 NEGATIVE EXAMPLES (do not route here)
-- "list mas" (use list-models)
-- "find mas X" (use find-model)
+- "list mas" (use list-mas)
+- "find mas X" (use find-mas)
 - "score with mas X" (use model-score)
 
 ERRORS

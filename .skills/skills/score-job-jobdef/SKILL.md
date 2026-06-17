@@ -19,15 +19,20 @@ description: >
 | Job | `sas-score-find-job` | `sas-score-job-score` |
 | JobDef | `sas-score-find-jobdef` | `sas-score-jobdef-score` |
 
+## 
 ## Inline Scenario Scoring
 
+
 **Job:**
-1. Verify: `sas-score-find-job({ name })`
-2. Score: `sas-score-job-score({ name, scenario })`
+
+1. Strip suffix '.job' from the model name, if present
+2. Verify: `sas-score-find-job({ name })`
+3. Score: `sas-score-job-score({ name, scenario })`
 
 **JobDef:**
-1. Verify: `sas-score-find-jobdef({ name })`
-2. Score: `sas-score-jobdef-score({ name, scenario })`
+1. Strip suffix '.jobdef' from the model name, if present
+2. Verify: `sas-score-find-jobdef({ name })`
+3. Score: `sas-score-jobdef-score({ name, scenario })`
 
 ## Table Row Scoring
 

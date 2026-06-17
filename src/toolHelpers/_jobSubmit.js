@@ -54,11 +54,14 @@ async function _jobSubmit(params) {
       let store = restaf.initStore(_appContext.storeConfig);
       let msg = await store.logon(_appContext.logonPayload);
       type = (type == null) ? 'job' : type.toLowerCase();
-      
+      console.error(`Job submission type resolved to: ${type}`);
+      console.error(`Job submission name resolved to: ${name}`);
+      console.error(`Job submission scenario resolved to: ${JSON.stringify(scenario)}`);
       let r = (type === 'definition' || type === 'def')
         ? await restaflib.jesRun(store, name, scenario)
         : await restaflib.jobRun(store, name, scenario);
 
+      console.error(`Response from job submission: ${JSON.stringify(r)}`);
       let response = (query === true) ? { tabled: r.tables.rows } : { tables: r.tables, listing: r.listing, log: r.log };
       
       return {

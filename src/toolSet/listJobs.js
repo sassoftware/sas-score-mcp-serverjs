@@ -35,7 +35,7 @@ EXAMPLES
 NEGATIVE EXAMPLES (do not route here)
 - find job abc (use ${_appContext.brand}-find-job)
 - score job abc (use ${_appContext.brand}-job-score)
-- list models (use ${_appContext.brand}-list-models)
+- list mas (use ${_appContext.brand}-list-mas)
 - list tables in lib xyz (use ${_appContext.brand}-list-tables)
 
 PAGINATION

@@ -37,7 +37,6 @@ EXAMPLES
 NEGATIVE EXAMPLES (do not route here)
 - "find model X" (use find-model)
 - "what inputs does model need" (use model-info)
-- "list models" (use list-models)
 - "score job X" (use job-score)
 
 ERRORS

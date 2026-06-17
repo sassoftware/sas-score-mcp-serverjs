@@ -45,7 +45,9 @@
       "Bash(python -m markitdown \"C:/dev/github/sas-score-mcp-serverjs/docs/sas-score-mcp-workflow.pptx\")",
       "Bash(python -m markitdown \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\docs\\\\sas-score-mcp-workflow.pptx\")",
       "Bash(python -m markitdown \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\docs\\\\sas-score-mcp-overview.pptx\")",
-      "Bash(python -m markitdown sas-score-mcp-overview.pptx)"
+      "Bash(python -m markitdown sas-score-mcp-overview.pptx)",
+      "Bash(npm root *)",
+      "Bash(NODE_PATH=$\\(npm root -g\\) node --input-type=commonjs)"
     ]
   }
 }

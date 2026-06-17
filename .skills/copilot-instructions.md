@@ -16,7 +16,7 @@ Note: the five-step phrasing (Identify → Verify → Select → Execute → For
 - Append a **Strategy Summary** to every response.
 - Always determine table server (CAS vs SAS) during verification; ask if ambiguous.
 - Do not invent resource names, servers, or model types — verify or ask.
-- Pagination: always pass `start=1` and `limit=10` when calling any tool that accepts these parameters, unless the user specifies different values.
+- Pagination: if the tool accepts start and limit parameters, default to `start=1` and `limit=10` when calling any tool that accepts these parameters, unless the user specifies different values.
 
 ## Model types
 All of the following are treated as **models** that can be scored:
