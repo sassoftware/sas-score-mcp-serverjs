@@ -1,6 +1,6 @@
 {
   "name": "@sassoftware/sas-score-mcp-serverjs",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "A mcp server for SAS Viya",
   "author": "Deva Kumar <deva.kumar@sas.com>",
   "license": "Apache-2.0",
