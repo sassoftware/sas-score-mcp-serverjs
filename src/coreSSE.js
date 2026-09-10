@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-async function coreSSE(mcpServer) { 
-  let transport = new StdioServerTransport();
-  await mcpServer.connect(transport);
-  console.error("[Note] MCP Server connected over stdio transport.");
-  return transport;
+import { serveStdio } from "@modelcontextprotocol/server/stdio";
+import makeServerFactory from "./createMcpServer.js";
+
+async function coreSSE(appEnvBase) {
+  // legacy: 'reject' — pure 2026-07-28 MCP revision, no 2025-era stdio opening.
+  const handle = serveStdio(makeServerFactory(appEnvBase), { legacy: "reject" });
+  console.error("[Note] MCP Server serving over stdio.");
+  return handle;
 }
 export default coreSSE;

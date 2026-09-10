@@ -47,7 +47,12 @@
       "Bash(python -m markitdown \"C:\\\\dev\\\\github\\\\sas-score-mcp-serverjs\\\\docs\\\\sas-score-mcp-overview.pptx\")",
       "Bash(python -m markitdown sas-score-mcp-overview.pptx)",
       "Bash(npm root *)",
-      "Bash(NODE_PATH=$\\(npm root -g\\) node --input-type=commonjs)"
+      "Bash(NODE_PATH=$\\(npm root -g\\) node --input-type=commonjs)",
+      "Bash(ls \"/c/Users/kumar/.claude/plans/\" 2>&1)",
+      "Bash(git checkout *)",
+      "Bash(rm -f src/core.js src/createHttpTransport.js src/db/scrModels.js src/urlOpen.js src/toolHelpers/refreshTokenOauth.js src/toolSet/getEnv.js src/toolSet/setContext.js src/processHeaders.js)",
+      "Bash(rm -rf src/db src/oauthHandlers)",
+      "Bash(npm ls *)"
     ]
   }
 }

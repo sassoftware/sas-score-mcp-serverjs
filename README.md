@@ -2,6 +2,12 @@
 A Model Context Protocol (MCP) Server for Scoring with SAS Viya. 
 See [wiki](https://github.com/sassoftware/sas-score-mcp-serverjs/wiki) for the capabilities of the server.
 
+> This server implements only the **2026-07-28** MCP specification revision —
+> there is no support for older (2025-era) clients, and the HTTP transport is
+> fully stateless (no `Mcp-Session-Id` is ever issued or required). A client
+> that only speaks an earlier protocol revision will get an
+> unsupported-protocol-version error rather than being served.
+
 ## Major changes in release 1.0.0
 
 - Authentication: Oauth flow is now supported. 
@@ -38,7 +44,7 @@ npx @sassoftware/sas-score-mcp-serverjs@latest
 The mcp is also available as a docker image. Add or remove the env variables as needed.
 
 ```sh
-docker run -p 8080:8080 --name sasscore -e VIYA_SERVER=<yourviyaserver> -e AUTHFLOW=oauth ghcr.io/sassoftware/sas-score-mcp-serverjs:latest
+docker run -p 8080:8080 --name sasscore -e VIYA_SERVER=<yourviyaserver> -e AUTHFLOW=bearer ghcr.io/sassoftware/sas-score-mcp-serverjs:latest
 ```
 
 ## Capabilities
@@ -81,11 +87,14 @@ Typically these are set either in the .env file or as environment variables or a
 
 These can be customized
 
-1. AUTHFLOW=**oauth**|oauthclient|bearer|sascli|token|password 
-    - Authentication method. Default is oauth
+1. AUTHFLOW=**bearer**|oauthclient|sascli|token|refresh|password|none
+    - Authentication method. Default is bearer. This server never brokers an
+      OAuth login itself — the caller supplies a bearer token on every
+      request, either obtained via its own OAuth2 flow (`oauthclient`/`bearer`)
+      or managed locally (`sascli`/`token`/`refresh`/`password`).
 
 2. CLIENTID=**vscodemcp** 
-     - Clientid for oauth and oauthclient AUTHFlOW. Must be PKCE clientid. 
+     - Clientid used by an MCP client that performs its own OAuth2 flow against SAS Logon. 
      
 
 3. MCPTYPE=**http**|stdio  
@@ -108,22 +117,11 @@ These can be customized
 
 ### Clientid specifications
 
-If using remote mcp server, change the url in redirect to the remote url
-
-```js
-{
-  client_id: 'vscodemcp',
-  scope: [ 'openid' ],
-  resource_ids: [ 'none' ],
-  autoapprove: true,
-  authorized_grant_types: [ 'authorization_code' ],
-  access_token_validity: 86400,
-  allowpublic: true,
-  redirect_uri: [ 'http://localhost:8080/callback' ]
-}
-```
-
-> OauthClient Flow. Clientid with redirect appropriate for the client. Some examples are shown below. Note that the explicit port used by github copilot is not guaranteed. 
+The MCP client (not this server) performs the OAuth2 flow against SAS Logon
+and sends the resulting token as a bearer token. Register a Viya OAuth
+client whose `redirect_uri` matches the MCP client's own redirect. Some
+examples are shown below. Note that the explicit port used by github copilot
+is not guaranteed. 
 
 - github copilot: http://127.0.0.1:33418/
 - claude: https://claude.ai/api/mcp/auth_callback,https://claude.ai/api/auth/callback
@@ -190,10 +188,14 @@ For stdio scenario
 
 ## Notes
 
-The mcp server caches information for each mcp session id(user). 
+The mcp server is stateless: it answers each HTTP request independently and
+never tracks an mcp session id. Every request builds a fresh server instance
+from the same tool definitions, using the auth (bearer token, sascli profile,
+etc.) presented on that request/connection.
 
-However, cas and compute sessions are not cached in this release(TBD).
-The implication of this design choice is felt most when the tool needs is creating compute session * the requests will take longer than when the compute session is cached.
+Cas and compute sessions are not cached either. The implication of this
+design choice is felt most when a tool needs to create a compute session —
+the requests will take longer than they would with a cached compute session.
 
 ## Other Useful Tips
 

@@ -39,7 +39,6 @@ import jobDescribe from './jobDescribe.js';
 import jobdefDescribe from './jobdefDescribe.js';
 
 import sasQuery from './sasQuery.js';
-import setContext from './setContext.js';
 
 function makeTools(_appContext) {
   // wrap all tools with 
@@ -79,9 +78,7 @@ function makeTools(_appContext) {
     jobdefDescribe(_appContext),
     jobdefScore(_appContext),
 
-    devaScore(_appContext),
-    setContext(_appContext)
-    
+    devaScore(_appContext)
   ];
   let listWithCustom = list.concat(customTools);
   console.error(`\n[Note] Loaded a total of ${listWithCustom.length} tools.`);

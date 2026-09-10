@@ -1,6 +1,14 @@
 
 # Notes support for oauth in http transport 
 
+> The mcp server never brokers an OAuth login itself (there is no
+> `/oauth/authorize`, `/callback`, or `/oauth/token` on this server) — the MCP
+> client performs its own OAuth2/PKCE flow against SAS Logon and sends the
+> resulting token as a bearer token on every request. `AUTHFLOW=bearer` (also
+> accepted as `oauth`/`oauthclient`) is the only OAuth-shaped auth mode. The
+> server also speaks only the 2026-07-28 MCP protocol revision — there is no
+> backward compatibility with earlier (2025-era) clients.
+
 ## Claude
 
 TBD
@@ -35,27 +43,6 @@ It appears that the / at the end of the redirect URI is important]
 }
 ```
 
-### pkce clientid when mcp server does teh oauth flow
-
-```js
-
-{
-  scope: [ 'openid' ],
-  client_id: 'pkcevscodelocal',
-  resource_ids: [ 'none' ],
-  authorized_grant_types: [ 'authorization_code', 'refresh_token' ],
-  redirect_uri: [
-    'http://localhost:8080/callback',
-    'https://localhost:8080/callback'
-  ],
-  autoapprove: [ 'true' ],
-  access_token_validity: 7776000,
-  authorities: [ 'uaa.none' ],
-  allowpublic: true,
-  lastModified: 1776355837531,
-  required_user_groups: []
-}
-```
 ### Define the MCP server with this config
 
 ```js
