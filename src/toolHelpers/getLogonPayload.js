@@ -5,7 +5,6 @@
 
 import getToken from "./getToken.js";
 import refreshToken from "./refreshToken.js";
-import refreshTokenOauth from "./refreshTokenOauth.js";
 
 async function getLogonPayload(_appContext) {
   _appContext.contexts.logonPayload = await igetLogonPayload(_appContext);
@@ -22,25 +21,7 @@ async function igetLogonPayload(_appContext) {
   }
     */
 
-  if (_appContext.AUTHFLOW === 'code') {
-    let oauthInfo = _appContext.contexts.oauthInfo;
-    if (oauthInfo == null) {
-      return null;
-    }
-    _appContext.contexts.oauthInfo = await refreshTokenOauth(_appContext, oauthInfo);
-    if (_appContext.contexts.oauthInfo == null) {
-      return null;
-    }
-    let logonPayload = {
-      host: _appContext.VIYA_SERVER,
-      authType: "server",
-      token: _appContext.contexts.oauthInfo.accessToken,
-      tokenType: "Bearer",
-    }
-    return  logonPayload;
-  }
-
-  // Use user supplied bearer token 
+  // Use user supplied bearer token
   if (_appContext.AUTHFLOW === "bearer") {
     if (_appContext.bearerToken == null) {
       console.error("[Error] AUTHFLOW set to bearer but no bearer token supplied");

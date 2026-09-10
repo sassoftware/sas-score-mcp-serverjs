@@ -2,58 +2,87 @@
  * Copyright © 2025, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
-import express from "express";
-
 import https from "https";
-import cors from "cors";
-import bodyParser from "body-parser";
 import selfsigned from "selfsigned";
 import openAPIJson from "./openAPIJson.js";
-import createMcpServer from "./createMcpServer.js";
+import makeServerFactory from "./createMcpServer.js";
 
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { randomUUID } from "node:crypto";
-import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
+import { createMcpExpressApp, requireBearerAuth } from "@modelcontextprotocol/express";
+import { createMcpHandler, OAuthError, OAuthErrorCode } from "@modelcontextprotocol/server";
+import { toNodeHandler } from "@modelcontextprotocol/node";
 
 import tlogon from "./toolHelpers/tlogon.js";
+import { getMetadata, authorize, callback, token } from "./oauthHandlers/index.js";
 
-import { getMetadata, authorize, callback, token, baseUrl } from "./oauthHandlers/index.js";
-import processHeaders from "./processHeaders.js";
+// stateless MCP HTTP server: no mcp session tracking, no per-session
+// transport bookkeeping — the SDK builds a fresh McpServer per request via
+// makeServerFactory and answers each request independently. The one bit of
+// server-side state below (pkceStore/codeStore/tokenlist) is inherent to
+// acting as an OAuth intermediary (AUTHFLOW=oauth) — it is unrelated to MCP
+// session state and is cleared on restart.
 
-// setup express server
+// OAuthTokenVerifier passed to the SDK's requireBearerAuth middleware.
+// - AUTHEXTERNAL === true (oauthclient/bearer): the caller already holds a
+//   real, externally-obtained token; trust it as-is (same model the
+//   previous processHeaders.js used), decoding just enough to get an
+//   expiresAt if it's a JWT.
+// - AUTHEXTERNAL === false (oauth, server-brokered): the incoming bearer is
+//   the opaque code minted by our own /oauth/token — resolve it to the real
+//   Viya access token via tokenlist.
+function makeTokenVerifier(baseAppEnvContext, tokenlist) {
+  return {
+    async verifyAccessToken(incomingToken) {
+      if (baseAppEnvContext.AUTHEXTERNAL === true) {
+        let expiresAt;
+        try {
+          const payload = JSON.parse(Buffer.from(incomingToken.split(".")[1], "base64url").toString("utf8"));
+          if (typeof payload.exp === "number") {
+            expiresAt = payload.exp;
+          }
+        } catch {
+          // not a JWT (or unparsable) — fall through to the default below
+        }
+        if (expiresAt == null) {
+          expiresAt = Math.floor(Date.now() / 1000) + 24 * 60 * 60;
+        }
+        return { token: incomingToken, clientId: "external", scopes: [], expiresAt };
+      }
 
-async function expressMcpServer(_mcpServer, cache, baseAppEnvContext) {
-  // setup for change to persistence session
-  cache.del("headerCache");
-  const app = express();
+      const tokenData = tokenlist[incomingToken];
+      if (tokenData == null) {
+        throw new OAuthError(OAuthErrorCode.InvalidToken, "Expired token. Clear token and try again.");
+      }
+      return {
+        token: tokenData.access_token,
+        clientId: baseAppEnvContext.CLIENTID || "sas-oauth-proxy",
+        scopes: ["openid"],
+        expiresAt: Math.floor(tokenData.refreshAt / 1000),
+      };
+    },
+  };
+}
+
+async function expressMcpServer(baseAppEnvContext) {
+  const app = createMcpExpressApp({
+    host: baseAppEnvContext.contexts.APPHOST || "0.0.0.0",
+    jsonLimit: process.env.JSON_LIMIT ?? "50mb",
+  });
   let appStatus = false;
-  app.use(express.urlencoded({ extended: true })); // MUST be before your routes
-  app.use(express.json({ limit: "50mb" }));
-  app.use(
-    cors({
-      origin: "*",
-      credentials: false,
-      exposedHeaders: ["mcp-session-id"],
-      allowedHeaders: [
-        "Accept",
-        "Authorization",
-        "Content-Type",
-        "If-None-Match",
-        "Accept-language",
-        "mcp-session-id",
-      ],
-    })
-  );
-  // app.use(helmet());
-  app.use(bodyParser.json({ limit: process.env.JSON_LIMIT ?? "50mb" }));
 
   // In-memory stores for the OAuth PKCE proxy flow (cleared on server restart)
   const pkceStore = new Map(); // ourState -> { codeVerifier, clientRedirectUri, clientState }
   const codeStore = new Map(); // ourCode   -> { access_token, refresh_token, expires_in }
+  const tokenlist = {}; // ourCode (as bearer token) -> { access_token, refresh_token, expires_in, refreshAt }
+  const tokenCache = { get: (k) => (k === "tokenlist" ? tokenlist : undefined), set: () => {} };
 
-  // Per-session transports — each initialize creates its own transport
-  const transports = new Map(); // sessionId -> transport
-  cache.set("transports", transports);
+  const handler = createMcpHandler(makeServerFactory(baseAppEnvContext));
+
+  const requireAuth = baseAppEnvContext.AUTHFLOW === "bearer"
+    ? requireBearerAuth({
+        verifier: makeTokenVerifier(baseAppEnvContext, tokenlist),
+        resourceMetadataUrl: `${baseAppEnvContext.mcpHost}/.well-known/oauth-protected-resource`,
+      })
+    : (_req, _res, next) => next();
 
   app.get('/.well-known/oauth-protected-resource', (req, res) => {
     let payload = {
@@ -62,47 +91,39 @@ async function expressMcpServer(_mcpServer, cache, baseAppEnvContext) {
       scopes_supported: ['openid'],
       bearer_methods_supported: ["header"]
     }
-    console.error("[Note]>>>>>>>>>>>>>>>>>>>>>>>>>> protected resource metadata ", payload  );
     return res.json(payload);
   });
 
   app.get("/.well-known/oauth-authorization-server", async (req, res) => {
-    console.error("[Note] Received request for OAuth authorization server metadata");
     let metadata = getMetadata(req, res, baseAppEnvContext);
-    console.error("[Note]>>>>>>>>>>>>>>>>>>>>>>>>> metadata ", metadata);
     return res.status(200).json(metadata);
   });
 
-  // OAuth authorize — generates PKCE params, stores state, redirects to SAS Viya
-  app.get("/oauth/authorize", async (req, res) => {
-    console.error("[Note] Received request for /oauth/authorize");
-    return authorize(req, res, baseAppEnvContext, pkceStore, codeStore);
-  });
-  app.get("/authorize", async (req, res) => {
-    console.error("[Note] Received request for /authorize");
-    return authorize(req, res, baseAppEnvContext, pkceStore, codeStore);
-  });
+  // OAuth authorize — generates PKCE params, stores state, redirects to SAS Viya.
+  // Required for GitHub Copilot and other clients that hit /authorize on the
+  // MCP server itself rather than doing full AS discovery — Viya has no
+  // dynamic client registration, so this server proxies with its own
+  // pre-registered CLIENTID (AUTHFLOW=oauth).
+  app.get("/oauth/authorize", async (req, res) => authorize(req, res, baseAppEnvContext, pkceStore, codeStore));
+  app.get("/authorize", async (req, res) => authorize(req, res, baseAppEnvContext, pkceStore, codeStore));
 
   // OAuth callback — receives code from SAS Viya, exchanges for tokens
-  app.get("/callback", async (req, res) => {
-    console.error("[Note] Received request for /callback with query parameters:");
-    return await callback(req, res, pkceStore, codeStore, baseAppEnvContext);
-  });
+  app.get("/callback", async (req, res) => callback(req, res, pkceStore, codeStore, baseAppEnvContext));
 
   // OAuth token endpoint — MCP client exchanges intermediate code for access token
-  app.post("/oauth/token", (req, res) => {
-    console.error("[Note] Received request for /oauth/token");
-    return token(req, res, baseAppEnvContext, codeStore, cache);
-  });
+  app.post("/oauth/token", (req, res) => token(req, res, baseAppEnvContext, codeStore, tokenCache));
+  app.post("/token", (req, res) => token(req, res, baseAppEnvContext, codeStore, tokenCache));
 
-  app.post("/token", (req, res) => {
-    console.error("[Note] Received request for /token");
-    return token(req, res, baseAppEnvContext, codeStore, cache);
-  });
-  // setup routes
+  // createMcpExpressApp already parses the JSON body (express.json()), so the
+  // body stream is drained by the time toNodeHandler would see it — pass the
+  // already-parsed req.body through explicitly instead of letting it re-read.
+  // Route every method through the handler; stateless mode itself answers
+  // GET/DELETE (2025-era session operations) with 405, POST is the only one
+  // that does anything.
+  const mcpNodeHandler = toNodeHandler(handler);
+  app.all("/mcp", requireAuth, (req, res) => mcpNodeHandler(req, res, req.body));
 
   // Root endpoint info
-
   app.get("/", (req, res) => {
     res.json({
       name: "SAS Viya Sample MCP Server",
@@ -111,7 +132,7 @@ async function expressMcpServer(_mcpServer, cache, baseAppEnvContext) {
       endpoints: {
         mcp: "/mcp",
         health: "/health",
-        apiMeta: "/apiMeta"
+        apiMeta: "/apiMeta",
       },
       usage: "Use with MCP Inspector or compatible MCP clients",
     });
@@ -130,7 +151,7 @@ async function expressMcpServer(_mcpServer, cache, baseAppEnvContext) {
       endpoints: {
         mcp: "/mcp",
         health: "/health",
-        apiMeta: "/apiMeta"
+        apiMeta: "/apiMeta",
       },
       usage:
         "Use with MCP Inspector or compatible MCP clients like vscode or your own MCP client",
@@ -150,137 +171,6 @@ async function expressMcpServer(_mcpServer, cache, baseAppEnvContext) {
     res.json(spec);
   });
 
-  // handle processing of information in header.
-  function requireBearer(req, res, next) {
-    return processHeaders(req, res, next, cache, baseAppEnvContext);
-  }
-
-  // process mcp endpoint requests
-  const handleRequest = async (req, res) => {
-    console.error("=========================================================");
-    console.error("Processing POST /mcp request");
-    console.error("current active sessions:", transports.size);
-    try {
-
-      let sessionId = req.headers["mcp-session-id"];
-      console.error("[Note]Incoming session ID:", sessionId);
-      let body = (req.body == null) ? 'no body' : JSON.stringify(req.body);
-      console.error('[Note] Payload is ', body);
-     
-      if (isInitializeRequest(req.body)) {
-        console.error("[Note]>>>>>>>>>>>>>>>>>>>>>>>>>  Creating  new MCP server");
-        let mcpServer = await createMcpServer(cache, baseAppEnvContext);
-        // New session — create a dedicated transport
-        console.error("[Note] Initializing new session with fresh transport...");
-        const isInitRequest = req.body?.method === 'initialize';
-
-        const transport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: () => randomUUID(),
-          enableJsonResponse: true,
-          onsessioninitialized: (newSessionId) => {
-            console.error("[Note] Session initialized with ID:", newSessionId);
-            transports.set(newSessionId, transport);
-            cache.set("transports", transports);
-            console.error("[Note] Total active sessions:", Object.keys(transports));
-          },
-        });
-        transport.onclose = () => {
-          if (transport.sessionId) {
-            console.error("[Note] Session closed, removing transport:", transport.sessionId);
-            transports.delete(transport.sessionId);
-            cache.del(transport.sessionId);
-          }
-        };
-        await mcpServer.connect(transport);
-        console.error("=======================================================");
-        return await transport.handleRequest(req, res, req.body);
-
-      } else if (sessionId != null) {
-        const transport = transports.get(sessionId);
-        if (!transport) {
-          console.error("[Note] Unknown session ID:", sessionId);
-          return res.status(404).json({ jsonrpc: "2.0", error: { code: -32000, message: "Session not found. Please re-initialize." }, id: null });
-        }
-        console.error('[Note] Incoming session ID:', sessionId);
-        console.error("[Note] Using transport for session ID:", sessionId);
-
-        // post the current session - used to pass _appContext to tools
-        cache.set("currentId", sessionId);
-
-        // get app context for session
-        let _appContext = cache.get(sessionId);
-
-        //if first prompt on a sessionid, create app context
-        if (_appContext == null) {
-
-          let appEnvTemplate = cache.get("appEnvTemplate");
-          let headerCache = cache.get("headerCache");
-          _appContext = Object.assign({}, appEnvTemplate, headerCache);
-          cache.set(sessionId, _appContext);
-        } else {
-          let headerCache = cache.get("headerCache");
-          _appContext = Object.assign(_appContext, headerCache);
-          cache.set(sessionId, _appContext);
-        }
-        console.error("==========================================================");
-        await transport.handleRequest(req, res, req.body);
-        return;
-      }
-
-      // initialize request
-
-    }
-    catch (error) {
-      console.error("Error handling MCP request:", error);
-      if (!res.headersSent) {
-        res.status(500).json({
-          jsonrpc: "2.0",
-          error: {
-            code: -32603,
-            message: JSON.stringify(error),
-          },
-          id: null,
-        });
-      }
-      return;
-    }
-  };
-  const handleGetDelete = async (req, res) => {
-    console.error("=========================================================");
-    console.error(`[Note] ${req.method} /mcp called`);
-    const sessionId = req.headers["mcp-session-id"];
-    console.error("[Note] SessionId:", sessionId);
-
-    if (!sessionId) {
-      console.error("[Note] No session ID on /DELETE — rejecting");
-      return res.status(400).json({ jsonrpc: "2.0", error: { code: -32000, message: "Bad Request: Mcp-Session-Id header is required" }, id: null });
-    }
-
-    const transport = transports.get(sessionId);
-    if (!transport) {
-      console.error("[Note] Unknown session ID:", sessionId);
-      return res.status(404).json({ jsonrpc: "2.0", error: { code: -32000, message: "Session not found. Please re-initialize." }, id: null });
-    }
-
-    if (req.method === "GET") {
-      console.error("[Note] calling transport.handleRequest for GET /mcp");
-      await transport.handleRequest(req, res);
-      return;
-    }
-    if (req.method === "DELETE") {
-      console.error("[Note] Deleting transport and cache for session ID:", sessionId);
-      transports.delete(sessionId);
-      cache.del(sessionId);
-      console.error("[Note] Deleted session ID:", sessionId);
-      console.error("[Note] Total active sessions:", Object.keys(transports));
-      res.status(201).send(`[Info] Deleted session ${sessionId}`);
-    }
-  }
-
-  app.options("/mcp", (_, res) => res.sendStatus(204));
-  app.post("/mcp", requireBearer, handleRequest);
-  app.get("/mcp", handleGetDelete);
-  app.delete("/mcp", handleGetDelete);
   app.get("/StartUp", (_req, res) => {
     console.error("===================================================================")
     console.error("Received request for Startup  endpoint. Current app status:", appStatus);
@@ -319,7 +209,7 @@ async function expressMcpServer(_mcpServer, cache, baseAppEnvContext) {
     return res.status(200).json({ status: "ready" });
   });
   // Start the server
-  let appEnvBase = cache.get("appEnvBase");
+  let appEnvBase = baseAppEnvContext;
 
   const PORT = appEnvBase.PORT;
 
@@ -335,8 +225,6 @@ async function expressMcpServer(_mcpServer, cache, baseAppEnvContext) {
       appEnvBase.tlsOpts.rejectUnauthorized = false;
       appEnvBase.contexts.appCert = appEnvBase.tlsOpts; /* just for completeness */
     }
-
-    cache.set("appEnvBase", appEnvBase);
 
     console.error(`[Note] MCP Server listening on port ${PORT}`);
     console.error(

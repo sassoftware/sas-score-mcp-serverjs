@@ -4,98 +4,82 @@
  */
 
 /**
- * Creates and configures an MCP server instance.
- * @param {Object} cache - The session cache to store the MCP server instance.
- * @returns {Promise<McpServer>} The configured MCP server instance.  
- * @example
- * Notes: Handles both http and stdio transports scenarios
- * 
+ * Builds the MCP server factory used by both the stateless HTTP entry
+ * (createMcpHandler) and the stdio entry (serveStdio). The same factory is
+ * called once per request (HTTP) or once per connection (stdio) to build a
+ * fresh McpServer bound to a fresh, request-scoped appContext — there is no
+ * shared session state between calls.
  */
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/server";
 import makeTools from "./toolSet/makeTools.js";
 import getLogonPayload from "./toolHelpers/getLogonPayload.js";
 
-function getServerBaseUrl(appContext) {
-  const protocol = appContext.HTTPS === "TRUE" ? "https" : "http";
-  const host = appContext.contexts?.APPHOST || "localhost";
-  return `${protocol}://${host}:${appContext.PORT}`;
-}
+function makeServerFactory(appEnvBase) {
+  return async function serverFactory(ctx) {
+    // clone the base template; this becomes the per-request appContext
+    const _appContext = Object.assign({}, appEnvBase, { contexts: Object.assign({}, appEnvBase.contexts) });
 
-async function createMcpServer(cache, _appContext) {
-  const serverBaseUrl = getServerBaseUrl(_appContext);
-
-  let mcpServer = new McpServer(
-    {
-      name: "sasmcp",
-      version: _appContext.version,
-    },
-    {
-      capabilities: {
-        tools: {
-          listChanged: true,
-        },
-      },
+    // HTTP only — ctx.requestInfo/ctx.authInfo are unset over stdio, so the
+    // CLI-managed auth flows (sascli/token/refresh/password/none) fall
+    // through untouched.
+    if (ctx.requestInfo) {
+      const req = ctx.requestInfo;
+      const viyaServerHeader = req.headers.get("x-viya-server");
+      if (viyaServerHeader) {
+        console.error("[Note] Using user supplied VIYA server");
+        _appContext.VIYA_SERVER = viyaServerHeader;
+      }
+      const refreshHeader = req.headers.get("x-refresh-token");
+      if (refreshHeader) {
+        console.error("[Note] Using user supplied refresh token for authorization");
+        _appContext.REFRESH_TOKEN = refreshHeader;
+        _appContext.AUTHFLOW = "refresh";
+      }
     }
-  );
-  let toolSet = makeTools(_appContext);
-
-  //wrapping tool handler to pass _appContext
-  //can be ignored or used as needed.
-
-  const wrapf = (cache, builtin) => async (args) => {
-    let currentId = cache.get('currentId');
-    let _appContext = cache.get(currentId);
-    let params;
-
-    let errorStatus = cache.get('errorStatus');
-    if (errorStatus) {
-      return { isError: true, content: [{ type: 'text', text: errorStatus }] }
-    };
-    if (/*_appContext.AUTHFLOW === 'code'*/ _appContext.useHapi === true && _appContext.contexts.oauthInfo == null) {
-      return { isError: true, content: [{ type: 'text', text: 'Please visit https://localhost:8080/mcpserver to connect to Viya. Then try again.' }] }
+    if (ctx.authInfo) {
+      // already verified by requireBearerAuth before this factory runs
+      _appContext.bearerToken = ctx.authInfo.token;
     }
-    console.error("Getting logon payload for tool with session ID:", currentId);
+
+    console.error("[Note] Getting logon payload for new request, AUTHFLOW:", _appContext.AUTHFLOW);
     _appContext.contexts.logonPayload = await getLogonPayload(_appContext);
-    if (_appContext.contexts.logonPayload == null) {
-      return { isError: true, content: [{ type: 'text', text: 'Unable to get authentication token for SAS Viya. Please check your configuration.' }] }
 
-    }
+    const mcpServer = new McpServer(
+      {
+        name: "sasmcp",
+        version: _appContext.version,
+      },
+      {
+        capabilities: {
+          tools: {
+            listChanged: true,
+          },
+        },
+      }
+    );
 
-    // create enhanced appContext for tool
-    if (args == null) {
-      params = { _appContext: _appContext.contexts };
-    } else {
-      params = Object.assign({}, args, { _appContext: _appContext.contexts });
-    }
-
-    // call the actual tool handler
-    debugger;
-    console.error("Calling tool handler with enhanced params");
-    let r = await builtin(params);
-    return r;
-  }
-
-  // Register the tools with brand prefix
-  console.error(`[Note] Brand: ${_appContext.brand}`);
-  let toolNames = [];
-  let totalDescription = 0;
-  toolSet.forEach((tool, i) => {
-    let toolName = _appContext.brand + '-' + tool.name;
-    //tool.inputSchema.additionalProperties = false; // disallow extra properties 
-    let config = {
-      description: tool.description,
-      inputSchema: tool.inputSchema
-    }
-    totalDescription += tool.description.length;``
-    let toolHandler = wrapf(cache, tool.handler);
-    let r = mcpServer.registerTool(toolName, config, toolHandler);
-    toolNames.push(toolName);
-  });
-  console.error(`[Note]  Agent Mode: ${_appContext.agent}`);
-  console.error(`[Note] Registered ${toolSet.length} tools: ${toolNames}`);
-  console.error(`[Note] Total description length: ${totalDescription} characters`); 
-  cache.set("mcpServer", mcpServer);
-  return mcpServer;
+    const toolSet = makeTools(_appContext);
+    let toolNames = [];
+    let totalDescription = 0;
+    toolSet.forEach((tool) => {
+      const toolName = _appContext.brand + "-" + tool.name;
+      const config = {
+        description: tool.description,
+        inputSchema: tool.inputSchema,
+      };
+      totalDescription += tool.description.length;
+      mcpServer.registerTool(toolName, config, (args) => {
+        const params = args == null
+          ? { _appContext: _appContext.contexts }
+          : Object.assign({}, args, { _appContext: _appContext.contexts });
+        return tool.handler(params);
+      });
+      toolNames.push(toolName);
+    });
+    console.error(`[Note] Registered ${toolSet.length} tools: ${toolNames}`);
+    console.error(`[Note] Total description length: ${totalDescription} characters`);
+    return mcpServer;
+  };
 }
 
-export default createMcpServer;
+export default makeServerFactory;

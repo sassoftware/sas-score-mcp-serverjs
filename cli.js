@@ -9,10 +9,9 @@
 
 import coreSSE from './src/coreSSE.js';
 import expressMcpServer from './src/expressMcpServer.js';
-import createMcpServer from './src/createMcpServer.js';
+import makeTools from './src/toolSet/makeTools.js';
 // import dotenvExpand from 'dotenv-expand';
 import fs from 'fs';
-import { randomUUID } from 'node:crypto';
 
 import readCerts from './src/toolHelpers/readCerts.js';
 
@@ -21,11 +20,6 @@ import { dirname, join } from 'path';
 import os from 'os';
 import setupSkills from './src/setupSkills.js';
 import { parseArgs } from "node:util";
-
-import NodeCache from 'node-cache';
-//import { be } from 'zod/locales';
-//import { auth } from '@modelcontextprotocol/sdk/client/auth';
-//import getOpts from './src/toolHelpers/getOpts.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -62,7 +56,7 @@ const args = parseArgs({
     authflow: {
       type: 'string',
       short: 'a',
-      description: 'Authentication flow (sascli, code, token, oauth, oauth,oauthclient)'
+      description: 'Authentication flow (oauth, oauthclient, bearer, sascli, token, refresh, password, none)'
     },
     clientid: {
       type: 'string',
@@ -143,7 +137,7 @@ Options:
   
   Authentication options:
     -c, --clientid <id>            Client ID for oauth authentication(pkce preferred. default: vscodemcp)
-    -a, --authflow <flow>          Authentication flow: oauth, oauthclient, sascli, code, token(default oauth)
+    -a, --authflow <flow>          Authentication flow: oauth, oauthclient, bearer, sascli, token, refresh, password, none (default oauth)
     --profile <name>               SAS CLI profile name for sascli flow (default: Default)
     --config <path>                SAS CLI config directory for sascli flow (default: user home directory)
 
@@ -243,22 +237,15 @@ console.error(
      mcpType: ${mcpType}
      viyaServer: ${process.env.VIYA_SERVER}`
 );
-// session sessionCache
-// For more robust caching consider products like Redis
-// and storage provided by cloud providers
-
-debugger;
-let sessionCache = new NodeCache({ stdTTL: 24 * 60 * 60, checkperiod: 2 * 60, useClones: false });
-
 //
 // Load environment variables from .env file if present
 // swithching to:
 // stdio: set the env in the mcp config
 // http: use dotenv-cli to load env before starting the mcp server
 
-// setup base appEnv 
-// for stdio this is the _appContext
-// for http each session a copy of this as appEnvTemplate is created in corehttp
+// setup base appEnv
+// this is the template appContext; a fresh copy is built per request/connection
+// by the server factory (src/createMcpServer.js) — there is no shared session state.
 
 let https = process.env.HTTPS != null ? process.env.HTTPS.toUpperCase() : "FALSE";
 let authExternal = false;
@@ -266,10 +253,17 @@ let authFlow = process.env.AUTHFLOW;
 let mcpHost = process.env.MCPHOST;
 
 if (authFlow === 'oauth' || authFlow === 'oauthclient') {
+  // 'oauth': this server brokers the PKCE login against SAS Logon itself
+  //   (Viya does not support dynamic client registration, so the server
+  //   uses its own pre-registered CLIENTID and proxies /authorize,
+  //   /callback, /oauth/token — required for clients like GitHub Copilot
+  //   that expect those endpoints on the MCP server itself).
+  // 'oauthclient': the MCP client performs its own OAuth flow and simply
+  //   sends the resulting token as a bearer token on every request.
   authExternal = (authFlow === 'oauthclient') ? true : false;
   authFlow = 'bearer';
 } else if (authFlow === 'bearer') {
-  authExternal = true; // in bearer token flow we assume the token is generated externally and passed in via env variable or token file, so we set authExternal to true to indicate that  
+  authExternal = true; // in bearer token flow we assume the token is generated externally and passed in via env variable or token file, so we set authExternal to true to indicate that
 }
 let autoLogon = process.env.AUTOLOGON != null ? process.env.AUTOLOGON.toUpperCase() : "FALSE";
 const appEnvBase = {
@@ -311,9 +305,6 @@ const appEnvBase = {
   tokenRefresh: process.env.TOKENREFRESH === 'FALSE' ? false : true,
   tls: null,
   refreshToken: null,
-  transports: {},
-  mcpServer: null,
-  viyaSessions: {},
   store: null,
   casServer: null,
   casSessionId: null,
@@ -321,7 +312,6 @@ const appEnvBase = {
   logonPayload: null,
   bearerToken: null,
   tlsOpts: null,
-  oauthInfo: null,
   contexts: {
     AUTHFLOW: authFlow,
     AUTHEXTERNAL: authExternal,
@@ -332,10 +322,8 @@ const appEnvBase = {
     HTTPS: https,
     store: null, /* for restaf users */
     storeConfig: {},
-    oauthInfo: null,
     CLIENTID: process.env.CLIENTID || null,
     CLIENTSECRET: process.env.CLIENTSECRET || null,
-    pkce: process.env.PKCE || null,
     casSession: null, /* restaf cas session object */
     computeSession: null, /* restaf compute session object */
     viyaCert: null, /* ssl/tsl certificates to connect to viya */
@@ -350,8 +338,6 @@ const appEnvBase = {
 };
 
 process.env.APPPORT = appEnvBase.PORT;
-let useHapi = process.env.USEHAPI === 'TRUE' ? true : false;
-appEnvBase.useHapi = useHapi;
 
 // setup TLS options for viya calls
 appEnvBase.contexts.viyaCert = readCerts(appEnvBase.VIYACERT); /* appEnvBase.contexts.viyaCert is set here */
@@ -399,30 +385,10 @@ if (process.env.AGENT === 'TRUE') {
 } else {
     console.error(`[Note] Agent mode not enabled`);
   }
-let mcpServer = await createMcpServer(sessionCache, appEnvBase);
-
-sessionCache.set('appEnvBase', appEnvBase);
-let appEnvTemplate = Object.assign({}, appEnvBase);
-
-sessionCache.set('appEnvTemplate', appEnvTemplate);
-
-// prime transport cache
-let transports = {
-  "dummy": null
-};
-sessionCache.set('transports', transports);
-let tokenlist = {
-  dummy: null
-}
-sessionCache.set('tokenlist', tokenlist);
-
-// set this for stdio transport use
-// dummy sessionId for use in the tools  
-
-// creat a dummy sessionId for stdio since there is only one session and transport in that case, and tools need a sessionId to access the appEnvBase and contexts
-let sessionId = randomUUID();
-sessionCache.set(sessionId, appEnvBase);
-sessionCache.set('currentId', sessionId);
+// log the tool set once at startup (each request/connection registers its own
+// fresh copy via the server factory — this is just a startup summary)
+let toolSet = makeTools(appEnvBase);
+console.error(`[Note] ${toolSet.length} tools available.`);
 
 console.error('===================================================================');
 console.error(`MCP ServerJS - Version: ${pkgJson.version} - ${new Date().toISOString()}`);
@@ -466,13 +432,12 @@ if (process.env.AGENT === 'TRUE') {
         `);
 }
 if (mcpType === 'stdio') {
-  console.error('[Note] Setting up stdio transport with sessionId:', sessionId);
-  console.error('[Note] Used in setting up tools and some persistence(not all).');
-  await coreSSE(mcpServer);
+  console.error('[Note] Setting up stdio transport...');
+  await coreSSE(appEnvBase);
 
 } else {
   console.error('[Note] Starting HTTP MCP server...');
-  await expressMcpServer(mcpServer, sessionCache, appEnvBase);
+  await expressMcpServer(appEnvBase);
   console.error('[Note] MCP HTTP express server started on port ' + appEnvBase.PORT);
 }
 

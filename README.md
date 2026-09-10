@@ -81,11 +81,20 @@ Typically these are set either in the .env file or as environment variables or a
 
 These can be customized
 
-1. AUTHFLOW=**oauth**|oauthclient|bearer|sascli|token|password 
-    - Authentication method. Default is oauth
+1. AUTHFLOW=**oauth**|oauthclient|bearer|sascli|token|refresh|password|none
+    - Authentication method. Default is oauth.
+      - `oauth`: this server brokers the PKCE login against SAS Logon itself
+        (proxying `/authorize`, `/callback`, `/oauth/token`). Required for
+        clients such as GitHub Copilot, since **Viya does not support dynamic
+        client registration** — the server uses its own pre-registered
+        `CLIENTID` on the client's behalf.
+      - `oauthclient`: the MCP client performs its own OAuth2 flow against
+        SAS Logon and sends the resulting token as a bearer token.
+      - `bearer`: a token is supplied externally (env var/token file) and
+        sent as a bearer token on every request; no interactive login.
 
 2. CLIENTID=**vscodemcp** 
-     - Clientid for oauth and oauthclient AUTHFlOW. Must be PKCE clientid. 
+     - Clientid for `oauth` and `oauthclient` AUTHFLOW. Must be a pre-registered PKCE clientid in SAS Logon. 
      
 
 3. MCPTYPE=**http**|stdio  
@@ -108,7 +117,12 @@ These can be customized
 
 ### Clientid specifications
 
-If using remote mcp server, change the url in redirect to the remote url
+#### AUTHFLOW=oauth (server-brokered — required for GitHub Copilot)
+
+Since Viya does not support dynamic client registration, register a Viya
+OAuth client whose `redirect_uri` points back at this server's own
+`/callback`, and configure that same clientid as `CLIENTID`. If using a
+remote mcp server, change the url in redirect to the remote url.
 
 ```js
 {
@@ -116,14 +130,20 @@ If using remote mcp server, change the url in redirect to the remote url
   scope: [ 'openid' ],
   resource_ids: [ 'none' ],
   autoapprove: true,
-  authorized_grant_types: [ 'authorization_code' ],
+  authorized_grant_types: [ 'authorization_code', 'refresh_token' ],
   access_token_validity: 86400,
   allowpublic: true,
   redirect_uri: [ 'http://localhost:8080/callback' ]
 }
 ```
 
-> OauthClient Flow. Clientid with redirect appropriate for the client. Some examples are shown below. Note that the explicit port used by github copilot is not guaranteed. 
+#### AUTHFLOW=oauthclient (client-brokered)
+
+The MCP client (not this server) performs the OAuth2 flow against SAS Logon
+and sends the resulting token as a bearer token. Register a Viya OAuth
+client whose `redirect_uri` matches the MCP client's own redirect instead.
+Some examples are shown below. Note that the explicit port used by github
+copilot is not guaranteed. 
 
 - github copilot: http://127.0.0.1:33418/
 - claude: https://claude.ai/api/mcp/auth_callback,https://claude.ai/api/auth/callback
@@ -190,10 +210,14 @@ For stdio scenario
 
 ## Notes
 
-The mcp server caches information for each mcp session id(user). 
+The mcp server is stateless: it answers each HTTP request independently and
+never tracks an mcp session id. Every request builds a fresh server instance
+from the same tool definitions, using the auth (bearer token, sascli profile,
+etc.) presented on that request/connection.
 
-However, cas and compute sessions are not cached in this release(TBD).
-The implication of this design choice is felt most when the tool needs is creating compute session * the requests will take longer than when the compute session is cached.
+Cas and compute sessions are not cached either. The implication of this
+design choice is felt most when a tool needs to create a compute session —
+the requests will take longer than they would with a cached compute session.
 
 ## Other Useful Tips
 
