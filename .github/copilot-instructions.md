@@ -1,11 +1,11 @@
 # GitHub Copilot — SAS Viya (concise agent guide)
 
-This file is a short, agent-facing reference. It delegates routing and detailed decision logic to the canonical SKILLs in the `.skills/skills/` folder (especially `.skills/skills/request-routing/SKILL.md`). Keep this file minimal — use the SKILLs for examples and edge cases.
+This file is a short, agent-facing reference. It delegates routing and detailed decision logic to the canonical SKILLs `sas-score-request-routing/SKILL.md`. 
 
 **Core principle (single sentence):** Verify resources, execute with the mapped tool, and format results.
 
 ## Canonical workflow
-- Verify: confirm resources exist using `find-*` tools
+- Verify: confirm resources exist using `sas-score-find-*` tools
 - Execute: call the execution tool mapped by the router (read/query/score/describe/list).
 - Format: merge outputs, present results, and append a short Strategy Summary.
 
@@ -51,9 +51,9 @@ All of the following are treated as **models** that can be scored:
 - Column-to-model-input mapping is unclear
 
 ## References
-- Canonical router, examples, and Strategy Summary template: `.skills/skills/request-routing/SKILL.md`
-- Find/verify resources: `.skills/skills/find-resources/SKILL.md`
-- List/browse resources: `.skills/skills/list-resource/SKILL.md`
-- Read/query data: `.skills/skills/read-strategy/SKILL.md`
-- Scoring workflows: `.skills/skills/score-strategy/SKILL.md`
-- Describe/detail resources: `.skills/skills/detail-strategy/SKILL.md`
+- Canonical router, examples, and Strategy Summary template: `sas-score-request-routing/SKILL.md`
+- Find/verify resources: `sas-score-find-resources/SKILL.md`
+- List/browse resources: `sas-score-list-library/SKILL.md`
+- Read/query data: `sas-score-read-strategy/SKILL.md`
+- Scoring workflows: `sas-score-score-strategy/SKILL.md`
+- Describe/detail resources: `sas-score-detail-strategy/SKILL.md`

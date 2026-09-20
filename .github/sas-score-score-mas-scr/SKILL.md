@@ -1,5 +1,5 @@
 ---
-name: score-mas-scr
+name: sas-score-score-mas-scr
 description: >
   Scoring workflow for MAS (Micro Analytic Score) and SCR (Score Code Runtime) models.
   Use when the model type is .mas or .scr, or when no suffix is given (default is MAS).
@@ -45,7 +45,7 @@ description: >
 1. Find model → 
    - if mas use `sas-score-find-mas` to find the MAS model
    - if scr use `sas-score-find-scr` to find the SCR model
-2. Read table → use read-strategy skill
+2. Read table → use sas-score-read-strategy skill
 3. Score each row — tools accept a single row; loop over rows calling the tool for each
 4. Return rows with predictions appended
 5. Cap batch at 10 rows by default; ask user before proceeding with larger batches

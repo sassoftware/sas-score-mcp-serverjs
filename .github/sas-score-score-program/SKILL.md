@@ -1,9 +1,9 @@
 ---
-name: score-program
+name: sas-score-score-program
 description: >
   Scoring workflow for SAS Program  and Macro model types.
   Use when the user wants to score with a SAS program , or when the user references a SAS macro by name.
-  For CAS programs (casl) or CAS model tables, use score-cas instead.
+  For CAS programs (casl) or CAS model tables, use sas-score-score-cas instead.
   No pre-verification step — programs are scored directly.
   Handles both inline scenario scoring and table row scoring.
 ---
@@ -14,7 +14,7 @@ description: >
 - When the user wants to score a SAS program (`.sas`),
 - User references a SAS macro by name (Macro)
 
-  > For CAS programs (`.casl`) or CAS model tables, use the **score-cas** skill instead.
+  > For CAS programs (`.casl`) or CAS model tables, use the **sas-score-score-cas** skill instead.
 
 ## Tools
 
@@ -44,7 +44,7 @@ description: >
 | (count not specified) | 1 | 10 |
 
 **Flow:**
-1. Read table → use read-strategy skill
+1. Read table → use sas-score-read-strategy skill
 2. Score each row — tools accept a single row; loop over rows calling the tool for each
 3. Return rows with predictions appended
 4. Cap batch at 10 rows by default; ask user before proceeding with larger batches

@@ -1,5 +1,5 @@
 ---
-name: score-cas
+name: sas-score-score-cas
 description: >
   Scoring workflow for CAS (Cloud Analytic Services) programs and CAS model tables.
   Use when the model suffix is .casl, or when the user references a CAS model table
@@ -78,7 +78,7 @@ sas-score-cas-program-score({ casmodel, name, scenario, output, limit })
 | (count not specified) | 1 | 10 |
 
 **Flow:**
-1. Read table → use read-strategy skill
+1. Read table → use sas-score-read-strategy skill
 2. Score each row — tool accepts a single row; loop over rows calling the tool for each
 3. Return rows with predictions appended
 4. Cap batch at 10 rows by default; ask user before proceeding with larger batches

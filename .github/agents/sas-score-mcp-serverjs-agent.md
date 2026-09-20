@@ -2,12 +2,12 @@
 name: sas-score-mcp-serverjs-agent
 description: >
   Unified orchestration agent for scoring in SAS Viya.
-  Follow the canonical SKILL at [skills/request-routing/SKILL.md](skills/request-routing/SKILL.md).
+  Follow the canonical SKILL at [sas-score-request-routing/SKILL.md](../sas-score-request-routing/SKILL.md).
 ---
 
 # SAS Viya Unified Router
 
-**Default Agent Mode**: Use the request-routing strategy for all requests.
+**Default Agent Mode**: Use the sas-score-request-routing strategy for all requests.
 
 Agent defaults
 - Append the **Strategy Summary** to every response.
@@ -22,5 +22,5 @@ Implementation checklist (agent-level)
 - Call execution tools mapped in the SKILL.
 - Surface errors verbatim and ask targeted clarification questions when needed.
 
-See the canonical router for the full mapping, rules, examples, and Strategy Summary template: [skills/request-routing/SKILL.md](skills/request-routing/SKILL.md)
+See the canonical router for the full mapping, rules, examples, and Strategy Summary template: [sas-score-request-routing/SKILL.md](../sas-score-request-routing/SKILL.md)
 

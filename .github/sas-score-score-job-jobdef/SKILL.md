@@ -1,5 +1,5 @@
 ---
-name: score-job-jobdef
+name: sas-score-score-job-jobdef
 description: >
   Scoring workflow for Job (.job) and JobDef (.jobdef) model types.
   Use when the model suffix is .job or .jobdef.
@@ -48,7 +48,7 @@ description: >
 1. Find model →
    - if job use `sas-score-find-job` to find the Job model
    - if jobdef use `sas-score-find-jobdef` to find the JobDef model
-2. Read table → use read-strategy skill
+2. Read table → use sas-score-read-strategy skill
 3. Score each row — tools accept a single row; loop over rows calling the tool for each
 4. Return rows with predictions appended
 5. Cap batch at 10 rows by default; ask user before proceeding with larger batches

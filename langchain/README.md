@@ -166,15 +166,15 @@ All 13 SKILL.md decision trees are embedded in the agent's system prompt:
 
 | Group | Skills |
 |---|---|
-| Routing & Entry | `request-routing`, `score-strategy` |
-| Scoring Specialists | `score-mas-scr`, `score-job-jobdef`, `score-program`, `score-cas` |
-| Data Access | `read-strategy`, `find-resources`, `find-library-server` |
-| Discovery & Detail | `list-library`, `list-tables`, `list-mas-job-jobdef`, `detail-strategy` |
+| Routing & Entry | `sas-score-request-routing`, `sas-score-score-strategy` |
+| Scoring Specialists | `sas-score-score-mas-scr`, `sas-score-score-job-jobdef`, `sas-score-score-program`, `sas-score-score-cas` |
+| Data Access | `sas-score-read-strategy`, `sas-score-find-resources`, `sas-score-find-library-server` |
+| Discovery & Detail | `sas-score-list-library`, `sas-score-list-tables`, `sas-score-list-mas-job-jobdef`, `sas-score-detail-strategy` |
 
 The skills are loaded from `.skills/skills/` (repo usage) or from a bundled `skills/` copy (npm package).
 
 ```js
 import { listSkillNames } from '@sassoftware/sas-score-langchain';
 console.log(listSkillNames());
-// ['request-routing', 'score-strategy', ...]
+// ['sas-score-request-routing', 'sas-score-score-strategy', ...]
 ```
