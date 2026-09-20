@@ -19,7 +19,7 @@ function setupSkills(clientName,agentFolder) {
     if (agentFolder) {
         destination = path.join(destination, agentFolder);
     }
-    const source = path.join(__dirname, `../.skills`);
+    const source = path.join(__dirname, `../.github`);
     console.error("==================================================================");
     console.error(`           Copying ${source} to ${destination}...`);
 

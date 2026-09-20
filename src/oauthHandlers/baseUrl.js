@@ -7,6 +7,6 @@ function baseUrl(appContext) {
     //const host = "localhost";
     const host = appContext.VIYA_SERVER;
     return host;
-    return `${protocol}://${host}:${appContext.PORT}`;
+    //return `${protocol}://${host}:${appContext.PORT}`;
 }
 export default baseUrl;

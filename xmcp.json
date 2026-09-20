@@ -1,0 +1,77 @@
+{
+  "servers": {
+    "oriondev": {
+      "type": "http",
+      "url": "http://localhost:3300/mcp",
+    },
+    "sas-score-mcp-serverjs-stdio": {
+      "command": "npx",
+      "args": [
+        "@sassoftware/sas-score-mcp-serverjs@latest",
+        "--mcptype",
+        "stdio",
+        "-v",
+        "https://viya-6mq6k4aa5r.engage.sas.com",
+        "--profile",
+        "6mq",
+        "--authflow",
+        "sascli",
+      ],
+      "type": "stdio"
+    },
+    "sas-score-mcp-serverjs": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp",
+      "oauth": {
+        "type": "oauth2",
+        "clientId": "scoremcplocal"
+      },
+    },
+    "workiq": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/workiq@latest", "mcp"],
+      "tools": ["*"]
+    },
+
+    "microsoftdocs/mcp": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp",
+      "gallery": "https://api.mcp.github.com",
+      "version": "1.0.0"
+    },
+    "microsoft/playwright-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "gallery": "https://api.mcp.github.com",
+      "version": "0.0.1-seed"
+    },
+    "oraios/serena": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "serena@latest",
+        "--context",
+        "ide-assistant"
+      ],
+      "gallery": "https://api.mcp.github.com",
+      "version": "1.0.0"
+    },
+    "io.github.wonderwhy-er/desktop-commander": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "--registry",
+        "https://registry.npmjs.org",
+        "@wonderwhy-er/desktop-commander@0.2.51"
+      ],
+      "gallery": "https://api.mcp.github.com",
+      "version": "0.2.51",
+    },
+  },
+  "inputs": []
+}

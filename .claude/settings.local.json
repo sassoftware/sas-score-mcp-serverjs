@@ -94,7 +94,20 @@
       "Bash(curl -s -D - -o /dev/null \"http://localhost:8098/authorize?response_type=code&redirect_uri=http://127.0.0.1:33418/&state=xyz&scope=openid\")",
       "Bash(curl -s -o - -w \"\\\\nHTTP:%{http_code}\\\\n\" -X POST http://localhost:8098/mcp -H \"Content-Type: application/json\" -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}')",
       "Bash(kill 4034)",
-      "Bash(rm -f /tmp/final.log)"
+      "Bash(rm -f /tmp/final.log)",
+      "Bash(git status *)",
+      "Bash(git ls-tree *)",
+      "Bash(mkdir -p /c/Users/kumar/AppData/Local/Temp/claude/C--dev-github-sas-score-mcp-serverjs/328c171f-9e27-4da6-96b3-bc47ded0f6ab/scratchpad)",
+      "Bash(node generate-pdf.js out.pdf '{\"title\":\"Library Report\",\"sections\":[{\"heading\":\"row-id-123\",\"lines\":[\"name: Foo Library\",\"status: active\",\"created: 2026-09-18\"]},{\"heading\":\"row-id-456\",\"lines\":[\"name: Bar Library\",\"status: inactive\",\"created: 2026-09-17\",\"note: This is a longer line to test the word wrap behavior across multiple words and confirm it breaks at a sane width without cutting words in half.\"]}]}')",
+      "Bash(xargs grep -l \"ContentBlock\\\\|CallToolResult\")",
+      "Bash(npm view *)",
+      "Bash(npm audit *)",
+      "Bash(rm -rf /tmp/skills-dry-run)",
+      "Bash(cp skills/pdf-generation/SKILL.md /tmp/skill.md)",
+      "Bash(node /tmp/generate-pdf-skill.js /tmp/skill-repro.pdf '{\"title\":\"SASHELP.CARS - First 2 Rows\",\"sections\":[{\"heading\":\"Row 1: Acura MDX\",\"lines\":[\"Make: Acura | Model: MDX | Type: SUV | Origin: Asia | Drive train: All | MSRP: 36945 | Invoice: 33337 | Engine size: 3.5 | Cylinders: 6 | Horsepower: 265 | MPG_City: 17 | MPG_Highway: 23 | Weight: 4451 | Wheelbase: 106 | Length: 189\"]}]}')",
+      "Read(//c/Users/kumar/AppData/Local/Temp/claude/C--dev-github-sas-score-mcp-serverjs/328c171f-9e27-4da6-96b3-bc47ded0f6ab/scratchpad/**)",
+      "Bash(node generate-pdf-skill.js skill-repro.pdf '{\"title\":\"SASHELP.CARS - First 2 Rows\",\"sections\":[{\"heading\":\"Row 1: Acura MDX\",\"lines\":[\"Make: Acura | Model: MDX | Type: SUV | Origin: Asia | Drive train: All | MSRP: 36945 | Invoice: 33337 | Engine size: 3.5 | Cylinders: 6 | Horsepower: 265 | MPG_City: 17 | MPG_Highway: 23 | Weight: 4451 | Wheelbase: 106 | Length: 189\"]}]}')",
+      "Bash(rm -f \"/c/Users/kumar/AppData/Local/Temp/claude/C--dev-github-sas-score-mcp-serverjs/328c171f-9e27-4da6-96b3-bc47ded0f6ab/scratchpad/generate-pdf-skill.js\" 2>/dev/null *)"
     ]
   }
 }

@@ -85,9 +85,16 @@ async function expressMcpServer(baseAppEnvContext) {
     : (_req, _res, next) => next();
 
   app.get('/.well-known/oauth-protected-resource', (req, res) => {
+    // RFC 9728: advertise the authorization server whose metadata document
+    // this MCP server actually serves at /.well-known/oauth-authorization-server.
+    // That document's `issuer` is mcpHost (see getMetadata.js), so the
+    // authorization_servers entry MUST also be mcpHost — pointing it at
+    // VIYA_SERVER makes a strict client fetch a different issuer's metadata
+    // and breaks the flow (state mismatch). In external mode the mcpHost AS
+    // metadata redirects the client on to SAS Logon for authorize/token.
     let payload = {
       resource: `${baseAppEnvContext.mcpHost}/mcp`,
-      authorization_servers: [`${baseAppEnvContext.VIYA_SERVER}`],
+      authorization_servers: [`${baseAppEnvContext.mcpHost}`],
       scopes_supported: ['openid'],
       bearer_methods_supported: ["header"]
     }
@@ -126,9 +133,9 @@ async function expressMcpServer(baseAppEnvContext) {
   // Root endpoint info
   app.get("/", (req, res) => {
     res.json({
-      name: "SAS Viya Sample MCP Server",
+      name: "SAS Viya Score MCP Server",
       version: baseAppEnvContext.version,
-      description: "SAS Viya Sample MCP Server",
+      description: "SAS Viya Score MCP Server",
       endpoints: {
         mcp: "/mcp",
         health: "/health",

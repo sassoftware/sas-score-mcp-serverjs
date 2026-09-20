@@ -40,6 +40,8 @@ import jobdefDescribe from './jobdefDescribe.js';
 
 import sasQuery from './sasQuery.js';
 
+import generatePdf from './generatePdf.js';
+
 function makeTools(_appContext) {
   // wrap all tools with 
   let customTools = [];
@@ -78,7 +80,9 @@ function makeTools(_appContext) {
     jobdefDescribe(_appContext),
     jobdefScore(_appContext),
 
-    devaScore(_appContext)
+    devaScore(_appContext),
+
+    generatePdf(_appContext)
   ];
   let listWithCustom = list.concat(customTools);
   console.error(`\n[Note] Loaded a total of ${listWithCustom.length} tools.`);

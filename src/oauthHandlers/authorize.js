@@ -32,6 +32,8 @@ function authorize(req, res, appContext, pkceStore, codeStore) {
 
     pkceStore.set(ourState, { codeVerifier, clientRedirectUri: redirect_uri, clientState: state, codeChallenge });
 
+    console.error("[Note] PKCE store updated with state:", ourState);
+    console.error("[Note] Incomig state:", state);
   
     console.error("[Note] callbackUri:", callbackUri);
     let urlConfig = {
@@ -39,7 +41,7 @@ function authorize(req, res, appContext, pkceStore, codeStore) {
         client_id: appContext.CLIENTID,
         redirect_uri: callbackUri,
         scope: "openid",
-        state: ourState,
+        state: appContext.AUTHEXTERNAL === true ? state : ourState,
         code_challenge: codeChallenge,
         code_challenge_method: "S256"
     }
