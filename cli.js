@@ -50,7 +50,6 @@ const args = parseArgs({
     },
     mcphost: {
       type: 'string',
-      short: 'm',
       description: 'MCP server host (default: http://localhost:8080)'
     },
     authflow: {

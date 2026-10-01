@@ -23,7 +23,7 @@ async function _casScore(params) {
     }
     let output = await caslScore(store, session, args);
     let results = output.casResults;
-    return { content: [{ type: 'text', text: JSON.stringify(results) }], structuredContent: results };
+    return { content: [{ type: 'text', text: `Scored with model ${model}`}], structuredContent: results };
   } catch (err) {
     console.log(err);
     return { isError: true, content: [{ type: 'text', text: JSON.stringify(err) }] };

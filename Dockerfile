@@ -6,8 +6,14 @@ LABEL org.opencontainers.image.licenses=Apache-2.0
 RUN apk add --no-cache --upgrade bash
 RUN apk add --no-cache curl
 WORKDIR /app
+COPY package*.json ./
+COPY . .
+RUN npm install
+
 EXPOSE 8080
 ENV APPHOST=0.0.0.0
 ENV PORT=8080
+ENV MCPTYPE=http
+ENV AUTHFLOW=bearer
 
-CMD ["npx", "-y", "@sassoftware/sas-score-mcp-serverjs@dev"]
+CMD ["npm", "start"]
