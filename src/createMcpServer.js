@@ -11,8 +11,20 @@
  * shared session state between calls.
  */
 import { McpServer } from "@modelcontextprotocol/server";
+import { registerAppResource, registerAppTool, RESOURCE_MIME_TYPE, getUiCapability } from "@modelcontextprotocol/ext-apps/server";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import makeTools from "./toolSet/makeTools.js";
 import getLogonPayload from "./toolHelpers/getLogonPayload.js";
+
+// MCP App: every tool whose spec sets `ui: true` is linked to this one html view (built from ./ui by
+// `npm run build:ui`). Those tools still return their normal `content` text, so hosts without
+// MCP Apps support see no difference.
+const UI_RESOURCE_URI = "ui://sasmcp/view.html";
+const UI_HTML_FILE = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "dist", "ui", "index.html");
+let uiHtmlPromise;
+const loadUiHtml = () => (uiHtmlPromise ??= readFile(UI_HTML_FILE, "utf-8"));
 
 function makeServerFactory(appEnvBase) {
   return async function serverFactory(ctx) {
@@ -58,6 +70,24 @@ function makeServerFactory(appEnvBase) {
       }
     );
 
+    mcpServer.server.oninitialized = () => {
+      const client = mcpServer.getClientVersion();
+      const ui = getUiCapability(mcpServer.getClientCapabilities());
+      console.error("[Note] Client:", JSON.stringify(client), "MCP Apps:", ui ? JSON.stringify(ui) : "no");
+    };
+
+    registerAppResource(
+      mcpServer,
+      "SAS Results View",
+      UI_RESOURCE_URI,
+      { mimeType: RESOURCE_MIME_TYPE, description: "Interactive table view for SAS results" },
+      async () => {
+        console.error("[Note] resources/read", UI_RESOURCE_URI);
+        const html = await loadUiHtml();
+        return { contents: [{ uri: UI_RESOURCE_URI, mimeType: RESOURCE_MIME_TYPE, text: html }] };
+      }
+    );
+
     const toolSet = makeTools(_appContext);
     let toolNames = [];
     let totalDescription = 0;
@@ -68,12 +98,17 @@ function makeServerFactory(appEnvBase) {
         inputSchema: tool.inputSchema,
       };
       totalDescription += tool.description.length;
-      mcpServer.registerTool(toolName, config, (args) => {
+      const callback = (args) => {
         const params = args == null
           ? { _appContext: _appContext.contexts }
           : Object.assign({}, args, { _appContext: _appContext.contexts });
         return tool.handler(params);
-      });
+      };
+      if (tool.ui) {
+        registerAppTool(mcpServer, toolName, { ...config, _meta: { ui: { resourceUri: UI_RESOURCE_URI } } }, callback);
+      } else {
+        mcpServer.registerTool(toolName, config, callback);
+      }
       toolNames.push(toolName);
     });
     console.error(`[Note] Registered ${toolSet.length} tools: ${toolNames}`);

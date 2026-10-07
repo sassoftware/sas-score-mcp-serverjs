@@ -1,0 +1,76 @@
+#main {
+    padding: 12px;
+    font-family: var(--font-sans, system-ui, sans-serif);
+    color: var(--color-text-primary, inherit);
+}
+#status {
+    color: var(--color-text-secondary, #666);
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+th,
+td {
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--color-border-primary, #ccc);
+}
+th {
+    font-weight: 600;
+    background: #7573e9;
+}
+td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+table.subtable {
+    margin: 0 0 16px;
+    table-layout: fixed;
+}
+table.subtable th {
+    background: #7573e9;
+    color: #222;
+    text-align: left;
+}
+table.subtable th,
+table.subtable td {
+    border: 1px solid var(--color-border-primary, #ccc);
+}
+table.subtable td:first-child {
+    width: 35%;
+    font-weight: 600;
+}
+h3 {
+    margin: 16px 0 4px;
+}
+ul {
+    margin: 0 0 8px;
+    padding-left: 20px;
+}
+.scroll-box {
+    clear: both;
+    height: var(--box-h, 600px);
+    overflow: auto;
+}
+.blank-line {
+    height: 1.2em;
+}
+table.subtable th h2 {
+    margin: 0;
+    font-size: 1.1em;
+}
+.expand-btn {
+    float: right;
+    margin: 0 0 8px;
+    padding: 4px 12px;
+    cursor: pointer;
+    border: 1px solid var(--color-border-primary, #ccc);
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+}
+.expand-btn:hover {
+    background: var(--color-background-secondary, rgba(128, 128, 128, 0.15));
+}

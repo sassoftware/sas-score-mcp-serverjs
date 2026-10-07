@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="blue" />
+        <title>Results Viewer</title>
+    </head>
+    <body>
+        <!-- Static shell only. viewer.js fills #content from the tool result. -->
+        <main id="main">
+            <p id="status">Waiting for results...</p>
+            <div id="content"></div>
+        </main>
+        <!-- Vite inlines this script and the CSS it imports into this one HTML file at build time. -->
+        <script type="module" src="./src/viewer.js"></script>
+    </body>
+</html>

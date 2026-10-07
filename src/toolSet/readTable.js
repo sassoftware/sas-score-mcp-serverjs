@@ -60,6 +60,7 @@ Returns rows array, total count, filtered_count, columns metadata. Empty array i
   
     let  specs = {
       name: 'read-table',
+      ui: true,
       description: describe,
       inputSchema: z.object({
         table: z.string().min(1),

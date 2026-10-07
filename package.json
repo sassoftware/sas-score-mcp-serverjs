@@ -19,7 +19,9 @@
     "push2ghcr": "bash ./push2ghcr.sh",
     "bump": "npm version prerelease",
     "pub": "npm publish --tag dev --access public",
-    "test:github": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 node cli.js --mcptype http -c vscodemcpclient -a oauthclient"
+    "github": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 node cli.js --mcptype http -c vscodeclient -a oauthclient",
+    "build:ui": "vite build",
+    "prepublishOnly": "npm run build:ui"
   },
   "repository": "https://github.com/sassoftware/sas-score-mcp-serverjs",
   "bugs": {
@@ -44,6 +46,7 @@
   },
   "files": [
     "src",
+    "dist",
     "cli.js",
     "openApi.json",
     "openApi.yaml",
@@ -51,8 +54,10 @@
     ".github"
   ],
   "dependencies": {
+    "@modelcontextprotocol/client": "^2.3.1",
     "@modelcontextprotocol/core": "^2.0.0",
     "@modelcontextprotocol/express": "^2.0.0",
+    "@modelcontextprotocol/ext-apps": "^2.0.3",
     "@modelcontextprotocol/node": "^2.0.0",
     "@modelcontextprotocol/server": "^2.0.0",
     "@sassoftware/restaf": "^5.7.2",
@@ -75,6 +80,8 @@
     "@types/debug": "^4.1.12",
     "@types/node": "^25.0.3",
     "rimraf": "^6.1.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^8.3.3",
+    "vite-plugin-singlefile": "^2.3.3"
   }
 }

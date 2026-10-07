@@ -57,8 +57,12 @@ async function _readTable(params) {
       return d;
     });
     let tabled = { tabled: outdata };
-    let t = (limit === 1) ? JSON.stringify(outdata[0]) : JSON.stringify(tabled);
-    return { content: [{ type: 'text', text: t }], structuredContent: tabled };
+    let t = `Read ${outdata.length} rows from ${itable}`;
+    // `tabled` is the existing payload; viewHint/columns/rows feed the MCP App table view.
+    let columns = outdata.length ? Object.keys(outdata[0]) : [];
+    let rows = outdata.map((d) => columns.map((c) => d[c] ?? null));
+    let structuredContent = {viewHint: 'table', columns, rows, count: rows.length };
+    return { content: [{ type: 'text', text: t }], structuredContent };
 
   } catch (err) {
     await deleteSession(appControl);
