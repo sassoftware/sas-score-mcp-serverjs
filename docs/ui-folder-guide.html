@@ -1,0 +1,305 @@
+<title>UI Folder Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column with full-width diagrams; each section = a question the folder answers. */
+:root{
+  --bg:#f5f7fb; --panel:#ffffff; --fg:#14213d; --muted:#586580; --line:#d3dae8; --soft:#e9eef7;
+  --accent:#0a5cff; --accent-soft:#e2ebff;
+  --good:#08876a; --warn:#b4540a; --bad:#c01f5a;
+  --req:#2f55d4; --res:#08876a; --host:#6d44e0; --user:#cf4a0c;
+  --code-bg:#101a30; --code-fg:#dbe5ff;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',Consolas,ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1020; --panel:#121a30; --fg:#e8edfa; --muted:#9db0d0; --line:#2a3858; --soft:#1a2644;
+  --accent:#6fa0ff; --accent-soft:#1a2c58; --good:#43d9a8; --warn:#ffb36b; --bad:#ff7aa8;
+  --req:#8aa8ff; --res:#43d9a8; --host:#b8a0ff; --user:#ff9a62; --code-bg:#0a1122; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1020; --panel:#121a30; --fg:#e8edfa; --muted:#9db0d0; --line:#2a3858; --soft:#1a2644;
+  --accent:#6fa0ff; --accent-soft:#1a2c58; --good:#43d9a8; --warn:#ffb36b; --bad:#ff7aa8;
+  --req:#8aa8ff; --res:#43d9a8; --host:#b8a0ff; --user:#ff9a62; --code-bg:#0a1122; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;padding-inline:16px}
+.wrap{max-width:1080px;margin:0 auto;padding-block:36px 72px}
+header{display:flex;flex-direction:column;gap:12px;margin-bottom:36px}
+.kicker{font:500 13px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(34px,6vw,54px);line-height:1.05}
+h2{font-size:clamp(26px,4vw,32px);line-height:1.15;margin-top:56px;margin-bottom:6px}
+h3{font-size:20px;line-height:1.25}
+.lead{font-size:20px;color:var(--muted);max-width:62ch;margin:0}
+p{margin:0}
+.sec-lead{color:var(--muted);max-width:68ch;margin:0 0 20px}
+code{font-family:var(--mono);font-size:.86em;background:var(--soft);padding:1px 6px;border-radius:5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.card p{color:var(--muted);font-size:15.5px}
+.tag{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.scroll-x{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+
+/* file tree */
+.tree{display:flex;flex-direction:column;gap:10px}
+.file{display:grid;grid-template-columns:minmax(170px,230px) 1fr;gap:6px 22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;align-items:start}
+.file.nested{margin-left:clamp(0px,4vw,36px)}
+.file .name{font:500 16px var(--mono);word-break:break-all}
+.file .name small{display:block;font:400 12.5px var(--body);color:var(--muted);margin-top:2px}
+.file .role{font-weight:600}
+.file .why{grid-column:2;color:var(--muted);font-size:15.5px}
+.file .why b{color:var(--fg);font-weight:600}
+.chip{display:inline-block;font:500 12px/1 var(--mono);padding:4px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-right:6px;white-space:nowrap}
+.chip.out{background:var(--soft);color:var(--muted)}
+@media (max-width:620px){.file{grid-template-columns:1fr}.file .why{grid-column:1}}
+
+/* pipeline */
+.pipe{display:flex;align-items:stretch;gap:10px;padding:18px;min-width:880px}
+.pipe .box{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:14px 14px;display:flex;flex-direction:column;gap:6px;background:var(--panel)}
+.pipe .box b{font:700 16px var(--display)}
+.pipe .box span{font-size:14px;color:var(--muted);line-height:1.45}
+.pipe .box.key{border:2px solid var(--accent)}
+.pipe .arr{align-self:center;font:700 22px var(--mono);color:var(--muted)}
+.pipe .lbl{font:500 11.5px var(--mono);color:var(--muted);letter-spacing:.06em}
+
+/* lifecycle */
+.life{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.phase{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
+.phase h3{padding:14px 18px;background:var(--soft);font-size:17px}
+.phase ol{margin:0;padding:14px 18px 16px 38px;display:flex;flex-direction:column;gap:9px;font-size:15.5px}
+.phase li::marker{font-family:var(--mono);color:var(--accent);font-weight:500}
+.phase li span{color:var(--muted)}
+
+/* renderer table */
+table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{border:1px solid var(--line);padding:10px 14px;text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:600;white-space:nowrap}
+td:first-child{white-space:nowrap}
+.scroll-x table{border:0}
+
+/* sizing diagram */
+.sizing{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.size-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.size-card.bad{border-color:var(--bad)}.size-card.ok{border-color:var(--good)}
+.size-card .verdict{font:600 13px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.bad .verdict{color:var(--bad)}.ok .verdict{color:var(--good)}
+.loop{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14.5px}
+.loop span.n{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.loop span.a{color:var(--muted);font-family:var(--mono)}
+.bar{height:16px;border-radius:4px;background:var(--soft);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--accent)}
+.bars{display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--muted)}
+
+/* decisions */
+.dec{display:grid;grid-template-columns:1fr;gap:14px}
+.decision{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:8px 28px}
+.decision h3{grid-column:1;align-self:start}
+.decision .body{grid-column:2;display:flex;flex-direction:column;gap:8px;min-width:0}
+.decision .body p{color:var(--muted);font-size:15.5px}
+.decision .body p b{color:var(--fg)}
+.decision .tag{grid-column:1}
+@media (max-width:760px){.decision{grid-template-columns:1fr}.decision .body,.decision .tag{grid-column:1}}
+
+pre{margin:0;background:var(--code-bg);color:var(--code-fg);border-radius:10px;padding:14px 18px;font:400 14px/1.6 var(--mono);overflow-x:auto}
+pre .c{color:#8a98b8}pre .k{color:#7fb0ff}pre .s{color:#7ee0b5}
+.steps{counter-reset:s;display:flex;flex-direction:column;gap:12px;padding:0;margin:0;list-style:none}
+.steps li{counter-increment:s;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 14px 58px;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--bg);font:600 14px/28px var(--mono);text-align:center}
+.steps li b{display:block}
+.steps li span{color:var(--muted);font-size:15.5px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="kicker">sas-score-mcp-serverjs</div>
+  <h1>What is in the <code style="font-size:.8em">ui</code> folder, and why</h1>
+  <p class="lead">The <code>ui</code> folder holds the small web page that VS Code shows next to a tool result. It is plain JavaScript and CSS, bundled into one HTML file. This guide covers each file, how the pieces connect, and the reasons behind the main design choices.</p>
+</header>
+
+<section>
+  <h2>The files and what each one does</h2>
+  <p class="sec-lead">Four source files, one build config, and one generated output. Only the source files are edited by hand.</p>
+  <div class="tree">
+    <div class="file">
+      <div class="name">ui/index.html<small>static shell</small></div>
+      <div class="role"><span class="chip">source</span>An empty page with three elements</div>
+      <div class="why">It holds <code>#main</code>, a <code>#status</code> line ("Waiting for results...") and an empty <code>#content</code> div, then loads <code>viewer.js</code>. <b>Why:</b> the page never knows what it will show until a result arrives, so everything visible is created by script. That keeps one HTML file able to show every tool.</div>
+    </div>
+    <div class="file nested">
+      <div class="name">ui/src/viewer.js<small>about 270 lines</small></div>
+      <div class="role"><span class="chip">source</span>The whole application</div>
+      <div class="why">It connects to the host, receives the tool result, picks a renderer from <code>viewHint</code>, and handles the Previous/Next buttons, row selection and the Expand button. <b>Why one file:</b> there is a single screen and no state beyond the last result, so a framework would add size and a build step without helping.</div>
+    </div>
+    <div class="file nested">
+      <div class="name">ui/src/global.css<small>about 100 lines</small></div>
+      <div class="role"><span class="chip">source</span>Fallback theme variables</div>
+      <div class="why">It defines the host style variables (<code>--color-text-primary</code>, <code>--font-sans</code>, spacing and heading sizes) with <code>light-dark()</code> defaults. <b>Why:</b> the host overrides these at runtime with its own colors and fonts, so the view matches VS Code. The defaults keep it readable if the host sends nothing.</div>
+    </div>
+    <div class="file nested">
+      <div class="name">ui/src/styles.css<small>about 100 lines</small></div>
+      <div class="role"><span class="chip">source</span>Layout for our own views</div>
+      <div class="why">Table borders and striping, sub-tables, the selectable list, the scroll box, and the Previous/Next and Expand buttons. <b>Why separate from global.css:</b> <code>global.css</code> comes from the MCP Apps template and tracks the host. <code>styles.css</code> is ours and is the only file that normally changes.</div>
+    </div>
+    <div class="file">
+      <div class="name">vite.config.js<small>repo root, not in ui/</small></div>
+      <div class="role"><span class="chip">build</span>Bundles everything into one file</div>
+      <div class="why">Vite with <code>vite-plugin-singlefile</code> reads <code>ui/index.html</code> and inlines the script and both stylesheets. <b>Why:</b> the server hands the view to the host as one string, and the sandboxed iframe has no server to fetch extra files from.</div>
+    </div>
+    <div class="file">
+      <div class="name">dist/ui/index.html<small>generated, about 237 KB</small></div>
+      <div class="role"><span class="chip out">output</span>The file the server serves</div>
+      <div class="why"><code>createMcpServer.js</code> reads it once and returns it for <code>ui://sasmcp/view.html</code>. Most of the size is the MCP Apps client library bundled into the script. Rebuild with <code>npm run build:ui</code> after any change in <code>ui/</code>.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>From source files to the iframe</h2>
+  <p class="sec-lead">The view travels as text. Nothing in the chain depends on a web server for the view itself.</p>
+  <div class="scroll-x"><div class="pipe">
+    <div class="box"><span class="lbl">EDIT</span><b>ui/</b><span>index.html, viewer.js, global.css, styles.css</span></div>
+    <div class="arr">&rarr;</div>
+    <div class="box"><span class="lbl">BUILD</span><b>Vite + singlefile</b><span><code>npm run build:ui</code> inlines script and CSS, and pulls in the ext-apps library</span></div>
+    <div class="arr">&rarr;</div>
+    <div class="box key"><span class="lbl">ONE FILE</span><b>dist/ui/index.html</b><span>self-contained HTML, no external requests</span></div>
+    <div class="arr">&rarr;</div>
+    <div class="box"><span class="lbl">SERVE</span><b>resources/read</b><span>server returns it as text, mime type <code>text/html;profile=mcp-app</code></span></div>
+    <div class="arr">&rarr;</div>
+    <div class="box"><span class="lbl">RUN</span><b>Host iframe</b><span>sandboxed, receives the tool result by message</span></div>
+  </div></div>
+</section>
+
+<section>
+  <h2>What viewer.js does while it runs</h2>
+  <p class="sec-lead">The script is driven by three kinds of events. Everything else is a helper called from one of them.</p>
+  <div class="life">
+    <div class="phase"><h3>1. When the page loads</h3><ol>
+      <li>Create the <code>App</code> object. <span>It talks to the host over postMessage.</span></li>
+      <li>Build the Previous/Next bar and the Expand button, both hidden. <span>They appear only when the data or the host allows them.</span></li>
+      <li>Register every handler (<code>ontoolresult</code>, <code>onhostcontextchanged</code>, <code>onteardown</code>, <code>onerror</code>).</li>
+      <li>Call <code>app.connect()</code>, then apply the host context. <span>Theme, fonts, safe-area insets, and the box height.</span></li>
+    </ol></div>
+    <div class="phase"><h3>2. When a tool result arrives</h3><ol>
+      <li><code>showResult(structuredContent)</code> stores the paging info and shows or hides the pager.</li>
+      <li>If there are <code>columns</code> and <code>rows</code>, <code>render()</code> reads <code>viewHint</code> and calls the matching renderer.</li>
+      <li>If the data has another shape, show it as raw JSON.</li>
+      <li>If there is nothing, show "No structured data in tool result."</li>
+    </ol></div>
+    <div class="phase"><h3>3. When the user acts</h3><ol>
+      <li><b>Previous / Next:</b> <code>sendPrompt(paging.nextPrompt)</code> posts the text to the chat.</li>
+      <li><b>Row select (singlelist):</b> replace <code>#SELECTION</code> in <code>nextToolPrompt</code> with the row value, then send it.</li>
+      <li><b>Expand:</b> <code>requestDisplayMode</code> switches fullscreen or inline, and the box is resized.</li>
+      <li>Buttons are disabled while a request is pending. <span>The next result re-enables them.</span></li>
+    </ol></div>
+  </div>
+</section>
+
+<section>
+  <h2>One view, several layouts</h2>
+  <p class="sec-lead">The tool decides what to show by setting <code>viewHint</code>. The view has no knowledge of individual tools, so adding a tool does not mean changing the view.</p>
+  <div class="scroll-x"><table>
+    <thead><tr><th>viewHint</th><th>Renderer</th><th>What you see</th><th>Used by</th></tr></thead>
+    <tbody>
+      <tr><td><code>table</code></td><td><code>renderTable</code></td><td>Bordered grid with striped rows. Decimals show to two places, with the full value as a tooltip.</td><td>read-table, sas-query</td></tr>
+      <tr><td><code>singlelist</code></td><td><code>renderSingleList</code></td><td>One centered-header column. Rows are buttons: click or press Enter or Space to send a follow-up prompt.</td><td>list-libraries, list-tables</td></tr>
+      <tr><td><code>group</code></td><td><code>renderSubTables</code></td><td>One two-column table per row (name | value), headed by the group values, in a scroll box.</td><td>available</td></tr>
+      <tr><td><code>details</code></td><td><code>renderDetails</code></td><td>One collapsible <code>&lt;details&gt;</code> per row, with the same name | value table inside.</td><td>available</td></tr>
+      <tr><td><code>section</code></td><td><code>renderSections</code></td><td>One <code>&lt;section&gt;</code> with an h2 per row, with the same name | value table inside.</td><td>available</td></tr>
+      <tr><td>anything else</td><td><code>renderRaw</code></td><td>The result as formatted JSON.</td><td>fallback</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Design decisions</h2>
+  <p class="sec-lead">Each of these has a cost. The notes say what was chosen, why, and what was passed over.</p>
+  <div class="dec">
+
+    <div class="decision">
+      <div class="tag">Security</div>
+      <h3>Build the page with <code>textContent</code>, never <code>innerHTML</code></h3>
+      <div class="body">
+        <p><b>Why:</b> table values come from SAS data and can contain anything, including markup. The helper <code>el()</code> only ever sets text, so a cell holding <code>&lt;script&gt;</code> is shown as text.</p>
+        <p><b>Passed over:</b> template strings with <code>innerHTML</code>. They are shorter to write and unsafe with untrusted data.</p>
+      </div>
+    </div>
+
+    <div class="decision">
+      <div class="tag">Interaction</div>
+      <h3>Buttons send prompts instead of calling the tool</h3>
+      <div class="body">
+        <p><b>Why:</b> <code>app.sendMessage</code> puts the request in the chat, so the model sees it and the skills that guide the flow still apply.</p>
+        <p><b>Passed over:</b> <code>app.callServerTool</code>. It updates the table in place and is faster, but the model never sees the new page.</p>
+        <pre><span class="c">// the prompt text comes from the tool, not the view</span>
+paging: { nextPrompt: <span class="s">'read the next 20 rows'</span>, ... }</pre>
+      </div>
+    </div>
+
+    <div class="decision">
+      <div class="tag">Layout</div>
+      <h3>Size the scroll box in pixels, not <code>vh</code></h3>
+      <div class="body">
+        <p><b>Why:</b> the host sizes the iframe to fit its content. A box set to a percentage of the viewport height feeds back on itself and collapses. The view reads the host's container size instead and sets one CSS variable, <code>--box-h</code>.</p>
+        <div class="sizing">
+          <div class="size-card bad"><span class="verdict">Collapses</span>
+            <div class="loop"><span class="n">box = 80vh</span><span class="a">&rarr;</span><span class="n">iframe = content height</span><span class="a">&rarr;</span><span class="n">vh = iframe height</span><span class="a">&#8635;</span></div>
+            <div class="bars"><span>each pass makes the box smaller</span><div class="bar"><i style="width:100%"></i></div><div class="bar"><i style="width:70%"></i></div><div class="bar"><i style="width:45%"></i></div></div>
+          </div>
+          <div class="size-card ok"><span class="verdict">Stable</span>
+            <div class="loop"><span class="n">host context</span><span class="a">&rarr;</span><span class="n">containerDimensions</span><span class="a">&rarr;</span><span class="n">--box-h (px, min 800)</span></div>
+            <div class="bars"><span>fullscreen: the iframe fills the panel, so <code>calc(100vh - 70px)</code> is safe</span><div class="bar"><i style="width:100%"></i></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="decision">
+      <div class="tag">Theming</div>
+      <h3>Use the host's style variables, with fallbacks</h3>
+      <div class="body">
+        <p><b>Why:</b> the view should look like part of VS Code in light, dark and custom themes. The host sends its variables, <code>applyHostStyleVariables</code> sets them, and <code>global.css</code> covers the case where it sends none.</p>
+        <p><b>Passed over:</b> fixed colors of our own. The light-blue table header and the translucent row stripes are the exception, chosen to read on both themes.</p>
+      </div>
+    </div>
+
+    <div class="decision">
+      <div class="tag">Reliability</div>
+      <h3>Register every handler before <code>connect()</code></h3>
+      <div class="body">
+        <p><b>Why:</b> the host can send the tool result right after the connection opens. A handler set later could miss it and leave the view on "Waiting for results...".</p>
+      </div>
+    </div>
+
+    <div class="decision">
+      <div class="tag">Build</div>
+      <h3>One bundled file and no framework</h3>
+      <div class="body">
+        <p><b>Why:</b> the sandbox allows no extra requests for the view, so everything is inlined. With about 270 lines of script, plain DOM calls are easier to read than a framework and keep the file small.</p>
+        <p><b>Cost:</b> each new layout is a function that builds elements by hand. If the views grow much more complex, that is the point to reconsider.</p>
+      </div>
+    </div>
+
+    <div class="decision">
+      <div class="tag">Fallback</div>
+      <h3>Show something for every result</h3>
+      <div class="body">
+        <p><b>Why:</b> a tool can return a shape the view does not know yet. Unknown <code>viewHint</code> values and plain objects render as JSON, and an empty result shows a message, so the user never sees a blank frame.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>Adding a new layout</h2>
+  <p class="sec-lead">The usual change is a new <code>viewHint</code>. Four steps, all inside <code>ui/</code> except the tool.</p>
+  <ol class="steps">
+    <li><b>Write the renderer in viewer.js</b><span>A function that takes the structured result and returns a DOM element, built with <code>el()</code>.</span></li>
+    <li><b>Add it to <code>render()</code></b><span>One more branch on <code>viewer === '...'</code>, before the <code>renderRaw</code> fallback.</span></li>
+    <li><b>Style it in styles.css</b><span>Use the host variables with a fallback, such as <code>var(--color-border-primary, #ccc)</code>.</span></li>
+    <li><b>Rebuild and reload</b><span>Run <code>npm run build:ui</code>, then reload the VS Code window or restart the server so the host picks up the change.</span></li>
+  </ol>
+</section>
+</div>
