@@ -31,7 +31,7 @@ async function _readTable(params) {
       qs: {
         start: (start == null) ? 0 : start - 1, // Adjust for 0-based index
         limit: limit,
-        format: format || false,
+        format: format || true,
         where: where || ''
       }
     }
@@ -61,7 +61,15 @@ async function _readTable(params) {
     // `tabled` is the existing payload; viewHint/columns/rows feed the MCP App table view.
     let columns = outdata.length ? Object.keys(outdata[0]) : [];
     let rows = outdata.map((d) => columns.map((c) => d[c] ?? null));
-    let structuredContent = {viewHint: 'table', columns, rows, count: rows.length };
+    let first = start == null ? 1 : start;
+    let pageSize = limit ?? rows.length; // the limit the model used (rows returned if it passed none)
+    let paging = {
+      nextPrompt: `read the next ${pageSize} rows`,
+      previousPrompt: `previous ${pageSize} rows`,
+      hasPrevious: first > 1,
+      hasNext: limit == null || rows.length >= limit, // a short page means we hit the end
+    };
+    let structuredContent = { viewHint: 'table', columns, rows, count: rows.length, paging };
     return { content: [{ type: 'text', text: t }], structuredContent };
 
   } catch (err) {

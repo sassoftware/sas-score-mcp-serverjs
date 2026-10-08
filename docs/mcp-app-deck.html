@@ -1,0 +1,398 @@
+<title>SAS MCP Apps Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a fixed 1280x720 stage scaled to fit the window; one slide visible at a time. */
+:root{
+  --bg:#eef1f6; --stage:#fbfcfe; --fg:#13203a; --muted:#56637c; --line:#cdd5e3; --soft:#e6ebf4;
+  --accent:#0a5cff; --accent-ink:#ffffff;
+  --req:#2f55d4; --res:#08876a; --user:#cf4a0c; --host:#6d44e0; --loop:#c01f5a;
+  --code-bg:#101a30; --code-fg:#dbe5ff; --code-key:#7fb0ff; --code-str:#7ee0b5; --code-com:#8a98b8;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',Consolas,ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0a0f1c; --stage:#111a2e; --fg:#e9eefb; --muted:#9db0d0; --line:#2b3a5c; --soft:#1a2745;
+  --accent:#6fa0ff; --accent-ink:#0a0f1c;
+  --req:#8aa8ff; --res:#43d9a8; --user:#ff9a62; --host:#b8a0ff; --loop:#ff7aa8;
+  --code-bg:#0a1122; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0a0f1c; --stage:#111a2e; --fg:#e9eefb; --muted:#9db0d0; --line:#2b3a5c; --soft:#1a2745;
+  --accent:#6fa0ff; --accent-ink:#0a0f1c;
+  --req:#8aa8ff; --res:#43d9a8; --user:#ff9a62; --host:#b8a0ff; --loop:#ff7aa8;
+  --code-bg:#0a1122; color-scheme:dark}
+
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column}
+.viewport{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding-inline:16px}
+.stage{width:1280px;height:720px;flex:none;position:relative;background:var(--stage);border:1px solid var(--line);border-radius:14px;transform-origin:center center;overflow:hidden}
+.slide{position:absolute;inset:0;padding:48px 64px;display:none;flex-direction:column;gap:22px}
+.slide.on{display:flex}
+.kicker{font:500 15px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1,h2{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:40px;line-height:1.1;font-weight:700}
+h1{font-size:76px;line-height:1.02;font-weight:700}
+p{margin:0;font-size:22px;line-height:1.5}
+.muted{color:var(--muted)}
+code,.mono{font-family:var(--mono);font-size:.88em;background:var(--soft);padding:2px 7px;border-radius:5px}
+.row{display:flex;gap:24px;min-height:0}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
+.panel{border:1px solid var(--line);border-radius:12px;padding:20px 24px;background:var(--stage)}
+.panel h3{margin:0 0 8px;font:700 24px/1.2 var(--display)}
+.panel p{font-size:19px;color:var(--muted)}
+.tag{font:500 14px/1 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+ul.tight{margin:0;padding-left:22px;font-size:21px;line-height:1.55;display:flex;flex-direction:column;gap:6px}
+
+/* title slide */
+.s-title{justify-content:center;gap:26px}
+.s-title .sub{font-size:28px;color:var(--muted);max-width:30ch}
+.s-title .rule{width:96px;height:6px;border-radius:3px;background:var(--accent)}
+.s-title .meta{font:500 16px var(--mono);color:var(--muted);letter-spacing:.08em}
+
+/* diagram slides */
+.diagram{flex:1;min-height:0;display:flex}
+.diagram svg{width:100%;height:100%}
+.lane{fill:var(--soft);stroke:var(--line)}
+.lanel{fill:var(--fg);font:600 16px var(--body)}
+.life{stroke:var(--line);stroke-width:2;stroke-dasharray:4 6}
+.phase{fill:var(--soft)}
+.phasel{fill:var(--fg);font:700 16px var(--body)}
+.lbl{fill:var(--fg);font:600 17px var(--body)}
+.sub{fill:var(--muted);font:14.5px var(--body)}
+.num{fill:#fff;font:700 13px var(--body);text-anchor:middle}
+.legend{display:flex;gap:22px;font-size:15px;color:var(--muted)}
+.legend i{display:inline-block;width:26px;border-top:3px solid;vertical-align:middle;margin-right:7px}
+
+/* code */
+pre{margin:0;background:var(--code-bg);color:var(--code-fg);border-radius:12px;padding:20px 24px;font:400 18px/1.55 var(--mono);overflow:hidden;white-space:pre}
+pre .k{color:var(--code-key)}pre .s{color:var(--code-str)}pre .c{color:var(--code-com)}
+
+/* mock views */
+.mock{border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:16px;background:var(--stage)}
+.mock .bar{display:flex;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--soft)}
+.mock button{font:500 14px var(--body);padding:3px 12px;border:1px solid var(--line);border-radius:5px;background:transparent;color:var(--fg)}
+.mock button[disabled]{opacity:.5}
+.mock table{border-collapse:collapse;width:100%}
+.mock th,.mock td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+.mock th{background:#add8e6;color:#13203a;font-weight:600}
+.mock tbody tr:nth-child(even){background:rgba(173,216,230,.35)}
+.mock td.n{text-align:right;font-variant-numeric:tabular-nums}
+.mock th.c{text-align:center}
+.mock tr.pick{background:rgba(117,115,233,.35)!important;font-weight:600}
+.mock tr.hov{background:rgba(128,128,128,.2)}
+
+/* roomier slides: fewer, bigger blocks */
+.slide.roomy{gap:30px}
+.slide.roomy .panel{padding:30px 34px}
+.slide.roomy .panel h3{font-size:30px;margin-bottom:12px}
+.slide.roomy .panel p{font-size:24px}
+.slide.roomy .tag{font-size:16px;margin-bottom:10px}
+.slide.roomy .flow .step{padding:24px 26px;gap:10px}
+.slide.roomy .flow .step b{font-size:28px}
+.slide.roomy .flow .step span{font-size:21px}
+.slide.roomy ul.tight{font-size:28px;gap:16px;line-height:1.45}
+.slide.roomy table.map{font-size:23px}
+.slide.roomy table.map th,.slide.roomy table.map td{padding:16px 20px}
+.slide.roomy>p.muted{font-size:22px!important}
+/* flow cards */
+.flow{display:flex;align-items:stretch;gap:12px}
+.flow .step{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.flow .step b{font:700 20px var(--display)}
+.flow .step span{font-size:16.5px;color:var(--muted);line-height:1.4}
+.flow .arrow{align-self:center;font:700 26px var(--mono);color:var(--muted)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.vs .panel.good{border-color:var(--accent);border-width:2px}
+
+/* table */
+table.map{border-collapse:collapse;width:100%;font-size:19px}
+table.map th,table.map td{border:1px solid var(--line);padding:10px 14px;text-align:left;vertical-align:top}
+table.map th{background:var(--soft);font-weight:600}
+
+/* controls */
+.controls{display:flex;align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:14px;flex-wrap:wrap;justify-content:center}
+.controls button{font:500 15px var(--body);padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:var(--stage);color:var(--fg);cursor:pointer}
+.controls button:hover:not([disabled]){border-color:var(--accent)}
+.controls button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.controls button[disabled]{opacity:.45;cursor:default}
+.progress{flex:1;min-width:120px;max-width:420px;height:6px;border-radius:3px;background:var(--soft);overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.count{font:500 15px var(--mono);min-width:64px;text-align:center}
+@media (prefers-reduced-motion:reduce){.progress i{transition:none}}
+</style>
+
+<div class="app">
+<div class="viewport" id="viewport"><div class="stage" id="stage">
+
+<!-- 1 title -->
+<section class="slide s-title on" data-title="Title">
+  <div class="kicker">sas-score-mcp-serverjs</div>
+  <h1>MCP Apps: tools that return a view</h1>
+  <div class="rule"></div>
+  <p class="sub">How a SAS tool result becomes a table you can click.</p>
+  <div class="meta">Team walkthrough</div>
+</section>
+
+<!-- 2 why -->
+<section class="slide roomy" data-title="Why">
+  <div class="kicker">Why</div>
+  <h2>A text answer is hard to scan and impossible to click</h2>
+  <div class="vs">
+    <div class="panel">
+      <div class="tag">Before</div>
+      <h3>Plain text result</h3>
+      <p>The model reads rows as JSON and re-types them into chat. Long tables wrap badly, numbers lose alignment, and follow-up questions mean typing again.</p>
+    </div>
+    <div class="panel good">
+      <div class="tag">With MCP Apps</div>
+      <h3>An interactive view next to the result</h3>
+      <p>The same tool call also returns data for a small web page. The host renders it as a table or a pick list, and a click becomes the next prompt.</p>
+    </div>
+  </div>
+  <p class="muted">The text result is still returned, so hosts without MCP Apps support lose nothing.</p>
+</section>
+
+<!-- 3 three pieces -->
+<section class="slide roomy" data-title="Three pieces">
+  <div class="kicker">The idea</div>
+  <h2>Three pieces make it work</h2>
+  <div class="flow">
+    <div class="step"><b>1. Link</b><span>A tool with <code>ui: true</code> is registered with <code>registerAppTool</code>. That adds <code>_meta.ui.resourceUri</code> to the tool.</span></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><b>2. Serve</b><span><code>registerAppResource</code> exposes <code>ui://sasmcp/view.html</code>: one Vite-built HTML file, mime type <code>text/html;profile=mcp-app</code>.</span></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><b>3. Return</b><span>The tool returns <code>content</code> for the model and <code>structuredContent</code> for the view.</span></div>
+  </div>
+  <div class="panel">
+    <h3>One view for every tool</h3>
+    <p>All tools point at the same view. It picks its layout from <code>structuredContent.viewHint</code>, so a new tool only has to return the right shape.</p>
+  </div>
+</section>
+
+<!-- 4 diagram A+B -->
+<section class="slide" data-title="Flow: connect and run">
+  <div class="kicker">The flow, part 1</div>
+  <h2>Connect, then run the tool</h2>
+  <div class="diagram"><svg viewBox="0 0 1200 642" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sequence diagram, phases A, B"><defs><marker id="AB-ah-req" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--req)"/></marker><marker id="AB-ah-res" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--res)"/></marker><marker id="AB-ah-user" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--user)"/></marker><marker id="AB-ah-host" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--host)"/></marker><marker id="AB-ah-loop" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--loop)"/></marker></defs><rect x="28" y="8" width="164" height="42" rx="9" class="lane"/><text x="110" y="35" text-anchor="middle" class="lanel">User</text><line x1="110" y1="50" x2="110" y2="642" class="life"/><rect x="258" y="8" width="164" height="42" rx="9" class="lane"/><text x="340" y="35" text-anchor="middle" class="lanel">VS Code + model</text><line x1="340" y1="50" x2="340" y2="642" class="life"/><rect x="518" y="8" width="164" height="42" rx="9" class="lane"/><text x="600" y="35" text-anchor="middle" class="lanel">MCP server</text><line x1="600" y1="50" x2="600" y2="642" class="life"/><rect x="778" y="8" width="164" height="42" rx="9" class="lane"/><text x="860" y="35" text-anchor="middle" class="lanel">View (iframe)</text><line x1="860" y1="50" x2="860" y2="642" class="life"/><rect x="1008" y="8" width="164" height="42" rx="9" class="lane"/><text x="1090" y="35" text-anchor="middle" class="lanel">SAS Viya</text><line x1="1090" y1="50" x2="1090" y2="642" class="life"/><rect x="10" y="86" width="1180" height="32" rx="6" class="phase"/><text x="24" y="107" class="phasel">A   Connect and discover</text><line x1="340" y1="148" x2="596" y2="148" stroke="var(--req)" stroke-width="2.6" marker-end="url(#AB-ah-req)"/><circle cx="357" cy="148" r="12" fill="var(--req)"/><text x="357" y="152.5" class="num">1</text><text x="470.0" y="138" text-anchor="middle" class="lbl">initialize</text><text x="470.0" y="170" text-anchor="middle" class="sub">client declares extensions[&#x27;io.modelcontextprotocol/ui&#x27;]</text><line x1="340" y1="210" x2="596" y2="210" stroke="var(--req)" stroke-width="2.6" marker-end="url(#AB-ah-req)"/><circle cx="357" cy="210" r="12" fill="var(--req)"/><text x="357" y="214.5" class="num">2</text><text x="470.0" y="200" text-anchor="middle" class="lbl">tools/list</text><text x="470.0" y="232" text-anchor="middle" class="sub">tool carries _meta.ui.resourceUri = ui://sasmcp/view.html</text><rect x="10" y="252" width="1180" height="32" rx="6" class="phase"/><text x="24" y="273" class="phasel">B   Ask and run the tool</text><line x1="110" y1="314" x2="336" y2="314" stroke="var(--user)" stroke-width="2.6" marker-end="url(#AB-ah-user)"/><circle cx="127" cy="314" r="12" fill="var(--user)"/><text x="127" y="318.5" class="num">3</text><text x="225.0" y="304" text-anchor="middle" class="lbl">prompt</text><text x="225.0" y="336" text-anchor="middle" class="sub">&quot;read 20 rows from cars in Samples&quot;</text><line x1="340" y1="376" x2="596" y2="376" stroke="var(--req)" stroke-width="2.6" marker-end="url(#AB-ah-req)"/><circle cx="357" cy="376" r="12" fill="var(--req)"/><text x="357" y="380.5" class="num">4</text><text x="470.0" y="366" text-anchor="middle" class="lbl">tools/call  sas-read-table</text><text x="470.0" y="398" text-anchor="middle" class="sub">model picks the tool and arguments</text><line x1="600" y1="438" x2="1086" y2="438" stroke="var(--req)" stroke-width="2.6" marker-end="url(#AB-ah-req)"/><circle cx="617" cy="438" r="12" fill="var(--req)"/><text x="617" y="442.5" class="num">5</text><text x="845.0" y="428" text-anchor="middle" class="lbl">read rows</text><text x="845.0" y="460" text-anchor="middle" class="sub">restafedit session, query, deleteSession</text><line x1="1090" y1="500" x2="604" y2="500" stroke="var(--res)" stroke-width="2.6" stroke-dasharray="7 5" marker-end="url(#AB-ah-res)"/><circle cx="1073" cy="500" r="12" fill="var(--res)"/><text x="1073" y="504.5" class="num">6</text><text x="845.0" y="490" text-anchor="middle" class="lbl">rows</text><line x1="600" y1="562" x2="344" y2="562" stroke="var(--res)" stroke-width="2.6" stroke-dasharray="7 5" marker-end="url(#AB-ah-res)"/><circle cx="583" cy="562" r="12" fill="var(--res)"/><text x="583" y="566.5" class="num">7</text><text x="470.0" y="552" text-anchor="middle" class="lbl">result</text><text x="470.0" y="584" text-anchor="middle" class="sub">content (text for the model) + structuredContent (for the view)</text></svg></div>
+</section>
+
+<!-- 5 diagram C -->
+<section class="slide" data-title="Flow: render">
+  <div class="kicker">The flow, part 2</div>
+  <h2>The host fetches and renders the view</h2>
+  <div class="diagram"><svg viewBox="0 0 1200 482" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sequence diagram, phases C"><defs><marker id="C-ah-req" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--req)"/></marker><marker id="C-ah-res" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--res)"/></marker><marker id="C-ah-user" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--user)"/></marker><marker id="C-ah-host" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--host)"/></marker><marker id="C-ah-loop" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--loop)"/></marker></defs><rect x="28" y="8" width="164" height="42" rx="9" class="lane"/><text x="110" y="35" text-anchor="middle" class="lanel">User</text><line x1="110" y1="50" x2="110" y2="482" class="life"/><rect x="258" y="8" width="164" height="42" rx="9" class="lane"/><text x="340" y="35" text-anchor="middle" class="lanel">VS Code + model</text><line x1="340" y1="50" x2="340" y2="482" class="life"/><rect x="518" y="8" width="164" height="42" rx="9" class="lane"/><text x="600" y="35" text-anchor="middle" class="lanel">MCP server</text><line x1="600" y1="50" x2="600" y2="482" class="life"/><rect x="778" y="8" width="164" height="42" rx="9" class="lane"/><text x="860" y="35" text-anchor="middle" class="lanel">View (iframe)</text><line x1="860" y1="50" x2="860" y2="482" class="life"/><rect x="1008" y="8" width="164" height="42" rx="9" class="lane"/><text x="1090" y="35" text-anchor="middle" class="lanel">SAS Viya</text><line x1="1090" y1="50" x2="1090" y2="482" class="life"/><rect x="10" y="98" width="1180" height="32" rx="6" class="phase"/><text x="24" y="119" class="phasel">C   Render the view</text><line x1="340" y1="160" x2="596" y2="160" stroke="var(--req)" stroke-width="2.6" marker-end="url(#C-ah-req)"/><circle cx="357" cy="160" r="12" fill="var(--req)"/><text x="357" y="164.5" class="num">8</text><text x="470.0" y="150" text-anchor="middle" class="lbl">resources/read  ui://sasmcp/view.html</text><text x="470.0" y="182" text-anchor="middle" class="sub">first time only, then cached by URI</text><line x1="600" y1="222" x2="344" y2="222" stroke="var(--res)" stroke-width="2.6" stroke-dasharray="7 5" marker-end="url(#C-ah-res)"/><circle cx="583" cy="222" r="12" fill="var(--res)"/><text x="583" y="226.5" class="num">9</text><text x="470.0" y="212" text-anchor="middle" class="lbl">single-file HTML</text><text x="470.0" y="244" text-anchor="middle" class="sub">dist/ui/index.html, built by Vite</text><line x1="340" y1="284" x2="856" y2="284" stroke="var(--host)" stroke-width="2.6" marker-end="url(#C-ah-host)"/><circle cx="357" cy="284" r="12" fill="var(--host)"/><text x="357" y="288.5" class="num">10</text><text x="600.0" y="274" text-anchor="middle" class="lbl">create sandboxed iframe</text><text x="600.0" y="306" text-anchor="middle" class="sub">load the HTML</text><line x1="860" y1="346" x2="344" y2="346" stroke="var(--req)" stroke-width="2.6" marker-end="url(#C-ah-req)"/><circle cx="843" cy="346" r="12" fill="var(--req)"/><text x="843" y="350.5" class="num">11</text><text x="600.0" y="336" text-anchor="middle" class="lbl">ui/initialize</text><text x="600.0" y="368" text-anchor="middle" class="sub">App.connect()</text><line x1="340" y1="408" x2="856" y2="408" stroke="var(--res)" stroke-width="2.6" stroke-dasharray="7 5" marker-end="url(#C-ah-res)"/><circle cx="357" cy="408" r="12" fill="var(--res)"/><text x="357" y="412.5" class="num">12</text><text x="600.0" y="398" text-anchor="middle" class="lbl">tool-result</text><text x="600.0" y="430" text-anchor="middle" class="sub">structuredContent: viewHint, columns, rows, paging</text></svg></div>
+  <p class="muted" style="font-size:18px">Step 8 happens once per URI. The host caches the HTML, so a second tool using the same view skips it.</p>
+</section>
+
+<!-- 6 diagram D -->
+<section class="slide" data-title="Flow: interact">
+  <div class="kicker">The flow, part 3</div>
+  <h2>A click becomes the next prompt</h2>
+  <div class="diagram"><svg viewBox="0 0 1200 358" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sequence diagram, phases D"><defs><marker id="D-ah-req" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--req)"/></marker><marker id="D-ah-res" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--res)"/></marker><marker id="D-ah-user" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--user)"/></marker><marker id="D-ah-host" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--host)"/></marker><marker id="D-ah-loop" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--loop)"/></marker></defs><rect x="28" y="8" width="164" height="42" rx="9" class="lane"/><text x="110" y="35" text-anchor="middle" class="lanel">User</text><line x1="110" y1="50" x2="110" y2="358" class="life"/><rect x="258" y="8" width="164" height="42" rx="9" class="lane"/><text x="340" y="35" text-anchor="middle" class="lanel">VS Code + model</text><line x1="340" y1="50" x2="340" y2="358" class="life"/><rect x="518" y="8" width="164" height="42" rx="9" class="lane"/><text x="600" y="35" text-anchor="middle" class="lanel">MCP server</text><line x1="600" y1="50" x2="600" y2="358" class="life"/><rect x="778" y="8" width="164" height="42" rx="9" class="lane"/><text x="860" y="35" text-anchor="middle" class="lanel">View (iframe)</text><line x1="860" y1="50" x2="860" y2="358" class="life"/><rect x="1008" y="8" width="164" height="42" rx="9" class="lane"/><text x="1090" y="35" text-anchor="middle" class="lanel">SAS Viya</text><line x1="1090" y1="50" x2="1090" y2="358" class="life"/><rect x="10" y="104" width="1180" height="32" rx="6" class="phase"/><text x="24" y="125" class="phasel">D   Interact</text><line x1="110" y1="166" x2="856" y2="166" stroke="var(--user)" stroke-width="2.6" marker-end="url(#D-ah-user)"/><circle cx="127" cy="166" r="12" fill="var(--user)"/><text x="127" y="170.5" class="num">13</text><text x="485.0" y="156" text-anchor="middle" class="lbl">click Next or select a row</text><line x1="860" y1="228" x2="344" y2="228" stroke="var(--req)" stroke-width="2.6" marker-end="url(#D-ah-req)"/><circle cx="843" cy="228" r="12" fill="var(--req)"/><text x="843" y="232.5" class="num">14</text><text x="600.0" y="218" text-anchor="middle" class="lbl">ui/message</text><text x="600.0" y="250" text-anchor="middle" class="sub">app.sendMessage( prompt ), e.g. &quot;read the next 20 rows&quot;</text><path d="M340 290 h74 v28 h-74" fill="none" stroke="var(--loop)" stroke-width="2.6" marker-end="url(#D-ah-loop)"/><circle cx="322" cy="290" r="12" fill="var(--loop)"/><text x="322" y="294.5" class="num">15</text><text x="428" y="295" text-anchor="start" class="lbl">new user message</text><text x="428" y="315" text-anchor="start" class="sub">model calls the tool again, back to step 4</text></svg></div>
+  <div class="legend"><span><i style="border-color:var(--req)"></i>request</span><span><i style="border-color:var(--res);border-top-style:dashed"></i>response or data</span><span><i style="border-color:var(--user)"></i>user action</span><span><i style="border-color:var(--host)"></i>host action</span><span><i style="border-color:var(--loop)"></i>loop</span></div>
+</section>
+
+<!-- 7 payload -->
+<section class="slide" data-title="Two payloads">
+  <div class="kicker">The payload</div>
+  <h2>One tool result, two audiences</h2>
+  <div class="row" style="flex:1">
+<pre style="flex:1.25"><span class="c">// returned by read-table</span>
+{
+  <span class="k">content</span>: [{ type: <span class="s">'text'</span>,
+    text: <span class="s">'Read 20 rows from cars'</span> }],
+  <span class="k">structuredContent</span>: {
+    viewHint: <span class="s">'table'</span>,
+    columns: [<span class="s">'Make'</span>, <span class="s">'MSRP'</span>, ...],
+    rows: [[<span class="s">'Audi'</span>, 36945], ...],
+    count: 20,
+    paging: {
+      nextPrompt: <span class="s">'read the next 20 rows'</span>,
+      previousPrompt: <span class="s">'previous 20 rows'</span>,
+      hasPrevious: false, hasNext: true
+    }
+  }
+}</pre>
+    <div class="col" style="flex:1">
+      <div class="panel"><h3><code>content</code></h3><p>Short text. The model reads this and nothing else. It also works on hosts with no MCP Apps support.</p></div>
+      <div class="panel"><h3><code>structuredContent</code></h3><p>Data for the view: what to draw, the rows, and which prompts the buttons send.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 views -->
+<section class="slide" data-title="What the view shows">
+  <div class="kicker">The view</div>
+  <h2>The layout comes from <code>viewHint</code></h2>
+  <div class="row" style="flex:1">
+    <div class="col">
+      <div class="tag">viewHint: table &middot; read-table, sas-query</div>
+      <div class="mock">
+        <div class="bar"><button disabled>Previous</button><button>Next</button></div>
+        <table>
+          <thead><tr><th>Make</th><th>Model</th><th>MSRP</th></tr></thead>
+          <tbody>
+            <tr><td>Acura</td><td>MDX</td><td class="n">36945</td></tr>
+            <tr><td>Acura</td><td>RSX</td><td class="n">23820.50</td></tr>
+            <tr><td>Audi</td><td>A4</td><td class="n">25940</td></tr>
+            <tr><td>Audi</td><td>TT</td><td class="n">33430.25</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:18px" class="muted">Bordered, striped rows. Decimals show to two places.</p>
+    </div>
+    <div class="col">
+      <div class="tag">viewHint: singlelist &middot; list-libraries, list-tables</div>
+      <div class="mock">
+        <div class="bar"><button disabled>Previous</button><button>Next</button></div>
+        <table>
+          <thead><tr><th class="c">cas Library</th></tr></thead>
+          <tbody>
+            <tr><td>Formats</td></tr>
+            <tr class="pick"><td>Samples</td></tr>
+            <tr class="hov"><td>Models</td></tr>
+            <tr><td>Public</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:18px" class="muted">Pick a row: its value fills <code>#SELECTION</code> in <code>nextToolPrompt</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 interaction -->
+<section class="slide roomy" data-title="Prompts, not calls">
+  <div class="kicker">Design choice</div>
+  <h2>Buttons send prompts, not tool calls</h2>
+  <div class="vs">
+    <div class="panel good">
+      <div class="tag">What we do</div>
+      <h3><code>app.sendMessage</code></h3>
+      <p>The click posts text such as <code>list tables in cas library Samples</code> to the chat. The model sees it, applies its skills, and calls the tool.</p>
+    </div>
+    <div class="panel">
+      <div class="tag">What we avoided</div>
+      <h3><code>app.callServerTool</code></h3>
+      <p>Faster and updates in place, but the model never sees the new page and the skills that steer the flow are skipped.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Example: drilling down</h3>
+    <p><code>list-libraries</code> &rarr; click <b>Samples</b> &rarr; <code>list tables in cas library Samples</code> &rarr; <code>list-tables</code> &rarr; click <b>cars</b> &rarr; <code>read Samples.cars</code> &rarr; <code>read-table</code></p>
+  </div>
+</section>
+
+<!-- 10 code -->
+<section class="slide roomy" data-title="Where it lives">
+  <div class="kicker">In the code</div>
+  <h2>Where each part lives</h2>
+  <table class="map">
+    <tr><th>Concern</th><th>File</th></tr>
+    <tr><td>Register the view and the tools, log client support</td><td><code>src/createMcpServer.js</code></td></tr>
+    <tr><td>Opt a tool in</td><td><code>ui: true</code> in <code>src/toolSet/*.js</code></td></tr>
+    <tr><td>Build the structured result</td><td><code>_readTable.js</code>, <code>_listLibrary.js</code>, <code>_listTables.js</code></td></tr>
+    <tr><td>Render, page, select</td><td><code>ui/src/viewer.js</code>, <code>ui/src/styles.css</code></td></tr>
+    <tr><td>Bundle to one file</td><td><code>vite.config.js</code> &rarr; <code>dist/ui/index.html</code></td></tr>
+  </table>
+  <p class="muted" style="font-size:19px">Build the view with <code>npm run build:ui</code>. It also runs before publishing.</p>
+</section>
+
+<!-- 11 gotchas -->
+<section class="slide roomy" data-title="Good to know">
+  <div class="kicker">Good to know</div>
+  <h2>Things that surprised us</h2>
+  <div class="row" style="flex:1">
+    <div class="col">
+      <div class="panel"><h3>VS Code caches tools</h3><p>After adding <code>ui: true</code> to a tool, reload the window or restart the server. Otherwise the old tool list stays.</p></div>
+      <div class="panel"><h3>The view loads once</h3><p><code>resources/read</code> shows up in the log for the first tool only. Later tools reuse the cached HTML.</p></div>
+    </div>
+    <div class="col">
+      <div class="panel"><h3>Paging depends on the model</h3><p>The next prompt asks the model to move the offset. Telling it the table and row range in the text result makes that more reliable.</p></div>
+      <div class="panel"><h3>Check the host first</h3><p>The server logs the client's capabilities on connect. Look for <code>io.modelcontextprotocol/ui</code> to confirm the host supports MCP Apps.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 next -->
+<section class="slide roomy" data-title="Next">
+  <div class="kicker">Next</div>
+  <h2>Where we can take it</h2>
+  <ul class="tight">
+    <li><b>Done:</b> read-table, sas-query, list-libraries, list-tables</li>
+    <li><b>Next up:</b> table-describe, find-*, and the list tools for models, jobs and SCR</li>
+    <li><b>Scoring tools:</b> show inputs and scores side by side</li>
+    <li><b>Later:</b> separate views for tools that need their own behavior, such as a code-submit log</li>
+  </ul>
+  <p class="muted">Adding a tool is three steps: set <code>ui: true</code>, return <code>structuredContent</code> with a <code>viewHint</code>, reload the host.</p>
+</section>
+
+</div></div>
+
+<div class="controls">
+  <button id="prev" type="button">Previous</button>
+  <div class="progress"><i id="bar"></i></div>
+  <span class="count" id="count">1 / 12</span>
+  <button id="next" type="button">Next</button>
+  <button id="full" type="button">Full screen</button>
+  <span>Arrow keys, space, Home and End also work</span>
+</div>
+</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var stage = document.getElementById('stage');
+  var viewport = document.getElementById('viewport');
+  var prev = document.getElementById('prev'), next = document.getElementById('next');
+  var count = document.getElementById('count'), bar = document.getElementById('bar');
+  var idx = 0;
+
+  function fit() {
+    var w = viewport.clientWidth - 32, h = viewport.clientHeight - 8;
+    var s = Math.min(w / 1280, h / 720);
+    stage.style.transform = 'scale(' + (s > 0 ? s : 1) + ')';
+    // transform does not change layout size, so pull the box in to the scaled size
+    stage.style.margin = (-(720 - 720 * s) / 2) + 'px ' + (-(1280 - 1280 * s) / 2) + 'px';
+  }
+  function show(i) {
+    idx = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, n) { s.classList.toggle('on', n === idx); });
+    count.textContent = (idx + 1) + ' / ' + slides.length;
+    bar.style.width = ((idx + 1) / slides.length * 100) + '%';
+    prev.disabled = idx === 0;
+    next.disabled = idx === slides.length - 1;
+    try { history.replaceState(null, '', '#s' + (idx + 1)); } catch (e) {}
+  }
+  function go(d) { show(idx + d); }
+
+  prev.addEventListener('click', function () { go(-1); });
+  next.addEventListener('click', function () { go(1); });
+  document.getElementById('full').addEventListener('click', function () {
+    try {
+      var p = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+      if (p && p.catch) p.catch(function () {});
+    } catch (e) {}
+  });
+  document.addEventListener('keydown', function (e) {
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') { e.preventDefault(); go(1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); go(-1); }
+    else if (k === 'Home') { e.preventDefault(); show(0); }
+    else if (k === 'End') { e.preventDefault(); show(slides.length - 1); }
+  });
+  stage.addEventListener('click', function (e) {
+    // click the right half to advance, the left half to go back
+    var r = stage.getBoundingClientRect();
+    if (e.target.closest('button,a')) return;
+    go(e.clientX > r.left + r.width / 2 ? 1 : -1);
+  });
+  window.addEventListener('resize', fit);
+
+  var m = /^#s(\d+)$/.exec(location.hash || '');
+  fit();
+  show(m ? parseInt(m[1], 10) - 1 : 0);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>

@@ -4,6 +4,7 @@
  */
 
 import restafedit from '@sassoftware/restafedit';
+import deleteSession from './deleteSession.js';
 
 async function _listTables(params) {
   let { server, lib, limit, start, name, _appContext} = params;
@@ -15,8 +16,9 @@ async function _listTables(params) {
     table: null
   };
   
+  let appControl;
   try {
-    let appControl = await restafedit.setup(
+    appControl = await restafedit.setup(
       _appContext.logonPayload,
       config,
       null,/* create a session */
@@ -39,11 +41,28 @@ async function _listTables(params) {
     }
 
     let items = await restafedit.getTableList(lib, appControl, payload);
-    let response = {tables: items};
-    return {content: [{ type: 'text', text: JSON.stringify(response) }],
+    await deleteSession(appControl);
+    appControl = null;
+    // Paging buttons in the view post these prompts to the chat. A name filter returns one match, so no paging.
+    let pageSize = payload.qs.limit;
+    let where = `in ${server ? server + ' ' : ''}library ${lib}`;
+    let paging = name != null ? undefined : {
+      nextPrompt: `list the next ${pageSize} tables ${where}`,
+      previousPrompt: `list the previous ${pageSize} tables ${where}`,
+      hasPrevious: payload.qs.start > 0,
+      hasNext: Array.isArray(items) && items.length >= pageSize, // a short page means we hit the end
+    };
+    let response = {viewHint: 'singlelist', columns: [`${lib} Tables`], rows: items,
+                       nextToolPrompt: `read ${lib}.#SELECTION `,
+                       paging
+                     };
+    return {content: [{ type: 'text', text: `List of tables in library ${lib} ` }],
       structuredContent: response};
   } catch (err) {
     console.error(JSON.stringify(err));
+    if (appControl != null) {
+      await deleteSession(appControl);
+    }
     return {isError: true, content: [{ type: 'text', text: (typeof err === 'string') ? err : JSON.stringify(err) }] }
   }
 

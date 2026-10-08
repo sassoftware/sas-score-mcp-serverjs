@@ -23,40 +23,24 @@ const el = (tag, text, cls) => {
 const fmt = (v) => (v === null ? '' : String(v));
 
 function renderTable({ columns, rows }) {
-    const table = el('table');
+    const table = el('table', undefined, 'grid');
     const headRow = el('tr');
     columns.forEach((c) => headRow.append(el('th', c)));
     table.appendChild(el('thead')).append(headRow);
     const body = table.appendChild(el('tbody'));
     for (const row of rows) {
         const tr = body.appendChild(el('tr'));
-        row.forEach((v) => tr.append(el('td', fmt(v), typeof v === 'number' ? 'num' : undefined)));
+        row.forEach((v) => {
+            // round non-integers to 2 decimals; the full value stays available as a tooltip
+            const rounded = typeof v === 'number' && !Number.isInteger(v);
+            const td = el('td', rounded ? v.toFixed(2) : fmt(v), typeof v === 'number' ? 'num' : undefined);
+            if (rounded) td.title = String(v);
+            tr.append(td);
+        });
     }
     return table;
 }
 
-function renderList({ columns, rows, group = [] }) {
-    const groupIdx = group.map((g) => columns.indexOf(g)).filter((i) => i >= 0);
-    const itemIdx = columns.map((_, i) => i).filter((i) => !groupIdx.includes(i));
-    const groups = new Map(); // Map keeps first-seen order
-    for (const row of rows) {
-        const key = groupIdx.map((i) => fmt(row[i])).join(' / ');
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(row);
-    }
-    const root = el('div');
-    for (const [key, groupRows] of groups) {
-        if (groupIdx.length) root.append(el('h3', key));
-        const ul = root.appendChild(el('ul'));
-        for (const row of groupRows) {
-            for (const i of itemIdx) {
-                const text = itemIdx.length === 1 ? fmt(row[i]) : `${columns[i]}: ${fmt(row[i])}`;
-                ul.append(el('li', text));
-            }
-        }
-    }
-    return root;
-}
 
 // One two-column table (column name | value) per row, with no column titles. The values of the
 // `group` columns form an h2 header that spans both columns; those columns are left out of the
@@ -117,7 +101,35 @@ function renderSections({ columns, rows, group = [] }) {
     }
     return root;
 }
-
+// Single-column table whose rows are selectable. Selecting a row posts
+// nextToolPrompt, with its #SELECTION placeholder replaced by the row value, to the chat (app.sendMessage), so the model runs the follow-up tool.
+function renderSingleList({ columns, rows, nextToolPrompt = '' }) {
+    const table = el('table', undefined, 'grid selectable');
+    const headRow = el('tr');
+    headRow.append(el('th', columns?.[0] ?? ''));
+    table.appendChild(el('thead')).append(headRow);
+    const body = table.appendChild(el('tbody'));
+    for (const row of rows) {
+        const value = fmt(Array.isArray(row) ? row[0] : row);
+        const tr = body.appendChild(el('tr', undefined, 'selectable-row'));
+        tr.tabIndex = 0;
+        tr.setAttribute('role', 'button');
+        tr.append(el('td', value));
+        const select = () => {
+            body.querySelectorAll('tr.selected').forEach((r) => r.classList.remove('selected'));
+            tr.classList.add('selected');
+            sendPrompt(nextToolPrompt.split('#SELECTION').join(value)); // split/join: value may contain `$`
+        };
+        tr.addEventListener('click', select);
+        tr.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                select();
+            }
+        });
+    }
+    return table;
+}
 function renderRaw(result) {
     const pre = el('pre', JSON.stringify(result, null, 2));
     return pre;
@@ -128,8 +140,8 @@ function render(result) {
     const viewer = result.viewHint?.toLowerCase();
     console.error('------------------------Viewer type:', viewer);
     contentEl.replaceChildren(
-        viewer === 'list'
-            ? renderList(result)
+        viewer === 'singlelist'
+            ? renderSingleList(result)
             : viewer === 'group'
                 ? renderSubTables(result)
                 : viewer === 'details'
@@ -196,9 +208,45 @@ function onHostContext(ctx) {
 
 const app = new App({ name: 'Results Viewer', version: '1.0.0' });
 
-// Register ALL handlers before connect()
-app.ontoolresult = (result) => {
-    const data = result.structuredContent;
+// Previous / Next paging. A tool opts in by returning structuredContent.paging =
+// { nextPrompt, previousPrompt, hasNext, hasPrevious }; pressing a button posts that prompt to the
+// chat as a user message, so the model (and any skills it follows) re-calls the tool.
+const pagerEl = el('div', undefined, 'pager');
+const prevBtn = el('button', 'Previous', 'page-btn');
+const nextBtn = el('button', 'Next', 'page-btn');
+prevBtn.type = nextBtn.type = 'button';
+pagerEl.hidden = true;
+pagerEl.append(prevBtn, nextBtn);
+contentEl.before(pagerEl);
+
+let lastPaging;
+
+function showPager(paging) {
+    pagerEl.hidden = !paging;
+    if (!paging) return;
+    prevBtn.disabled = paging.hasPrevious === false;
+    nextBtn.disabled = paging.hasNext === false;
+    prevBtn.onclick = () => sendPrompt(paging.previousPrompt);
+    nextBtn.onclick = () => sendPrompt(paging.nextPrompt);
+}
+
+async function sendPrompt(text) {
+    prevBtn.disabled = nextBtn.disabled = true; // re-enabled when the new result arrives
+    statusEl.hidden = true;
+    try {
+        const res = await app.sendMessage({ role: 'user', content: [{ type: 'text', text }] });
+        if (res?.isError) throw new Error('host rejected the message');
+    } catch (e) {
+        console.error('sendMessage failed', e);
+        statusEl.hidden = false;
+        statusEl.textContent = 'Could not send the request to the chat.';
+        showPager(lastPaging);
+    }
+}
+
+function showResult(data) {
+    lastPaging = data?.paging;
+    showPager(lastPaging);
     if (data?.columns && data.rows) render(data);
     else if (data) {
         // Detail/lookup tools return a plain object: show it as-is.
@@ -208,7 +256,8 @@ app.ontoolresult = (result) => {
         statusEl.hidden = false;
         statusEl.textContent = 'No structured data in tool result.';
     }
-};
+}
+app.ontoolresult = (result) => showResult(result.structuredContent);
 app.onhostcontextchanged = onHostContext;
 app.onteardown = async () => ({});
 app.onerror = console.error;

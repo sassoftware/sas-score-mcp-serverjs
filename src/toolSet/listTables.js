@@ -54,6 +54,7 @@ Returns empty array if no tables found.
     
   let spec = {
     name: 'list-tables',
+    ui: true,
     description: description,
 
     inputSchema: z.object({

@@ -5,4 +5,4 @@
 docker rmi viyafseditcr.azurecr.io/sas-score-mcp-serverjs
 az acr login --name viyafseditcr
 docker build --no-cache --platform linux/amd64 -t  viyafseditcr.azurecr.io/sas-score-mcp-serverjs .
-docker push viyafseditcr.azurecr.io/sas-score-mcp-serverjs:latest
+docker push viyafseditcr.azurecr.io/sas-score-mcp-serverjs:test

@@ -33,9 +33,14 @@ async function _jobSubmit(params) {
 
     try {
       let r = await _submitCode(iparams);
-      let response = {tabled: r.structuredContent.tabled};
+      let outdata = r.structuredContent.tabled;
+      let columns = outdata.length ? Object.keys(outdata[0]) : [];
+      let rows = outdata.map((d) => columns.map((c) => d[c] ?? null));
+      let count = rows.length;
+      let response = {columns,rows,count,viewHint: 'table'};
+ 
       return {
-        content: [{ type: 'text', text: JSON.stringify(response) }],
+        content: [{ type: 'text', text: `Read ${count} rows from query results` }],
         structuredContent: response
       };
     } catch (error) {
@@ -65,7 +70,7 @@ async function _jobSubmit(params) {
       let response = (query === true) ? { tabled: r.tables.rows } : { tables: r.tables, listing: r.listing, log: r.log };
       
       return {
-        content: [{ type: 'text', text: JSON.stringify(response) }],
+        content: [{ type: 'text', text: `Submitted job ${name} of type ${type}` }],
         structuredContent: response
       };
     }

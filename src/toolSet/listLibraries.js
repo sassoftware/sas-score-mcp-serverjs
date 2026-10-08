@@ -62,6 +62,7 @@ Return structured error with a message field. Never hallucinate library names.
  
   let spec = {
     name: 'list-libraries',
+    ui: true,
     description: description,
     inputSchema: z.object({
       intent: z.literal('list'),

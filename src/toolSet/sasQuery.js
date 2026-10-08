@@ -45,6 +45,7 @@ Returns rows array, columns metadata, log. Returns error if SQL invalid or table
 
 
     let spec = {
+    ui: true,
     name: 'sas-query',
     description: description,
         inputSchema: z.object({
@@ -72,6 +73,7 @@ Returns rows array, columns metadata, log. Returns error if SQL invalid or table
             }
          
             let r = await _jobSubmit(iparams);
+            console.error(JSON.stringify(r));
             return r;
             
            }

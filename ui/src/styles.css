@@ -18,7 +18,7 @@ td {
 }
 th {
     font-weight: 600;
-    background: #7573e9;
+    background: lightblue;
 }
 td.num {
     text-align: right;
@@ -73,4 +73,30 @@ table.subtable th h2 {
 }
 .expand-btn:hover {
     background: var(--color-background-secondary, rgba(128, 128, 128, 0.15));
+}
+.pager { display: flex; gap: 8px; margin: 0 0 8px; }
+.page-btn { padding: 4px 12px; cursor: pointer; border: 1px solid var(--color-border-primary, #ccc); border-radius: 4px; background: transparent; color: inherit; font: inherit; }
+.page-btn:hover:not(:disabled) { background: var(--color-background-secondary, rgba(128,128,128,.15)); }
+.page-btn:disabled { opacity: .5; cursor: default; }
+table.grid th,
+table.grid td {
+    border: 1px solid var(--color-border-primary, #ccc);
+}
+table.grid tbody tr:nth-child(even) {
+    background: rgba(173, 216, 230, 0.35); /* translucent light blue: readable in light and dark themes */
+}
+table.selectable tr.selectable-row {
+    cursor: pointer;
+}
+table.selectable tr.selectable-row:hover,
+table.selectable tr.selectable-row:focus-visible {
+    background: var(--color-background-secondary, rgba(128, 128, 128, 0.2));
+    outline: none;
+}
+table.selectable tr.selectable-row.selected {
+    background: rgba(117, 115, 233, 0.35);
+    font-weight: 600;
+}
+table.selectable th {
+    text-align: center;
 }

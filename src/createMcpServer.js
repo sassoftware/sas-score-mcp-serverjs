@@ -78,11 +78,11 @@ function makeServerFactory(appEnvBase) {
 
     registerAppResource(
       mcpServer,
-      "SAS Results View",
+      "Viya Table Views",
       UI_RESOURCE_URI,
       { mimeType: RESOURCE_MIME_TYPE, description: "Interactive table view for SAS results" },
       async () => {
-        console.error("[Note] resources/read", UI_RESOURCE_URI);
+        console.error("[Note]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resources/read", UI_RESOURCE_URI);
         const html = await loadUiHtml();
         return { contents: [{ uri: UI_RESOURCE_URI, mimeType: RESOURCE_MIME_TYPE, text: html }] };
       }
@@ -105,13 +105,14 @@ function makeServerFactory(appEnvBase) {
         return tool.handler(params);
       };
       if (tool.ui) {
+        console.error(`[Note] Registering UI tool with resource URI: ${UI_RESOURCE_URI}: ${toolName}`);
         registerAppTool(mcpServer, toolName, { ...config, _meta: { ui: { resourceUri: UI_RESOURCE_URI } } }, callback);
       } else {
         mcpServer.registerTool(toolName, config, callback);
       }
       toolNames.push(toolName);
     });
-    console.error(`[Note] Registered ${toolSet.length} tools: ${toolNames}`);
+    //console.error(`[Note] Registered ${toolSet.length} tools: ${toolNames}`);
     console.error(`[Note] Total description length: ${totalDescription} characters`);
     return mcpServer;
   };

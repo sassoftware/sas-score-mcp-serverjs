@@ -42,13 +42,17 @@ async function _listLibrary(params) {
       }
 
       let items = await restafedit.getLibraryList(appControl, payload);
-      let response = { libraries: items };
-      await deleteSession(appControl);
+      if (server === 'cas'){
+        items = items.map(item => {
+          if (item.toLowerCase().includes('casuser')) {
+            item = 'casuser';
+          }
+          return item;
+        })
 
-      return {
-        content: [{ type: 'text', text: JSON.stringify(response) }],
-        structuredContent: response
-      };
+      }
+      await deleteSession(appControl);
+      return items;
     } catch (err) {
       console.error(JSON.stringify(err));
       if (appControl != null) {
@@ -58,15 +62,27 @@ async function _listLibrary(params) {
     }
   }
 
-  let source = (server === 'all') ? ['sas', 'cas'] : [server];
-  let response = {};
 
-  for (let i = 0; i < source.length; i++) {
-    let liblist = await _ilistLibrary({ server: source[i], limit, start, name, _appContext });
-    response[source[i]] = liblist.structuredContent;
-  }
+  let response = {};
+  let liblist = await _ilistLibrary({ server: server, limit, start, name, _appContext });
+  let columns = [`${server} Library`];
+  let rows = liblist;
+  /* sample structured response
+   { viewHint: 'singlelist', columns: [`cas Library`], rows: ['Samples', "Model"], nextToolPrompt: `list tables in cas library  ` }
+  */
+
+  // Paging buttons in the view post these prompts to the chat. A name filter returns one match, so no paging.
+  let pageSize = limit ?? 10;
+  let paging = name != null ? undefined : {
+    nextPrompt: `list the next ${pageSize} ${server} libraries`,
+    previousPrompt: `list the previous ${pageSize} ${server} libraries`,
+    hasPrevious: (start ?? 1) > 1,
+    hasNext: Array.isArray(rows) && rows.length >= pageSize, // a short page means we hit the end
+  };
+  response = { columns, rows, viewHint: 'singlelist', nextToolPrompt: `list tables in ${server} library #SELECTION`, paging };
+  console.error(response);
   return {
-    content: [{ type: 'text', text: JSON.stringify(response) }],
+    content: [{ type: 'text', text: `Library list for ${server}` }],
     structuredContent: response
   };
 }
